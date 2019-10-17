@@ -1,0 +1,12 @@
+*BUILDING
+n
+*BOUNDARY
+  NodeID NodeID NodeID NodeID     .... Ground Level
+*BOUNDARY_MASTERNODE
+  NodeID NodeID NodeID NodeID   .... total number depends on number of storey for building n
+*BUILDING
+m
+*BOUNDARY
+  NodeID NodeID NodeID NodeID     .... Ground Level
+*BOUNDARY_MASTERNODE
+  NodeID NodeID NodeID NodeID   .... total number depends on number of storey for building n
