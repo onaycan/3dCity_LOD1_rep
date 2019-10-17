@@ -1,2 +1,3 @@
-# 3dCity_LOD1_rep
-the rep of a 3d representation of a city 
+# 3dCity_LOD1_rep -- Opensees Related files exchange branch
+
+This branch is only thought to be used for file exchange. 
