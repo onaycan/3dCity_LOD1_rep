@@ -46,10 +46,13 @@ counter=0
 buildings_dic={}
 buildings_dic[mahalle]={}
 prev_file=open("map_kadiköy_caferaga.json",'r', encoding='utf-8')
+start_time = time.time()
 buildings_dic=json.load(prev_file)
+elapsed_time = time.time() - start_time
+print("json load needs: "+str(elapsed_time))
 
 last_key=list(buildings_dic[mahalle].keys())[-1]
-print(last_key)
+#print(last_key)
 
 #print(buildings_dic[mahalle].keys())
 
@@ -120,17 +123,26 @@ for bk in buildings_dic[mahalle].keys():
 
 #end wo crawling
 
-
+start_time = time.time()
+last_vertex_id=max([int(v) for v in vertices.keys()])
 numberofbuildingswithheight=0
 for b in buildings.values():
-    numberofbuildingswithheight=b.build_building(beamsets,vertices,trusses,numberofbuildingswithheight)
+    numberofbuildingswithheight,last_vertex_id=b.build_building(beamsets,vertices,trusses,numberofbuildingswithheight,last_vertex_id)
+elapsed_time = time.time() - start_time
+print("building needs: "+str(elapsed_time))
 
 print("number of buildings with height: "+str(numberofbuildingswithheight))
 
+
+
 triangle_or_truss=True
 wireframe=False
+start_time = time.time()
 vtk_interactor=vtk_interaction.vtk_interactor()
+elapsed_time = time.time() - start_time
+print("interactor needs: "+str(elapsed_time))
+
 vtk_interactor.insert_all_vertices(vertices.values())
 vtk_interactor.insert_buildings(buildings)
-    
+#    
 vtk_interactor.visualize(triangle_or_truss, wireframe)

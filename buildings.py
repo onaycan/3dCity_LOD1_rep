@@ -182,7 +182,7 @@ class building:
             
 
 
-    def build_building(self,_beamsets,_vertices,_trusses,_numberofbuildingswithheight):
+    def build_building(self,_beamsets,_vertices,_trusses,_numberofbuildingswithheight, _lastvertexid):
         '''
         floor_height=16.0/5.0
         if self.osm_feasible:
@@ -209,9 +209,13 @@ class building:
                 #print("here")
                 numberoflevels=int(self.levels)
                 for l in range(1,numberoflevels+1):
-                    next_beamset=self.beamsets[0].shift_and_copy_beamset(_vertices,_trusses, str(l), [0.0,0.0,-l*floor_height/111000.0])
+                    #print("beamset inserted in "+self.name)
+                    next_beamset, _lastvertexid=self.beamsets[0].shift_and_copy_beamset(_vertices,_trusses, str(l), [0.0,0.0,-l*floor_height/111000.0], _lastvertexid)
                     _beamsets[next_beamset.id]=next_beamset
                     self.beamsets.append(next_beamset)
+                    
+
+
                     
                     #start columns
                     current_column=columns.column(self.name)
@@ -267,7 +271,7 @@ class building:
 
 
                     #end basesets
-
+                    
                     
                 retval=_numberofbuildingswithheight+1
-        return retval
+        return retval, _lastvertexid
