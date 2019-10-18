@@ -62,6 +62,12 @@ class vtk_interactor:
         self.trusses.InsertCellPoint(self.vertexId2VtkPointId[_truss.vertices[1].id])
         #print(_truss.vertices[0].id)
 
+    def insert_polygon_as_triangle(self,_beamset):
+        self.triangles.InsertNextCell(len(_beamset.vertices))
+        for v in _beamset.vertices:
+            self.triangles.InsertCellPoint(self.vertexId2VtkPointId[v.id])
+    
+
     def insert_triangle(self,_triangle):
         self.triangles.InsertNextCell(3)
         self.triangles.InsertCellPoint(self.vertexId2VtkPointId[_triangle.vertices[0].id])
@@ -95,11 +101,17 @@ class vtk_interactor:
             self.insert_baseset(bs)
         for w in _building.walls:
             self.insert_wall(w)
+        #for bb in _building.beamsets:
+        #self.insert_polygon_as_triangle(_building.beamsets[0])
 
     def insert_buildings(self,_buildings):
         for b in _buildings.values():
             self.insert_building(b)
             #print(b.name)
+            
+
+
+
     '''
     def insert_building_triangle(self,_building):
         

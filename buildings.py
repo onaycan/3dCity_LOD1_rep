@@ -7,6 +7,7 @@ import basesets
 import triangles
 import basesets
 import walls
+import misc
 
 import geopy
 from geopy.geocoders import Nominatim
@@ -17,6 +18,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
+
+from scipy.spatial import Delaunay
 
 
 
@@ -250,28 +253,51 @@ class building:
                     self.walls.append(current_wall)
                     #end wall
 
-                for l in range(1,numberoflevels+2):
-                    #start basesets
-                    current_baseset=basesets.baseset(self.name+delim+str(l))
-                    for v in range(1,len(self.beamsets[l-1].vertices)-1):
-                        numberofvertices=len(self.beamsets[l-1].vertices)
-                        current_vertices=[self.beamsets[l-1].vertices[0],self.beamsets[l-1].vertices[v],self.beamsets[l-1].vertices[int((v+1)%numberofvertices)]]
-                        current_triangle=triangles.triangle(self.name+delim+str(l)+delim+str(v),current_vertices)
-                        current_baseset.append_triangle(current_triangle)
-                        current_baseset.append_vertex(self.beamsets[l-1].vertices[0])
-                        current_baseset.append_vertex(self.beamsets[l-1].vertices[v])
-                        current_baseset.append_vertex(self.beamsets[l-1].vertices[int((v+1)%numberofvertices)])
+                l=0
+                current_baseset=basesets.baseset(self.name+delim+str(l))
+                points=np.array([]).reshape(0,2)
+                ground_triangles={}
+                ground_vertices={}
+                coun=0
+                for v in range(len(self.beamsets[l].vertices)-1):
+                    ver=self.beamsets[l].vertices[v]
+                    points=np.vstack([points,[ver.coords[0],ver.coords[1]]])
+                    ground_vertices["g"+str(coun)]=ver
+                    current_baseset.append_vertex(ver)
+                    coun+=1
+                #su aritma tesisleri
+                #if (self.name=="236167025"):
+                #    print(points)
+                tris, ret=misc.constrained_polygon_triangulation(points)
+                coun=0
+                if ret:
+                    for tri in tris:
+                        ground_triangles["t"+str(coun)]=triangles.triangle("t"+str(coun),[ground_vertices["g"+str(tri[0])],ground_vertices["g"+str(tri[1])],ground_vertices["g"+str(tri[2])]])
+                        current_baseset.append_triangle(ground_triangles["t"+str(coun)])
+                        coun+=1
                     self.basesets.append(current_baseset)
-                    #end basesets      
-
-
-                    
-
-
-
+                #other floors:
+                for l in range(1,len(self.beamsets)):
+                    current_baseset=basesets.baseset(self.name+delim+str(l))
+                    ground_triangles={}
+                    ground_vertices={}
+                    coun=0
+                    for v in range(len(self.beamsets[l].vertices)-1):
+                        ver=self.beamsets[l].vertices[v]
+                        points=np.vstack([points,[ver.coords[0],ver.coords[1]]])
+                        ground_vertices["g"+str(coun)]=ver
+                        current_baseset.append_vertex(ver)
+                        coun+=1
+                    coun=0
+                    if ret:
+                        for tri in tris:
+                            ground_triangles["t"+str(coun)]=triangles.triangle("t"+str(coun),[ground_vertices["g"+str(tri[0])],ground_vertices["g"+str(tri[1])],ground_vertices["g"+str(tri[2])]])
+                            current_baseset.append_triangle(ground_triangles["t"+str(coun)])
+                            coun+=1
+                        self.basesets.append(current_baseset)
 
                     #end basesets
                     
-                    
+                   
                 retval=_numberofbuildingswithheight+1
         return retval, _lastvertexid

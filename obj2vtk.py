@@ -135,6 +135,8 @@ print("number of buildings with height: "+str(numberofbuildingswithheight))
 
 
 
+
+
 triangle_or_truss=True
 wireframe=False
 start_time = time.time()
