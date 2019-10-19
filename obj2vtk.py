@@ -94,8 +94,8 @@ vtk_interactor=vtk_interaction.vtk_interactor()
 elapsed_time = time.time() - start_time
 print("interactor needs: "+str(elapsed_time))
 
-vtk_interactor.insert_vertices(vertices.values())
-vtk_interactor.insert_vertices(ground_vertices.values())
+vtk_interactor.insert_vertices(vertices.values(),_colormap="gray")
+vtk_interactor.insert_vertices(ground_vertices.values(),_colormap="gist_earth")
 vtk_interactor.insert_buildings(buildings)
 vtk_interactor.insert_triangles(ground_triangles.values())
 
