@@ -1,6 +1,7 @@
 
 import vertices
 import trusses
+import numpy as np
 
 class beamset:
     def __init__(self,_id):
@@ -10,8 +11,18 @@ class beamset:
     def append_vertex(self,_vertex):
         self.vertices.append(_vertex)
     def append_truss(self,_truss):
-        self.trusses.append(_truss)        
-    def shift_and_copy_beamset(self,_vertices,_trusses, _level, _shift, _last_vertex_id):
+        self.trusses.append(_truss)
+    def set_floor_mid(self):
+        all_coords=np.array([]).reshape(0,3)
+        for v in range(len(self.vertices)-1):
+            ver=self.vertices[v]
+            all_coords=np.vstack([all_coords,[ver.coordsX[0],ver.coordsX[1],ver.coordsX[2]]])
+        self.mid=np.mean(all_coords,axis=0)
+        return self.mid
+    def set_footprint_max_elev(self):
+        self.fp_max_elev=max([v.coordsX[2] for v in self.vertices])
+        return self.fp_max_elev
+    def shift_and_copy_beamset(self,_vertices,_trusses, _level, _shift, _last_vertex_id,_origin):
         delim="##"
         #last_vertex_id=max([int(v) for v in _vertices.keys()])
         #print(last_vertex_id)
@@ -19,10 +30,16 @@ class beamset:
         return_beamset=beamset(return_beamset_id)
         copied_vertex_ids=[]
         for v in self.vertices:
-            new_coords=[0.0,0.0,0.0]
+            new_coords_lat_long=[0.0,0.0]
+            for c in range(2):
+                new_coords_lat_long[c]=v.coords_lat_long[c]
+            _vertices[str(_last_vertex_id+1)]=vertices.vertex(str(_last_vertex_id+1),new_coords_lat_long)
+            for c in range(2):
+                _vertices[str(_last_vertex_id+1)].coordsX[c]=v.coordsX[c]
+            _vertices[str(_last_vertex_id+1)].coordsX[2]=self.fp_max_elev
+            #_vertices[str(_last_vertex_id+1)].convert_lat_long2m(_origin)
             for c in range(3):
-                new_coords[c]=v.coords[c]+_shift[c]
-            _vertices[str(_last_vertex_id+1)]=vertices.vertex(str(_last_vertex_id+1),new_coords)
+                _vertices[str(_last_vertex_id+1)].coordsX[c]+=_shift[c]
             copied_vertex_ids.append(str(_last_vertex_id+1))
             return_beamset.append_vertex(_vertices[str(_last_vertex_id+1)])
             _last_vertex_id+=1

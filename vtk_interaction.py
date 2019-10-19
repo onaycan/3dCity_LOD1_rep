@@ -43,15 +43,15 @@ class vtk_interactor:
         self.Colors.SetName("Colors")
     
 
-    def insert_all_vertices(self,_vertices):
-        min_elevation=min([v.coords[2] for v in _vertices])
-        max_elevation=max([v.coords[2] for v in _vertices])
-        print(min_elevation)
-        print(max_elevation)
+    def insert_vertices(self,_vertices):
+        min_elevation=min([v.coordsX[2] for v in _vertices])
+        max_elevation=max([v.coordsX[2] for v in _vertices])
+        #print(min_elevation)
+        #print(max_elevation)
 
         for v in _vertices:
-            VtkPointId=self.points.InsertNextPoint(v.coords[0],v.coords[1],v.coords[2])
-            r,g,b=rgb(min_elevation,30,v.coords[1])
+            VtkPointId=self.points.InsertNextPoint(v.coordsX[0],v.coordsX[1],v.coordsX[2])
+            r,g,b=rgb(min_elevation,max_elevation,v.coordsX[2])
             self.Colors.InsertNextTuple3(r,g,b)
             self.vertexId2VtkPointId[v.id]=VtkPointId
 
@@ -74,6 +74,9 @@ class vtk_interactor:
         self.triangles.InsertCellPoint(self.vertexId2VtkPointId[_triangle.vertices[1].id])
         self.triangles.InsertCellPoint(self.vertexId2VtkPointId[_triangle.vertices[2].id])
         
+    def insert_triangles(self, _triangles):
+        for tri in _triangles:
+            self.insert_triangle(tri)    
 
     def insert_beamset(self,_beamset):
         for t in _beamset.trusses:
@@ -156,14 +159,14 @@ class vtk_interactor:
             self.insert_building_triangle(b)
             #print(b.name)
     '''
-    def visualize(self,_triangle_or_truss, _wireframe):
+    def visualize(self,_triangle_or_truss, _wireframe, _origin):
         
         self.PolyData.SetPoints(self.points)
         
         self.PolyData.SetPolys(self.triangles)
         self.PolyData.SetLines(self.trusses)
         
-        #self.PolyData.GetPointData().SetScalars(self.Colors)
+        self.PolyData.GetPointData().SetScalars(self.Colors)
 
         # mapper
         if vtk.VTK_MAJOR_VERSION <= 5:
@@ -179,6 +182,31 @@ class vtk_interactor:
 
         # assign actor to the renderer
         self.ren.AddActor(self.actor)
+        self.axes = vtk.vtkAxesActor()
+
+
+        xAxisLabel = self.axes.GetXAxisCaptionActor2D()#.GetTextActor().SetTextScaleModeToNone()
+        xAxisLabel.GetTextActor().SetTextScaleModeToNone()
+        xAxisLabel.GetCaptionTextProperty().SetFontSize(10) 
+        yAxisLabel = self.axes.GetYAxisCaptionActor2D()#.GetTextActor().SetTextScaleModeToNone()
+        yAxisLabel.GetCaptionTextProperty().SetFontSize(10) #
+        yAxisLabel.GetTextActor().SetTextScaleModeToNone()
+        
+        zAxisLabel = self.axes.GetZAxisCaptionActor2D()#.GetTextActor().SetTextScaleModeToNone()
+        zAxisLabel.GetCaptionTextProperty().SetFontSize(10) 
+        zAxisLabel.GetTextActor().SetTextScaleModeToNone()
+         
+
+        self.axes.SetShaftTypeToLine()
+        self.axes.SetTotalLength(100, 100, 100)
+        self.axes.SetNormalizedShaftLength(1.0, 1.0, 1.0)
+        self.axes.SetNormalizedTipLength(0.05, 0.05, 0.05) 
+
+        transform = vtk.vtkTransform()
+        transform.Translate(_origin[0],_origin[1], 0.0)
+        self.axes.SetUserTransform(transform)
+        self.ren.AddActor(self.axes)
+
 
         # enable user interface interactor
         self.iren.Initialize()

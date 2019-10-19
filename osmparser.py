@@ -4,7 +4,7 @@ import beamsets
 import buildings
 import xml.etree.ElementTree as ET
 
-def parse_objs(osmfile,_vertices, _beamsets, _trusses, _buildings):
+def parse_objs(osmfile,_vertices, _beamsets, _trusses, _buildings,_origin):
     #osmlines=osmfile.read()
     delim="##"
     valid_buildings=["building","building:part"]
@@ -14,7 +14,8 @@ def parse_objs(osmfile,_vertices, _beamsets, _trusses, _buildings):
     for child in root:
         if child.tag=="node":
             #print(child.attrib["id"])
-            _vertices[child.attrib["id"]]=vertices.vertex(child.attrib["id"],[child.attrib["lat"],child.attrib["lon"],0.0])
+            _vertices[child.attrib["id"]]=vertices.vertex(child.attrib["id"],[child.attrib["lat"],child.attrib["lon"]])
+            _vertices[child.attrib["id"]].convert_lat_long2m(_origin)
 
     for child in root: 
         if child.tag=="way":
@@ -33,7 +34,7 @@ def parse_objs(osmfile,_vertices, _beamsets, _trusses, _buildings):
                         _buildings[child.attrib["id"]]=buildings.building(child.attrib["id"])
                         current_beamset_id=child.attrib["id"]+delim+"0"
                         _beamsets[current_beamset_id]=beamsets.beamset(current_beamset_id)
-                        for nd in current_node_ids:
+                        for nd in current_node_ids: # the start id is twice inside! this may cause problem! 
                             _beamsets[current_beamset_id].append_vertex(_vertices[nd])
                         for ndid in range(len(current_node_ids)-1):
                             nd_tip=current_node_ids[ndid]

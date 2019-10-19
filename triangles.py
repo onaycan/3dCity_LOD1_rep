@@ -10,11 +10,13 @@ class triangle:
         self.vertices.append(_vertices[0])
         self.vertices.append(_vertices[1])
         self.vertices.append(_vertices[2])
-        self.all_coords=np.array([]).reshape(0,3)
-        for v in self.vertices:
-            self.all_coords=np.vstack([self.all_coords,[v.coords[0],v.coords[1],0.0]])
-        self.mid=list(np.mean(self.all_coords,axis=0))
-        #print(self.mid)
+        
+        #old: coords need to be specified, meters or lat long
+        #self.all_coords=np.array([]).reshape(0,3)
+        #for v in self.vertices:
+        #    self.all_coords=np.vstack([self.all_coords,[v.coords[0],v.coords[1],0.0]])
+        #self.mid=list(np.mean(self.all_coords,axis=0))
+        ##print(self.mid)
     '''
     def check_inside_nonconvex_boundaries(self, _boundaries):
         p1=np.subtract(self.all_coords[1],self.all_coords[0])

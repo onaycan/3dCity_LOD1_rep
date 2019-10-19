@@ -60,6 +60,11 @@ class building:
                 self.osm_feasible=True
                 #self.print_building(intersection)
     
+    def set_floor_mid(self):
+        self.mid=self.beamsets[0].set_floor_mid()
+    def set_footprint_max_elev(self):
+        self.fp_max_elev=self.beamsets[0].set_footprint_max_elev()
+
     def get_building_level(self,_driver,_action):
         time.sleep(1)
         #araclar_tab=_driver.find_element_by_xpath("//a[@title='Araçlar']")
@@ -185,25 +190,8 @@ class building:
             
 
 
-    def build_building(self,_beamsets,_vertices,_trusses,_numberofbuildingswithheight, _lastvertexid):
-        '''
-        floor_height=16.0/5.0
-        if self.osm_feasible:
-            if "height" in self.attributes.keys():
-                if "building:levels" in self.attributes.keys():
-                    floor_height=float(self.attributes["height"].split()[0].strip())/float(self.attributes["building:levels"])
-                    numberoflevels=int(self.attributes["building:levels"])
-                else:
-                    numberoflevels=int(float(self.attributes["height"])/floor_height)
-                    print("numberoflevels:"+str(numberoflevels))
-                
-            else:
-                numberoflevels=int(self.attributes["building:levels"])
-            for l in range(1,numberoflevels):
-                next_beamset=self.beamsets[0].shift_and_copy_beamset(_vertices,_trusses, str(l), [0.0,0.0,l*floor_height/111000.0])
-                _beamsets[next_beamset.id]=next_beamset
-                self.beamsets.append(next_beamset)
-        '''
+    def build_building(self,_beamsets,_vertices,_trusses,_numberofbuildingswithheight, _lastvertexid, _origin):
+
         delim="##"
         retval=_numberofbuildingswithheight
         floor_height=16.0/5.0
@@ -213,7 +201,7 @@ class building:
                 numberoflevels=int(self.levels)
                 for l in range(1,numberoflevels+1):
                     #print("beamset inserted in "+self.name)
-                    next_beamset, _lastvertexid=self.beamsets[0].shift_and_copy_beamset(_vertices,_trusses, str(l), [0.0,0.0,-l*floor_height/111000.0], _lastvertexid)
+                    next_beamset, _lastvertexid=self.beamsets[0].shift_and_copy_beamset(_vertices,_trusses, str(l), [0.0,0.0,l*floor_height], _lastvertexid, _origin)
                     _beamsets[next_beamset.id]=next_beamset
                     self.beamsets.append(next_beamset)
                     
@@ -261,7 +249,7 @@ class building:
                 coun=0
                 for v in range(len(self.beamsets[l].vertices)-1):
                     ver=self.beamsets[l].vertices[v]
-                    points=np.vstack([points,[ver.coords[0],ver.coords[1]]])
+                    points=np.vstack([points,[ver.coordsX[0],ver.coordsX[1]]])
                     ground_vertices["g"+str(coun)]=ver
                     current_baseset.append_vertex(ver)
                     coun+=1
@@ -284,7 +272,7 @@ class building:
                     coun=0
                     for v in range(len(self.beamsets[l].vertices)-1):
                         ver=self.beamsets[l].vertices[v]
-                        points=np.vstack([points,[ver.coords[0],ver.coords[1]]])
+                        points=np.vstack([points,[ver.coordsX[0],ver.coordsX[1]]])
                         ground_vertices["g"+str(coun)]=ver
                         current_baseset.append_vertex(ver)
                         coun+=1
