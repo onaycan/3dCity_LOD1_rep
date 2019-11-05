@@ -8,6 +8,7 @@ from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 class Ui(QtWidgets.QMainWindow):
     def __init__(self):
         super(Ui, self).__init__()
+        self.adjustSize()
         uic.loadUi('./gui_designer/ideas4all_city_simulator_gui.ui', self)
         self.show()
 
@@ -15,7 +16,11 @@ class Ui(QtWidgets.QMainWindow):
 
 app = QtWidgets.QApplication(sys.argv)
 window = Ui()
-frame = window.frame
+window.showMaximized()
+
+frame = window.tabWidget
+
+
 vl=window.verticalLayout
 vtkWidget = QVTKRenderWindowInteractor(frame)
 vl.addWidget(vtkWidget)
