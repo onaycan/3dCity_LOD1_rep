@@ -27,6 +27,7 @@ from scipy.spatial import Delaunay
 class building:
     def __init__(self,_name):
         self.name=_name
+        self.femid=0
         self.beamsets=[]
         self.basesets=[]
         self.columns=[]
@@ -62,6 +63,9 @@ class building:
     
     def set_floor_mid(self):
         self.mid=self.beamsets[0].set_floor_mid()
+        for bs in range(1,len(self.beamsets)):
+            self.beamsets[bs].set_floor_mid()
+
     def set_footprint_max_elev(self):
         self.fp_max_elev=self.beamsets[0].set_footprint_max_elev()
 
@@ -289,3 +293,46 @@ class building:
                    
                 retval=_numberofbuildingswithheight+1
         return retval, _lastvertexid
+    
+    def building2opensees(self):
+        file=open("./OpenSeesFiles/building_"+str(self.name)+".tcl","w")
+        file.write("#BUILDING"+"\n")
+        file.write("set BuildingID "+str(self.name)+";"+"\n")
+        level=0
+        file.write("#NODES"+"\n")
+        for bs in self.beamsets:
+            level+=1
+            vertex_counter=1
+            file.write("#NODES OF FLOOR # "+str(level)+"\n")
+            for vi in range(len(bs.vertices)-1):
+                v=bs.vertices[vi]
+                current_id=str(level)+str(self.femid).zfill(5)+str(vertex_counter).zfill(2)  
+                vertex_counter+=1
+                file.write("node\t"+current_id+"\t"+str(v.coordsX[0])+"\t"+str(v.coordsX[2])+"\t"+str(v.coordsX[1])+"\n")
+        level=0
+        file.write("#MASTERNODES"+"\n")
+        for bs in self.beamsets:
+            level+=1
+            vertex_counter=2
+            if level>1:
+                current_id=str(99)+str(self.femid).zfill(5)+str(vertex_counter).zfill(2)
+                vertex_counter+=1
+                file.write("node\t"+current_id+"\t"+str(v.coordsX[0])+"\t"+str(v.coordsX[2])+"\t"+str(v.coordsX[1])+"\n")
+        level=0
+        file.write("#RIGIDELEMENTS"+"\n")
+        for bs in self.beamsets:
+            level+=1
+            if level>1:
+                current_id=str(99)+str(self.femid).zfill(5)+str(level).zfill(2)
+                vertex_counter=1
+                str2print="rigidDiaphragm 2\t"+current_id+"\t"
+                for vi in range(len(bs.vertices)-1):
+                    v=bs.vertices[vi]
+                    vertex_id=str(level)+str(self.femid).zfill(5)+str(vertex_counter).zfill(2) 
+                    str2print+=vertex_id+"\t"
+                    vertex_counter+=1
+                file.write(str2print+"\n")
+
+                
+                
+        file.close()

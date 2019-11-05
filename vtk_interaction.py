@@ -21,15 +21,18 @@ def rgb(minimum, maximum, value):
 
 
 class vtk_interactor:
-    def __init__(self):
+    def __init__(self, vtkWidget):
 
         # create a rendering window and renderer
         self.ren = vtk.vtkRenderer()
-        self.renWin = vtk.vtkRenderWindow()
+        #vtkWidget.GetRenderWindow().AddRenderer(self.ren)
+        #self.renWin = vtk.vtkRenderWindow()
+        self.renWin=vtkWidget.GetRenderWindow()
         self.renWin.AddRenderer(self.ren)
 
         # create a renderwindowinteractor
-        self.iren = vtk.vtkRenderWindowInteractor()
+        #self.iren = vtk.vtkRenderWindowInteractor()
+        self.iren=vtkWidget.GetRenderWindow().GetInteractor()
         self.iren.SetInteractorStyle(vtk.vtkInteractorStyleTrackballCamera())
         self.iren.SetRenderWindow(self.renWin)
 
@@ -222,6 +225,6 @@ class vtk_interactor:
 
 
         # enable user interface interactor
-        self.iren.Initialize()
-        self.renWin.Render()
-        self.iren.Start()
+        #self.iren.Initialize()
+        #self.renWin.Render()
+        #self.iren.Start()
