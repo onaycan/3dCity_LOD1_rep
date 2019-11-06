@@ -90,9 +90,10 @@ class vtk_interactor:
         self.triangles.InsertCellPoint(self.vertexId2VtkPointId[_triangle.vertices[1].id])
         self.triangles.InsertCellPoint(self.vertexId2VtkPointId[_triangle.vertices[2].id])
         
-    def insert_triangles(self, _triangles):
-        for tri in _triangles:
-            self.insert_triangle(tri)    
+    def insert_triangles(self, _triangles, _checked_items):
+        if _checked_items['terrain']>0:
+            for tri in _triangles:
+                self.insert_triangle(tri)    
 
     def insert_beamset(self,_beamset):
         for t in _beamset.trusses:
@@ -111,21 +112,26 @@ class vtk_interactor:
             self.insert_triangle(t)
 
 
-    def insert_building(self,_building):
-        for b in _building.beamsets:
-            self.insert_beamset(b)
-        for c in _building.columns:
-            self.insert_column(c)
-        for bs in _building.basesets:
-            self.insert_baseset(bs)
-        for w in _building.walls:
-            self.insert_wall(w)
+    def insert_building(self,_building, _checked_items):
+        if _checked_items['beamsets']>0:
+            for b in _building.beamsets:
+                self.insert_beamset(b)
+        if _checked_items['columns']>0:
+            for c in _building.columns:
+                self.insert_column(c)
+        if _checked_items['basesets']>0:
+            for bs in _building.basesets:
+                self.insert_baseset(bs)
+        if _checked_items['walls']>0:
+            for w in _building.walls:
+                self.insert_wall(w)
         #for bb in _building.beamsets:
         #self.insert_polygon_as_triangle(_building.beamsets[0])
 
-    def insert_buildings(self,_buildings):
-        for b in _buildings.values():
-            self.insert_building(b)
+    def insert_buildings(self,_buildings,_checked_items):
+        if _checked_items['buildings']>0:    
+            for b in _buildings.values():
+                self.insert_building(b,_checked_items)
             #print(b.name)
             
 
@@ -176,7 +182,9 @@ class vtk_interactor:
             #print(b.name)
     '''
     def visualize(self,_triangle_or_truss, _wireframe, _origin):
-        
+        if(self.triangles.GetNumberOfCells()==0):
+            _wireframe=False
+
         self.PolyData.SetPoints(self.points)
         
         self.PolyData.SetPolys(self.triangles)

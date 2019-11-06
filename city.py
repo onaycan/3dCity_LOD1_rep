@@ -114,12 +114,13 @@ def define_city(vtkWidget):
 
     vtk_interactor.insert_vertices(vertices.values(),_colormap="gray")
     vtk_interactor.insert_vertices(ground_vertices.values(),_colormap="gist_earth")
-    vtk_interactor.insert_buildings(buildings)
-    vtk_interactor.insert_triangles(ground_triangles.values())
+    checked_items={'basesets': 2, 'beamsets': 2, 'buildings': 2, 'columns': 2, 'walls': 2, 'terrain': 2}
+    vtk_interactor.insert_buildings(buildings,checked_items)
+    vtk_interactor.insert_triangles(ground_triangles.values(),checked_items)
 
     #triangle_or_truss=True
     #wireframe=False
     #vtk_interactor.visualize(triangle_or_truss, wireframe, origin)
-    return vtk_interactor, origin
+    return vtk_interactor, origin, buildings, ground_triangles
 
 
