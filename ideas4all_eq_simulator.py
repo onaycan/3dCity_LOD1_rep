@@ -4,7 +4,7 @@ import pprint
 import time
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QTreeWidgetItem
-from PyQt5 import Qt, QtCore
+from PyQt5 import Qt, QtCore, QtGui
 import sys
 import city
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
@@ -29,7 +29,7 @@ class Ui(QtWidgets.QMainWindow):
             if (item.checkState(0)>0):
                 checked_items[item.text(0)]=item.checkState(0)
                 #print (item.text(0),item.checkState(0))
-        pprint.pprint(checked_items)
+        print(checked_items)
 
         triangle_or_truss=True
         wireframe=False
@@ -123,7 +123,7 @@ if __name__=='__main__':
     frame = window.tabWidget
 
 
-    vl=window.verticalLayout
+    vl=window.vtkLayout
     vtkWidget = QVTKRenderWindowInteractor(frame)
     vl.addWidget(vtkWidget)
 
@@ -136,8 +136,8 @@ if __name__=='__main__':
     city_vtk.renWin.Render()
     city_vtk.iren.Initialize()
     city_vtk.iren.Start()
-    #edit=
-    #sys.stdout = OutLog( edit, sys.stdout)
+    edit=window.textEdit_Log
+    sys.stdout = OutLog( edit, sys.stdout)
     app.exec_()
     
     
