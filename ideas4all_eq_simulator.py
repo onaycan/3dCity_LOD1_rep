@@ -9,7 +9,21 @@ import sys
 import city
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 import vtk
+import vtk_interaction
 
+
+# overwrite combobox, so that no duplicates are allowed. 
+class ComboBox(QtWidgets.QComboBox):
+    def addItem(self, item):
+        if item not in self.get_set_items():
+            super(ComboBox, self).addItem(item)
+
+    def addItems(self, items):
+        items = list(self.get_set_items() | set(items))
+        super(ComboBox, self).addItems(items)
+
+    def get_set_items(self):
+        return set([self.itemText(i) for i in range(self.count())])
 
 
 class Ui(QtWidgets.QMainWindow):
@@ -18,7 +32,7 @@ class Ui(QtWidgets.QMainWindow):
         self.adjustSize()
         uic.loadUi('./gui_designer/ideas4all_city_simulator_gui.ui', self)
         self.show()
-
+        self.checked_items={'basesets': 2, 'beamsets': 2, 'buildings': 2, 'columns': 2, 'walls': 2, 'terrain': 2}
     def handleItemChanged(self, item, column):
         checked_items={'basesets': 0, 'beamsets': 0, 'buildings': 0, 'columns': 0, 'walls': 0, 'terrain': 0}
         if item.checkState(column) == QtCore.Qt.Checked:
@@ -31,18 +45,79 @@ class Ui(QtWidgets.QMainWindow):
                 #print (item.text(0),item.checkState(0))
         print(checked_items)
 
-        triangle_or_truss=True
-        wireframe=False
+        
         self.city_vtk.triangles = vtk.vtkCellArray()
         self.city_vtk.trusses = vtk.vtkCellArray()
         self.city_vtk.insert_buildings(self.buildings,checked_items)
         self.city_vtk.insert_triangles(self.ground_triangles.values(),checked_items)
-        self.city_vtk.visualize(triangle_or_truss, wireframe, origin)
+        #refresh is necessary, otherwise it blows! apperantly set data appends sometimes
+        self.city_vtk.PolyData = vtk.vtkPolyData()
+        self.city_vtk.visualize()
         city_vtk.renWin.Render()
+        self.checked_items=checked_items
+    
+    def manage_selection_enablebox(self):
+        if self.EnableSelection_checkBox.isChecked():
+            print("Selection is Enabled")
+            #self.facets_pushbutton.setEnabled(True)
+            self.buildings_pushbutton.setEnabled(True)
+            self.buildingBlocks_pushbutton.setEnabled(True)
+        else:
+            print("Selection is Disabled")
+            #self.facets_pushbutton.setChecked(False)
+            self.buildings_pushbutton.setChecked(False)
+            self.buildingBlocks_pushbutton.setChecked(False)
+            #self.facets_pushbutton.setEnabled(False)
+            self.buildings_pushbutton.setEnabled(False)
+            self.buildingBlocks_pushbutton.setEnabled(False)
 
-    def show_tree_widget(self, buildings, ground_triangles, city_vtk):
+
+    def manage_selection_box_f(self):
+        if self.facets_pushbutton.isChecked():
+            print("Facet selection is activated")
+            self.buildings_pushbutton.setChecked(False)
+            self.buildingBlocks_pushbutton.setChecked(False)
+
+    def manage_selection_box_b(self):
+         if self.buildings_pushbutton.isChecked():
+            print("Building selection is activated")
+            #self.facets_pushbutton.setChecked(False)
+            self.buildingBlocks_pushbutton.setChecked(False)
+
+    def manage_selection_box_bb(self):
+        if self.buildingBlocks_pushbutton.isChecked():
+            print("Building Block selection is activated")
+            #self.facets_pushbutton.setChecked(False)
+            self.buildings_pushbutton.setChecked(False)
+        
+
+
+
+    def show_table_widget(self, triggered=False):
+        attr = ['buildings', 'beamsets', 'columns', 'basesets', 'walls']
+
+        if not triggered:
+            self.comboboxes={}
+            for i in attr:
+                current_comboBox = QtWidgets.QComboBox()
+                self.comboboxes[i]=current_comboBox
+                self.comboboxes[i].addItem("None")
+
+
+        self.tableWidget.setColumnCount(2)
+        self.tableWidget.setRowCount(5)
+        self.tableWidget.show()
+        self.tableWidget.setHorizontalHeaderLabels(["Item Type","Item Id[s]"])
+        i=0
+        for j in attr:
+            self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(j))
+            self.tableWidget.setCellWidget(i, 1, self.comboboxes[j])
+            i += 1
+
+    def show_tree_widget(self, buildings, ground_triangles, city_vtk, vertices):
         self.city_vtk=city_vtk
         self.buildings=buildings
+        self.vertices=vertices
         self.ground_triangles=ground_triangles
         tw    = self.treeWidget
         tw.setHeaderLabels(['City Item', 'Quantity [-]', 'Remark'])
@@ -91,12 +166,7 @@ class Ui(QtWidgets.QMainWindow):
 
 class OutLog:
     def __init__(self, edit, out=None, color=None):
-        """(edit, out=None, color=None) -> can write stdout, stderr to a
-        QTextEdit.
-        edit = QTextEdit
-        out = alternate stream ( can be the original sys.stdout )
-        color = alternate color (i.e. color stderr a different color)
-        """
+
         self.edit = edit
         self.out = None
         self.color = color
@@ -117,8 +187,27 @@ class OutLog:
 
 if __name__=='__main__':
     app = QtWidgets.QApplication(sys.argv)
+    # start application of dark theme
+    app.setStyle("Fusion")
+    palette = QtGui.QPalette()
+    palette.setColor(QtGui.QPalette.Window, QtGui.QColor(53,53,53))
+    palette.setColor(QtGui.QPalette.WindowText, QtCore.Qt.white)
+    palette.setColor(QtGui.QPalette.Base, QtGui.QColor(15,15,15))
+    palette.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(53,53,53))
+    palette.setColor(QtGui.QPalette.ToolTipBase, QtCore.Qt.white)
+    palette.setColor(QtGui.QPalette.ToolTipText, QtCore.Qt.white)
+    palette.setColor(QtGui.QPalette.Text, QtCore.Qt.white)
+    palette.setColor(QtGui.QPalette.Button, QtGui.QColor(53,53,53))
+    palette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.white)
+    palette.setColor(QtGui.QPalette.BrightText, QtCore.Qt.red)
+         
+    palette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(142,45,197).lighter())
+    palette.setColor(QtGui.QPalette.HighlightedText, QtCore.Qt.black)   
+    app.setPalette(palette)
+    # end application of dark theme
+    
     window = Ui()
-    window.showMaximized()
+    #window.showMaximized()
 
     frame = window.tabWidget
 
@@ -127,17 +216,26 @@ if __name__=='__main__':
     vtkWidget = QVTKRenderWindowInteractor(frame)
     vl.addWidget(vtkWidget)
 
-    city_vtk, origin, buildings, ground_triangles=city.define_city(vtkWidget)
-    window.show_tree_widget(buildings, ground_triangles, city_vtk)
+    city_vtk, buildings, ground_triangles, vertices=city.define_city(vtkWidget)
+    window.show_tree_widget(buildings, ground_triangles, city_vtk, vertices)
+    window.show_table_widget()
+    window.EnableSelection_checkBox.stateChanged.connect(window.manage_selection_enablebox)
+    #window.facets_pushbutton.clicked.connect(window.manage_selection_box_f)
+    window.buildings_pushbutton.clicked.connect(window.manage_selection_box_b)
+    window.buildingBlocks_pushbutton.clicked.connect(window.manage_selection_box_bb)
 
-    triangle_or_truss=True
-    wireframe=False
-    city_vtk.visualize(triangle_or_truss, wireframe, origin)
+    city_vtk.style = vtk_interaction.MouseInteractorHighLightActor(city_vtk, window)
+    city_vtk.style.SetDefaultRenderer(city_vtk.ren)
+    city_vtk.iren.SetInteractorStyle(city_vtk.style)
+
+
+    city_vtk.visualize()
     city_vtk.renWin.Render()
     city_vtk.iren.Initialize()
     city_vtk.iren.Start()
     edit=window.textEdit_Log
     sys.stdout = OutLog( edit, sys.stdout)
+
     app.exec_()
     
     

@@ -18,10 +18,16 @@ from selenium.webdriver import DesiredCapabilities
 
 
 def define_city(vtkWidget):
+    vertices={}
+    beamsets={}
+    trusses={}
+    buildings={}
+    all_triangles={}
     origin,ground_vertices,ground_triangles=ground.ground_geometry()
     print("origin: "+str(origin))
+    all_triangles=ground_triangles
 
-
+    debugfile=open("debugfile.inp", 'w')
 
     #osmfilename="map_inönü_kücükcekmece_mixed.osm"
     #page="https://keos.kucukcekmece.bel.tr/keos/"
@@ -33,13 +39,11 @@ def define_city(vtkWidget):
 
 
     mahalle='caferaga'
-    vertices={}
-    beamsets={}
-    trusses={}
-    buildings={}
     osmfile=open(os.path.join("OSM_DB",osmfilename),'r', encoding="utf8")
     osmparser.parse_objs(osmfile,vertices,beamsets,trusses,buildings,origin)
     max_home_numbers=max([len(v.homes) for b in beamsets.values() for v in b.vertices])
+    
+    
     print("max number of home buildings sharing the same vertex: "+str(max_home_numbers))
 
 
@@ -73,11 +77,21 @@ def define_city(vtkWidget):
     last_vertex_id=max([int(v) for v in vertices.keys()])
     numberofbuildingswithheight=0
     for b in buildings.values():
-        numberofbuildingswithheight,last_vertex_id=b.build_building(beamsets,vertices,trusses,numberofbuildingswithheight,last_vertex_id, origin)
+        numberofbuildingswithheight,last_vertex_id=b.build_building(beamsets,vertices,trusses,numberofbuildingswithheight,last_vertex_id, origin, all_triangles)
     elapsed_time = time.time() - start_time
     print("building needs: "+str(elapsed_time))
 
     print("number of buildings with height: "+str(numberofbuildingswithheight))
+
+    # assigning homes to vertices    
+    for b in buildings.values():
+        b.assign_homes_to_vertices(vertices)
+    
+    for b in buildings.values():
+        b.find_neighbours(vertices,buildings)
+    
+    #for v in vertices.values():
+    #    debugfile.write(str(v.homes)+"\n")
 
     '''
     #start opensses convertion
@@ -108,7 +122,7 @@ def define_city(vtkWidget):
 
    
     start_time = time.time()
-    vtk_interactor=vtk_interaction.vtk_interactor(vtkWidget)
+    vtk_interactor=vtk_interaction.vtk_interactor(vtkWidget, origin)
     elapsed_time = time.time() - start_time
     print("interactor needs: "+str(elapsed_time))
 
@@ -121,6 +135,6 @@ def define_city(vtkWidget):
     #triangle_or_truss=True
     #wireframe=False
     #vtk_interactor.visualize(triangle_or_truss, wireframe, origin)
-    return vtk_interactor, origin, buildings, ground_triangles
+    return vtk_interactor, buildings, ground_triangles, vertices
 
 

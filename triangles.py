@@ -4,7 +4,8 @@ import numpy as np
 
 
 class triangle:
-    def __init__(self,_id,_vertices):
+    def __init__(self,_label,_vertices, _id):
+        self.label=_label
         self.id=_id
         self.vertices=[]
         self.vertices.append(_vertices[0])

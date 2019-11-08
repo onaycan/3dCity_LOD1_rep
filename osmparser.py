@@ -36,7 +36,8 @@ def parse_objs(osmfile,_vertices, _beamsets, _trusses, _buildings,_origin):
                         _beamsets[current_beamset_id]=beamsets.beamset(current_beamset_id)
                         for nd in current_node_ids: # the start id is twice inside! this may cause problem! 
                             _beamsets[current_beamset_id].append_vertex(_vertices[nd])
-                            _vertices[nd].homes.add(child.attrib["id"])
+                            #_vertices[nd].homes.add(child.attrib["id"])
+                            #_vertices[nd].homes.append(child.attrib["id"])
                         for ndid in range(len(current_node_ids)-1):
                             nd_tip=current_node_ids[ndid]
                             nd_tail=current_node_ids[ndid+1]

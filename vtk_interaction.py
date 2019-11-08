@@ -19,10 +19,110 @@ def rgb(minimum, maximum, value):
 
 
 
+class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
+
+    def __init__(self,vtkinteractor,_window,parent=None):
+        self.vtkinteractor=vtkinteractor
+        #self.SetDefaultRenderer(self.vtkinteractor.ren)
+        self.window=_window
+        self.buildings=_window.buildings
+        self.ground_triangles=_window.ground_triangles
+        self.vertices=_window.vertices
+        #homes=[v.homes for v in self.vertices.values()]
+        #print(homes)
+        self.checked_items=_window.checked_items
+        self.spressed=False
+        #self.AddObserver("MiddleButtonReleaseEvent",self.middleButtonReleaseEvent)    
+        
+        self.AddObserver("LeftButtonPressEvent", self.ButtonEvent)
+        self.vtkinteractor.iren.AddObserver("KeyPressEvent", self.Keypress)
+        self.debugfile=open("debugfile.deb",'w')
+ 
+    def Keypress(self,obj,event):
+       
+        key = obj.GetKeySym()
+        #key = obj.GetKeyCode()
+        self.spressed=False
+        if key == "c":
+            self.spressed=True
+        self.OnKeyRelease()
+        return
+
+    def ButtonEvent(self,obj,event):
+        
+        if self.spressed:
+            if self.window.buildings_pushbutton.isChecked() or self.window.buildingBlocks_pushbutton.isChecked():
+                self.spressed=False
+                clickPos = self.GetInteractor().GetEventPosition()
+                picker = vtk.vtkCellPicker()
+                #picker.Pick(clickPos[0], clickPos[1], 0, self.vtkinteractor.ren)
+                picker.Pick(clickPos[0], clickPos[1], 0, self.GetDefaultRenderer())
+
+                #cellids=picker.GetSubId()
+                cellid=picker.GetCellId()
+
+                print("selected cell id: "+str(cellid))
+
+                numberofids=self.vtkinteractor.PolyData.GetCell(cellid).GetPointIds().GetNumberOfIds()
+                pointids=[]
+                
+
+                sets=[]
+                for p in range(numberofids):
+                    pid=self.vtkinteractor.PolyData.GetCell(cellid).GetPointIds().GetId(p)
+                    sets.append(self.vertices[self.vtkinteractor.VtkPointId2vertexid[pid]].homes)
+                
+                self.building_vertices=set()
+
+                common_home=[set.intersection(*sets)][0] #in fact this is buggy.but you can not choose really a side wall or bottom triangle with common edge without being able to see it 
+                common_home=list(common_home)[0]
+                self.window.comboboxes['buildings'].addItem(common_home)
+                self.window.comboboxes['buildings'].setCurrentIndex(self.window.comboboxes['buildings'].count() - 1)
+                self.get_building_vertices(common_home)
+
+
+                if self.window.buildingBlocks_pushbutton.isChecked():
+                    for n in self.buildings[common_home].neighbours:
+                        self.window.comboboxes['buildings'].addItem(n)
+                        self.window.comboboxes['buildings'].setCurrentIndex(self.window.comboboxes['buildings'].count() - 1)
+                        for bb in self.buildings[n].beamsets:
+                            for v in bb.vertices:
+                                self.building_vertices.add(v.id)
+
+
+                    
+
+                for pid in self.building_vertices:
+                    pointids.append(self.vtkinteractor.vertexId2VtkPointId[pid])
+
+
+
+                print("points of selected cell: "+ str(pointids))
+                for p in pointids:
+                    self.vtkinteractor.Colors.SetTuple3(p,255,0,0)
+                print(self.vtkinteractor.triangles.GetNumberOfCells())
+                self.vtkinteractor.mapper.Update()
+                self.vtkinteractor.mapper.ScalarVisibilityOff()
+                self.vtkinteractor.mapper.ScalarVisibilityOn()
+                self.vtkinteractor.renWin.Render()
+        
+        self.OnLeftButtonDown()
+        return 
+    
+    def get_building_vertices(self,_home):
+        b=_home
+        print("home is selected: "+str(b))
+        for bb in range(1,len(self.buildings[b].beamsets)):
+            for v in self.buildings[b].beamsets[bb].vertices:
+                self.building_vertices.add(v.id)
+
+
 
 class vtk_interactor:
-    def __init__(self, vtkWidget):
+    def __init__(self, vtkWidget, _origin):
+        self.outfile=open("debugfile.out",'w')
 
+        self.origin=_origin
         # create a rendering window and renderer
         self.ren = vtk.vtkRenderer()
         #vtkWidget.GetRenderWindow().AddRenderer(self.ren)
@@ -33,23 +133,30 @@ class vtk_interactor:
         # create a renderwindowinteractor
         #self.iren = vtk.vtkRenderWindowInteractor()
         self.iren=vtkWidget.GetRenderWindow().GetInteractor()
-        self.iren.SetInteractorStyle(vtk.vtkInteractorStyleTrackballCamera())
+
+        #self.iren.SetInteractorStyle(vtk.vtkInteractorStyleTrackballCamera())
         self.iren.SetRenderWindow(self.renWin)
-
-        self.points = vtk.vtkPoints()
-        self.triangles = vtk.vtkCellArray()
-        self.trusses = vtk.vtkCellArray()
-        
-        
-        
-        self.mapper = vtk.vtkPolyDataMapper()
-
         self.PolyData = vtk.vtkPolyData()
-
-        self.vertexId2VtkPointId={}
+        #self.PolyData=vtk.vtkExtractPolyDataGeometry()
         self.Colors = vtk.vtkUnsignedCharArray()
         self.Colors.SetNumberOfComponents(3)
         self.Colors.SetName("Colors")
+
+        
+
+        
+
+        self.points = vtk.vtkPoints()
+        self.triangles = vtk.vtkCellArray()
+        self.numberoftriangles=0
+        self.trusses = vtk.vtkCellArray()
+        
+        self.mapper = vtk.vtkPolyDataMapper()
+        self.vertexId2VtkPointId={}
+        self.VtkPointId2vertexid={}
+        self.VtkTriangleId2Triangleid={}
+        
+        
     
 
     def insert_vertices(self,_vertices, _colormap=None):
@@ -69,6 +176,7 @@ class vtk_interactor:
         
             self.Colors.InsertNextTuple3(r*255,g*255,b*255)
             self.vertexId2VtkPointId[v.id]=VtkPointId
+            self.VtkPointId2vertexid[VtkPointId]=v.id
 
 
     def insert_truss(self,_truss):
@@ -85,10 +193,16 @@ class vtk_interactor:
     
 
     def insert_triangle(self,_triangle):
-        self.triangles.InsertNextCell(3)
+        
+        VtkTriangleId=self.triangles.InsertNextCell(3)
         self.triangles.InsertCellPoint(self.vertexId2VtkPointId[_triangle.vertices[0].id])
         self.triangles.InsertCellPoint(self.vertexId2VtkPointId[_triangle.vertices[1].id])
         self.triangles.InsertCellPoint(self.vertexId2VtkPointId[_triangle.vertices[2].id])
+        self.VtkTriangleId2Triangleid[VtkTriangleId]=_triangle.id
+        self.numberoftriangles+=1
+        
+        #print(self.numberoftriangles)
+        #self.outfile.write(str(self.numberoftriangles)+"\n")
         
     def insert_triangles(self, _triangles, _checked_items):
         if _checked_items['terrain']>0:
@@ -181,7 +295,9 @@ class vtk_interactor:
             self.insert_building_triangle(b)
             #print(b.name)
     '''
-    def visualize(self,_triangle_or_truss, _wireframe, _origin):
+    def visualize(self):
+        
+        _wireframe=True
         if(self.triangles.GetNumberOfCells()==0):
             _wireframe=False
 
@@ -198,10 +314,11 @@ class vtk_interactor:
         else:
             self.mapper.SetInputData(self.PolyData)
 
+        self.mapper.Update()
         # actor
         self.actor = vtk.vtkActor()
         self.actor.SetMapper(self.mapper)
-        if _wireframe:
+        if not _wireframe:
             self.actor.GetProperty().SetRepresentationToWireframe()
 
         # assign actor to the renderer
@@ -227,10 +344,13 @@ class vtk_interactor:
         self.axes.SetNormalizedTipLength(0.05, 0.05, 0.05) 
 
         transform = vtk.vtkTransform()
-        transform.Translate(_origin[0],_origin[1], 0.0)
+        transform.Translate(self.origin[0],self.origin[1], 0.0)
         self.axes.SetUserTransform(transform)
         self.ren.AddActor(self.axes)
 
+        #self.style = MouseInteractorHighLightActor(self)
+        #self.style.SetDefaultRenderer(self.ren)
+        #self.iren.SetInteractorStyle(self.style)
 
         # enable user interface interactor
         #self.iren.Initialize()

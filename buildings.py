@@ -33,6 +33,7 @@ class building:
         self.columns=[]
         self.walls=[]
         self.attributes={}
+        self.neighbours=set()
         self.osm_feasible=False
         self.levels="NotFound"
 
@@ -68,6 +69,22 @@ class building:
 
     def set_footprint_max_elev(self):
         self.fp_max_elev=self.beamsets[0].set_footprint_max_elev()
+
+    def assign_homes_to_vertices(self,_vertices):
+        for bs in self.beamsets:
+            for v in bs.vertices:
+                _vertices[v.id].homes.add(self.name)
+
+    def find_neighbours(self, _vertices,_buildings):
+        for bs in self.beamsets:
+            for v in bs.vertices:
+                for h in _vertices[v.id].homes:
+                    if h!=self.name and h not in self.neighbours:
+                        self.neighbours.add(h)
+                        _buildings[h].find_neighbours(_vertices, _buildings)
+
+
+
 
     def get_building_level(self,_driver,_action):
         time.sleep(1)
@@ -194,8 +211,8 @@ class building:
             
 
 
-    def build_building(self,_beamsets,_vertices,_trusses,_numberofbuildingswithheight, _lastvertexid, _origin):
-
+    def build_building(self,_beamsets,_vertices,_trusses,_numberofbuildingswithheight, _lastvertexid, _origin, _all_triangles):
+        triangle_counter=len(_all_triangles.keys())
         delim="##"
         retval=_numberofbuildingswithheight
         floor_height=16.0/5.0
@@ -230,14 +247,16 @@ class building:
                     for v in range(0,len(self.beamsets[l-1].vertices)-1):
                         numberofvertices=len(self.beamsets[l-1].vertices)
                         current_vertices=[self.beamsets[l-1].vertices[v],self.beamsets[l-1].vertices[int((v+1)%numberofvertices)],self.beamsets[l].vertices[int((v+1)%numberofvertices)]]
-                        current_triangle=triangles.triangle(self.name+delim+str(l)+delim+str(self.beamsets[l-1].vertices[v].id+delim+"0"),current_vertices)
+                        current_triangle=triangles.triangle(self.name+delim+str(l)+delim+str(self.beamsets[l-1].vertices[v].id+delim+"0"),current_vertices,triangle_counter)
+                        triangle_counter+=1
                         current_wall.append_triangle(current_triangle)
                         current_wall.append_vertex(self.beamsets[l-1].vertices[1])
                         current_wall.append_vertex(self.beamsets[l-1].vertices[int((v+1)%numberofvertices)])
                         current_wall.append_vertex(self.beamsets[l].vertices[int((v+1)%numberofvertices)])
 
                         current_vertices=[self.beamsets[l-1].vertices[v],self.beamsets[l].vertices[v],self.beamsets[l].vertices[int((v+1)%numberofvertices)]]
-                        current_triangle=triangles.triangle(self.name+delim+str(l)+delim+str(self.beamsets[l-1].vertices[v].id+delim+"1"),current_vertices)
+                        current_triangle=triangles.triangle(self.name+delim+str(l)+delim+str(self.beamsets[l-1].vertices[v].id+delim+"1"),current_vertices,triangle_counter)
+                        triangle_counter+=1
                         current_wall.append_triangle(current_triangle)
                         current_wall.append_vertex(self.beamsets[l-1].vertices[1])
                         current_wall.append_vertex(self.beamsets[l].vertices[v])
@@ -264,7 +283,8 @@ class building:
                 coun=0
                 if ret:
                     for tri in tris:
-                        ground_triangles["t"+str(coun)]=triangles.triangle("t"+str(coun),[ground_vertices["g"+str(tri[0])],ground_vertices["g"+str(tri[1])],ground_vertices["g"+str(tri[2])]])
+                        ground_triangles["t"+str(coun)]=triangles.triangle("t"+str(coun),[ground_vertices["g"+str(tri[0])],ground_vertices["g"+str(tri[1])],ground_vertices["g"+str(tri[2])]],triangle_counter)
+                        triangle_counter+=1
                         current_baseset.append_triangle(ground_triangles["t"+str(coun)])
                         coun+=1
                     self.basesets.append(current_baseset)
@@ -283,7 +303,8 @@ class building:
                     coun=0
                     if ret:
                         for tri in tris:
-                            ground_triangles["t"+str(coun)]=triangles.triangle("t"+str(coun),[ground_vertices["g"+str(tri[0])],ground_vertices["g"+str(tri[1])],ground_vertices["g"+str(tri[2])]])
+                            ground_triangles["t"+str(coun)]=triangles.triangle("t"+str(coun),[ground_vertices["g"+str(tri[0])],ground_vertices["g"+str(tri[1])],ground_vertices["g"+str(tri[2])]],triangle_counter)
+                            triangle_counter+=1
                             current_baseset.append_triangle(ground_triangles["t"+str(coun)])
                             coun+=1
                         self.basesets.append(current_baseset)

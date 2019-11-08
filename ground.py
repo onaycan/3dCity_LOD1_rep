@@ -5,6 +5,7 @@ import triangles
 import vtk_interaction
 
 def ground_geometry():
+    number_of_triangles=0
     origin=[]
     ground_vertices={}
     ground_triangles={}    
@@ -37,7 +38,8 @@ def ground_geometry():
     trigls = Delaunay(points)
     for tri in trigls.simplices:
         #print(tri)
-        ground_triangles["gt"+str(coun)]=triangles.triangle("gt"+str(coun),[ground_vertices["g"+str(tri[0])],ground_vertices["g"+str(tri[1])],ground_vertices["g"+str(tri[2])]])
+        ground_triangles["gt"+str(coun)]=triangles.triangle("gt"+str(coun),[ground_vertices["g"+str(tri[0])],ground_vertices["g"+str(tri[1])],ground_vertices["g"+str(tri[2])]],number_of_triangles)
+        number_of_triangles+=1
         coun+=1
 
     return origin,ground_vertices,ground_triangles
