@@ -75,13 +75,14 @@ class building:
             for v in bs.vertices:
                 _vertices[v.id].homes.add(self.name)
 
-    def find_neighbours(self, _vertices,_buildings):
+    def find_neighbours(self, _vertices,_buildings, _neighboursofthis):
         for bs in self.beamsets:
             for v in bs.vertices:
                 for h in _vertices[v.id].homes:
-                    if h!=self.name and h not in self.neighbours:
-                        self.neighbours.add(h)
-                        _buildings[h].find_neighbours(_vertices, _buildings)
+                    if h not in _neighboursofthis:
+                        #self.neighbours.add(h)
+                        _neighboursofthis.add(h)
+                        _buildings[h].find_neighbours(_vertices, _buildings, _neighboursofthis)
 
 
 

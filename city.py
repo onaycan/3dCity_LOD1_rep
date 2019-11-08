@@ -88,7 +88,9 @@ def define_city(vtkWidget):
         b.assign_homes_to_vertices(vertices)
     
     for b in buildings.values():
-        b.find_neighbours(vertices,buildings)
+        neighboursofthis=set()
+        b.find_neighbours(vertices,buildings,neighboursofthis)
+        b.neighbours=neighboursofthis
     
     #for v in vertices.values():
     #    debugfile.write(str(v.homes)+"\n")

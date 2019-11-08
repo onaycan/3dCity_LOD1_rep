@@ -207,7 +207,7 @@ if __name__=='__main__':
     # end application of dark theme
     
     window = Ui()
-    #window.showMaximized()
+    window.showMaximized()
 
     frame = window.tabWidget
 
