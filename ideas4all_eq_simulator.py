@@ -118,16 +118,20 @@ class Ui(QtWidgets.QMainWindow):
             self.tableWidget.setCellWidget(i, 1, self.comboboxes[j])
             i += 1
 
-    def show_tree_widget(self, buildings, ground_triangles, city_vtk, vertices):
+    def show_tree_widget(self, buildings, ground_triangles, city_vtk, vertices, building_blocks):
         self.city_vtk=city_vtk
         self.buildings=buildings
+        self.building_blocks=building_blocks
         self.vertices=vertices
         self.ground_triangles=ground_triangles
         tw    = self.treeWidget
         tw.setHeaderLabels(['City Item', 'Quantity [-]', 'Remark'])
         tw.setAlternatingRowColors(True)
 
-        b = QtWidgets.QTreeWidgetItem(tw, ['buildings', str(len(buildings.keys())), '# of Buildings'])
+        bb = QtWidgets.QTreeWidgetItem(tw, ['building_blocks', str(len(building_blocks.keys())), '# of Building Blocks'])
+        bb.setFlags(bb.flags() |QtCore.Qt.ItemIsTristate | QtCore.Qt.ItemIsUserCheckable)
+
+        b = QtWidgets.QTreeWidgetItem(bb, ['buildings', str(len(buildings.keys())), '# of Buildings'])
         b.setFlags(b.flags() |QtCore.Qt.ItemIsTristate | QtCore.Qt.ItemIsUserCheckable)
 
         self.gt = QtWidgets.QTreeWidgetItem(tw, ['terrain', str(len(ground_triangles.keys())), '# of triangles of geoterrain'])
@@ -219,8 +223,8 @@ if __name__=='__main__':
     vtkWidget = QVTKRenderWindowInteractor(frame)
     vl.addWidget(vtkWidget)
 
-    city_vtk, buildings, ground_triangles, vertices=city.define_city(vtkWidget)
-    window.show_tree_widget(buildings, ground_triangles, city_vtk, vertices)
+    city_vtk, buildings, ground_triangles, vertices, building_blocks=city.define_city(vtkWidget)
+    window.show_tree_widget(buildings, ground_triangles, city_vtk, vertices, building_blocks)
     window.show_table_widget()
     window.EnableSelection_checkBox.stateChanged.connect(window.manage_selection_enablebox)
     #window.facets_pushbutton.clicked.connect(window.manage_selection_box_f)

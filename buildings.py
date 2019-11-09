@@ -6,6 +6,7 @@ import trusses
 import basesets
 import triangles
 import basesets
+import buildingblocks
 import walls
 import misc
 
@@ -28,6 +29,7 @@ class building:
     def __init__(self,_name):
         self.name=_name
         self.femid=0
+        self.buildingblock_id=None
         self.beamsets=[]
         self.basesets=[]
         self.columns=[]
@@ -83,6 +85,19 @@ class building:
                         #self.neighbours.add(h)
                         _neighboursofthis.add(h)
                         _buildings[h].find_neighbours(_vertices, _buildings, _neighboursofthis)
+
+    def adoptto_building_blocks(self,_building_blocks, _buildings):
+        if self.buildingblock_id==None:
+            current_bb_id="bb"+str(len(_building_blocks.keys()))
+            _building_blocks[current_bb_id]=buildingblocks.buildingblock(current_bb_id)
+            _building_blocks[current_bb_id].append_building(self)
+            self.buildingblock_id=current_bb_id
+            for bb in self.neighbours:
+                _building_blocks[current_bb_id].append_building(_buildings[bb])
+                _buildings[bb].buildingblock_id=current_bb_id
+
+
+
 
 
 

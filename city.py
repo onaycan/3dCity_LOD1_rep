@@ -22,6 +22,7 @@ def define_city(vtkWidget):
     beamsets={}
     trusses={}
     buildings={}
+    buildingblocks={}
     all_triangles={}
     origin,ground_vertices,ground_triangles=ground.ground_geometry()
     print("origin: "+str(origin))
@@ -92,6 +93,10 @@ def define_city(vtkWidget):
         b.find_neighbours(vertices,buildings,neighboursofthis)
         b.neighbours=neighboursofthis
     
+    for b in buildings.values():
+        b.adoptto_building_blocks(buildingblocks,buildings)
+
+
     #for v in vertices.values():
     #    debugfile.write(str(v.homes)+"\n")
 
@@ -137,6 +142,6 @@ def define_city(vtkWidget):
     #triangle_or_truss=True
     #wireframe=False
     #vtk_interactor.visualize(triangle_or_truss, wireframe, origin)
-    return vtk_interactor, buildings, ground_triangles, vertices
+    return vtk_interactor, buildings, ground_triangles, vertices, buildingblocks
 
 
