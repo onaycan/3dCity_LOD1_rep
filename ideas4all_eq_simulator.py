@@ -95,7 +95,7 @@ class Ui(QtWidgets.QMainWindow):
 
 
     def show_table_widget(self, triggered=False):
-        attr = ['buildings', 'beamsets', 'columns', 'basesets', 'walls']
+        attr = ['building blocks','buildings', 'beamsets', 'columns', 'basesets', 'walls']
 
         if not triggered:
             self.comboboxes={}
@@ -105,11 +105,9 @@ class Ui(QtWidgets.QMainWindow):
                 self.comboboxes[i].addItem("None")
                 self.comboboxes[i].setEditable(True)
                 self.comboboxes[i].setMaxVisibleItems(5)
-                
-                #self.comboboxes[i].view().setVerticalScrollBarPolicy(qut.ScrollBarAsNeeded)
 
         self.tableWidget.setColumnCount(2)
-        self.tableWidget.setRowCount(5)
+        self.tableWidget.setRowCount(6)
         self.tableWidget.show()
         self.tableWidget.setHorizontalHeaderLabels(["Item Type","Item Id[s]"])
         i=0

@@ -82,6 +82,8 @@ class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
 
 
                 if self.window.buildingBlocks_pushbutton.isChecked():
+                    self.window.comboboxes['building blocks'].addItem(self.buildings[common_home].buildingblock_id)
+                    self.window.comboboxes['building blocks'].setCurrentIndex(self.window.comboboxes['building blocks'].count() - 1)
                     for n in self.buildings[common_home].neighbours:
                         self.window.comboboxes['buildings'].addItem(n)
                         self.window.comboboxes['buildings'].setCurrentIndex(self.window.comboboxes['buildings'].count() - 1)
