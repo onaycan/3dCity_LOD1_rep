@@ -5,6 +5,7 @@ import time
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QTreeWidgetItem
 from PyQt5 import Qt, QtCore, QtGui
+from PyQt5.QtCore import Qt as qut
 import sys
 import city
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
@@ -102,7 +103,10 @@ class Ui(QtWidgets.QMainWindow):
                 current_comboBox = QtWidgets.QComboBox()
                 self.comboboxes[i]=current_comboBox
                 self.comboboxes[i].addItem("None")
-
+                self.comboboxes[i].setEditable(True)
+                self.comboboxes[i].setMaxVisibleItems(5)
+                
+                #self.comboboxes[i].view().setVerticalScrollBarPolicy(qut.ScrollBarAsNeeded)
 
         self.tableWidget.setColumnCount(2)
         self.tableWidget.setRowCount(5)
@@ -125,7 +129,6 @@ class Ui(QtWidgets.QMainWindow):
 
         b = QtWidgets.QTreeWidgetItem(tw, ['buildings', str(len(buildings.keys())), '# of Buildings'])
         b.setFlags(b.flags() |QtCore.Qt.ItemIsTristate | QtCore.Qt.ItemIsUserCheckable)
-        #b.setCheckState(0, QtCore.Qt.Checked)
 
         self.gt = QtWidgets.QTreeWidgetItem(tw, ['terrain', str(len(ground_triangles.keys())), '# of triangles of geoterrain'])
         self.gt.setCheckState(0, QtCore.Qt.Checked)
