@@ -164,7 +164,9 @@ class Ui(QtWidgets.QMainWindow):
         
         #instead of itemchecked, itemlicked need to be used to avoid recursive effects
         self.treeWidget.itemClicked.connect(self.handleItemChanged)
-        
+        tw.expandAll()
+        tw.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        tw.header().setStretchLastSection(False)
         tw.show()
         
 
