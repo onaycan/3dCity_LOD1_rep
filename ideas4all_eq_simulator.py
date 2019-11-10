@@ -92,6 +92,7 @@ class Ui(QtWidgets.QMainWindow):
             self.buildings_pushbutton.setChecked(False)
         
     def fill_table_widget(self):
+        attr = ['building blocks','buildings', 'beamsets', 'columns', 'basesets', 'walls', 'vertices']
         selected_buildings=[self.comboboxes['buildings'].itemText(i) for i in range(self.comboboxes['buildings'].count())]
 
         for s in selected_buildings:
@@ -113,6 +114,11 @@ class Ui(QtWidgets.QMainWindow):
                 for w in current_building.walls:
                     self.comboboxes['walls'].addItem(w.id)
                     self.comboboxes['walls'].setCurrentIndex(self.comboboxes['walls'].count() - 1)
+            i=0
+            for j in attr:
+                number=str(self.comboboxes[j].count()-1)
+                self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(number))
+                i += 1
 
 
 
@@ -131,14 +137,16 @@ class Ui(QtWidgets.QMainWindow):
         
 
 
-        self.tableWidget.setColumnCount(2)
+        self.tableWidget.setColumnCount(3)
         self.tableWidget.setRowCount(7)
         self.tableWidget.show()
-        self.tableWidget.setHorizontalHeaderLabels(["Item Type","Item Id[s]"])
+        self.tableWidget.setHorizontalHeaderLabels(["Item Type","Item Id[s]","# of Selected Items"])
         i=0
         for j in attr:
             self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(j))
             self.tableWidget.setCellWidget(i, 1, self.comboboxes[j])
+            number=str(self.comboboxes[j].count()-1)
+            self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(number))
             i += 1
 
     def show_tree_widget(self, buildings, ground_triangles, city_vtk, vertices, building_blocks):
