@@ -91,11 +91,33 @@ class Ui(QtWidgets.QMainWindow):
             #self.facets_pushbutton.setChecked(False)
             self.buildings_pushbutton.setChecked(False)
         
+    def fill_table_widget(self):
+        selected_buildings=[self.comboboxes['buildings'].itemText(i) for i in range(self.comboboxes['buildings'].count())]
+
+        for s in selected_buildings:
+            if s!="None":
+                current_building=self.buildings[s]
+                for bs in current_building.beamsets:
+                    self.comboboxes['beamsets'].addItem(bs.id)
+                    self.comboboxes['beamsets'].setCurrentIndex(self.comboboxes['beamsets'].count() - 1)
+                    for v in bs.vertices:
+                        self.comboboxes['vertices'].addItem(v.id)
+                        self.comboboxes['vertices'].setCurrentIndex(self.comboboxes['vertices'].count() - 1)
+
+                for c in current_building.columns:
+                    self.comboboxes['columns'].addItem(c.id)
+                    self.comboboxes['columns'].setCurrentIndex(self.comboboxes['columns'].count() - 1)
+                for bas in current_building.basesets:
+                    self.comboboxes['basesets'].addItem(bas.id)
+                    self.comboboxes['basesets'].setCurrentIndex(self.comboboxes['basesets'].count() - 1)
+                for w in current_building.walls:
+                    self.comboboxes['walls'].addItem(w.id)
+                    self.comboboxes['walls'].setCurrentIndex(self.comboboxes['walls'].count() - 1)
 
 
 
     def show_table_widget(self, triggered=False):
-        attr = ['building blocks','buildings', 'beamsets', 'columns', 'basesets', 'walls']
+        attr = ['building blocks','buildings', 'beamsets', 'columns', 'basesets', 'walls', 'vertices']
 
         if not triggered:
             self.comboboxes={}
@@ -106,8 +128,11 @@ class Ui(QtWidgets.QMainWindow):
                 self.comboboxes[i].setEditable(True)
                 self.comboboxes[i].setMaxVisibleItems(5)
 
+        
+
+
         self.tableWidget.setColumnCount(2)
-        self.tableWidget.setRowCount(6)
+        self.tableWidget.setRowCount(7)
         self.tableWidget.show()
         self.tableWidget.setHorizontalHeaderLabels(["Item Type","Item Id[s]"])
         i=0

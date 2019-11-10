@@ -78,6 +78,7 @@ class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
                 common_home=list(common_home)[0]
                 self.window.comboboxes['buildings'].addItem(common_home)
                 self.window.comboboxes['buildings'].setCurrentIndex(self.window.comboboxes['buildings'].count() - 1)
+                
                 self.get_building_vertices(common_home)
 
 
@@ -91,7 +92,7 @@ class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
                             for v in bb.vertices:
                                 self.building_vertices.add(v.id)
 
-
+                self.window.fill_table_widget()
                     
 
                 for pid in self.building_vertices:
