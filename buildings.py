@@ -43,9 +43,7 @@ class building:
         self.sitename=''
         self.aciklama=""
         self.groundarea=0.0
-        #self.facets=[]
-        #self.vertices=[]
-        #self.trusses=[]
+        
     def append_beamset(self,_beamset):
         self.beamsets.append(_beamset)
     def assign_attributes(self,_attributes):
@@ -227,7 +225,7 @@ class building:
             
 
 
-    def build_building(self,_beamsets,_vertices,_trusses,_numberofbuildingswithheight, _lastvertexid, _origin, _all_triangles):
+    def build_building(self,_beamsets,_vertices,_trusses,_beams,_numberofbuildingswithheight, _lastvertexid, _origin, _all_triangles):
         triangle_counter=len(_all_triangles.keys())
         delim="##"
         retval=_numberofbuildingswithheight
@@ -238,7 +236,7 @@ class building:
                 numberoflevels=int(self.levels)
                 for l in range(1,numberoflevels+1):
                     #print("beamset inserted in "+self.name)
-                    next_beamset, _lastvertexid=self.beamsets[0].shift_and_copy_beamset(_vertices,_trusses, str(l), [0.0,0.0,l*floor_height], _lastvertexid, _origin)
+                    next_beamset, _lastvertexid=self.beamsets[0].shift_and_copy_beamset(_vertices,_beams, str(l), [0.0,0.0,l*floor_height], _lastvertexid, _origin)
                     _beamsets[next_beamset.id]=next_beamset
                     self.beamsets.append(next_beamset)
                     

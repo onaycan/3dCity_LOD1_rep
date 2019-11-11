@@ -1,10 +1,11 @@
 import vertices
-import trusses
+#import trusses
+import beams
 import beamsets
 import buildings
 import xml.etree.ElementTree as ET
 
-def parse_objs(osmfile,_vertices, _beamsets, _trusses, _buildings,_origin):
+def parse_objs(osmfile,_vertices, _beamsets, _beams, _buildings,_origin):
     #osmlines=osmfile.read()
     delim="##"
     valid_buildings=["building","building:part"]
@@ -41,8 +42,8 @@ def parse_objs(osmfile,_vertices, _beamsets, _trusses, _buildings,_origin):
                         for ndid in range(len(current_node_ids)-1):
                             nd_tip=current_node_ids[ndid]
                             nd_tail=current_node_ids[ndid+1]
-                            _trusses[current_beamset_id+delim+nd_tip]=trusses.truss(current_beamset_id+delim+nd_tip,[_vertices[nd_tip],_vertices[nd_tail]])
-                            _beamsets[current_beamset_id].append_truss(_trusses[current_beamset_id+delim+nd_tip])
+                            _beams[current_beamset_id+delim+nd_tip]=beams.beam(current_beamset_id+delim+nd_tip,[_vertices[nd_tip],_vertices[nd_tail]])
+                            _beamsets[current_beamset_id].append_beam(_beams[current_beamset_id+delim+nd_tip])
                         _buildings[child.attrib["id"]].append_beamset(_beamsets[current_beamset_id])
             if isbuilding:
                 _buildings[child.attrib["id"]].assign_attributes(current_attributes)

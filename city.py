@@ -21,6 +21,7 @@ def define_city(vtkWidget):
     vertices={}
     beamsets={}
     trusses={}
+    beams={}
     buildings={}
     buildingblocks={}
     all_triangles={}
@@ -41,7 +42,7 @@ def define_city(vtkWidget):
 
     mahalle='caferaga'
     osmfile=open(os.path.join("OSM_DB",osmfilename),'r', encoding="utf8")
-    osmparser.parse_objs(osmfile,vertices,beamsets,trusses,buildings,origin)
+    osmparser.parse_objs(osmfile,vertices,beamsets,beams,buildings,origin)
     max_home_numbers=max([len(v.homes) for b in beamsets.values() for v in b.vertices])
     
     
@@ -57,7 +58,6 @@ def define_city(vtkWidget):
 
 
 
-    counter=0
     buildings_dic={}
     buildings_dic[mahalle]={}
     prev_file=open("map_kadiköy_caferaga.json",'r', encoding='utf-8')
@@ -66,25 +66,22 @@ def define_city(vtkWidget):
     elapsed_time = time.time() - start_time
     print("json load needs: "+str(elapsed_time))
 
-    last_key=list(buildings_dic[mahalle].keys())[-1]
-
+    
     for bk in buildings_dic[mahalle].keys():
         buildings[bk].levels=buildings_dic[mahalle][bk]["numberoflevels"]
-    #start wo crawling
 
-    #end wo crawling
 
     start_time = time.time()
     last_vertex_id=max([int(v) for v in vertices.keys()])
     numberofbuildingswithheight=0
     for b in buildings.values():
-        numberofbuildingswithheight,last_vertex_id=b.build_building(beamsets,vertices,trusses,numberofbuildingswithheight,last_vertex_id, origin, all_triangles)
+        numberofbuildingswithheight,last_vertex_id=b.build_building(beamsets,vertices,trusses,beams,numberofbuildingswithheight,last_vertex_id, origin, all_triangles)
     elapsed_time = time.time() - start_time
     print("building needs: "+str(elapsed_time))
 
     print("number of buildings with height: "+str(numberofbuildingswithheight))
 
-    # assigning homes to vertices    
+    # start assigning homes to vertices and neighbour information
     for b in buildings.values():
         b.assign_homes_to_vertices(vertices)
     
@@ -95,35 +92,9 @@ def define_city(vtkWidget):
     
     for b in buildings.values():
         b.adoptto_building_blocks(buildingblocks,buildings)
+    # end assigning homes to vertices and neighbour information
+    
 
-
-    #for v in vertices.values():
-    #    debugfile.write(str(v.homes)+"\n")
-
-    '''
-    #start opensses convertion
-    #finding the mid of floors
-    femidcounter=1
-    for b in buildings.values():
-        b.set_floor_mid()
-        b.femid=femidcounter
-        femidcounter+=1
-        b.building2opensees()
-    #end opensees convertion
-
-    #print("max: "+str(femidcounter))
-    '''
-
-    '''
-    vertex_digits=set(len(str(v.id)) for v in vertices.values())
-
-    digits=set()
-    for b in buildings.values():
-        digits.add(b.building2opensees())
-
-    print(digits)
-    print(vertex_digits)
-    '''
 
 
 
@@ -139,9 +110,6 @@ def define_city(vtkWidget):
     vtk_interactor.insert_buildings(buildings,checked_items)
     vtk_interactor.insert_triangles(ground_triangles.values(),checked_items)
 
-    #triangle_or_truss=True
-    #wireframe=False
-    #vtk_interactor.visualize(triangle_or_truss, wireframe, origin)
     return vtk_interactor, buildings, ground_triangles, vertices, buildingblocks
 
 

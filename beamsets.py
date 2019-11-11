@@ -1,17 +1,17 @@
 
 import vertices
-import trusses
+import beams
 import numpy as np
 
 class beamset:
     def __init__(self,_id):
         self.id=_id
         self.vertices=[]
-        self.trusses=[]
+        self.beams=[]
     def append_vertex(self,_vertex):
         self.vertices.append(_vertex)
-    def append_truss(self,_truss):
-        self.trusses.append(_truss)
+    def append_beam(self,_beam):
+        self.beams.append(_beam)
     def set_floor_mid(self):
         all_coords=np.array([]).reshape(0,3)
         for v in range(len(self.vertices)-1):
@@ -22,7 +22,7 @@ class beamset:
     def set_footprint_max_elev(self):
         self.fp_max_elev=max([v.coordsX[2] for v in self.vertices])
         return self.fp_max_elev
-    def shift_and_copy_beamset(self,_vertices,_trusses, _level, _shift, _last_vertex_id,_origin):
+    def shift_and_copy_beamset(self,_vertices,_beams, _level, _shift, _last_vertex_id,_origin):
         delim="##"
         #last_vertex_id=max([int(v) for v in _vertices.keys()])
         #print(last_vertex_id)
@@ -37,7 +37,6 @@ class beamset:
             for c in range(2):
                 _vertices[str(_last_vertex_id+1)].coordsX[c]=v.coordsX[c]
             _vertices[str(_last_vertex_id+1)].coordsX[2]=self.fp_max_elev
-            #_vertices[str(_last_vertex_id+1)].convert_lat_long2m(_origin)
             for c in range(3):
                 _vertices[str(_last_vertex_id+1)].coordsX[c]+=_shift[c]
             copied_vertex_ids.append(str(_last_vertex_id+1))
@@ -46,9 +45,8 @@ class beamset:
         for ndid in range(len(copied_vertex_ids)-1):
             nd_tip=copied_vertex_ids[ndid]
             nd_tail=copied_vertex_ids[ndid+1]
-            #print(_vertices[nd_tip].id)
-            _trusses[self.id+delim+nd_tip]=trusses.truss(self.id+delim+nd_tip,[_vertices[nd_tip],_vertices[nd_tail]])
-            return_beamset.append_truss(_trusses[self.id+delim+nd_tip])
+            _beams[self.id+delim+nd_tip]=beams.beam(self.id+delim+nd_tip,[_vertices[nd_tip],_vertices[nd_tail]])
+            return_beamset.append_beam(_beams[self.id+delim+nd_tip])
         
         return return_beamset, _last_vertex_id
 

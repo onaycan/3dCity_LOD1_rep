@@ -140,10 +140,16 @@ class vtk_interactor:
         #self.iren.SetInteractorStyle(vtk.vtkInteractorStyleTrackballCamera())
         self.iren.SetRenderWindow(self.renWin)
         self.PolyData = vtk.vtkPolyData()
+        self.PolyData_Lines = vtk.vtkPolyData()
+        
         #self.PolyData=vtk.vtkExtractPolyDataGeometry()
         self.Colors = vtk.vtkUnsignedCharArray()
         self.Colors.SetNumberOfComponents(3)
         self.Colors.SetName("Colors")
+
+        self.LineColors = vtk.vtkUnsignedCharArray()
+        self.LineColors.SetNumberOfComponents(3)
+        self.LineColors.SetName("LineColors")
 
         
 
@@ -155,6 +161,7 @@ class vtk_interactor:
         self.trusses = vtk.vtkCellArray()
         
         self.mapper = vtk.vtkPolyDataMapper()
+        self.mapper_Lines = vtk.vtkPolyDataMapper()
         self.vertexId2VtkPointId={}
         self.VtkPointId2vertexid={}
         self.VtkTriangleId2Triangleid={}
@@ -182,11 +189,16 @@ class vtk_interactor:
             self.VtkPointId2vertexid[VtkPointId]=v.id
 
 
-    def insert_truss(self,_truss):
+    def insert_truss(self,_truss, _type):
         
         self.trusses.InsertNextCell(2)
         self.trusses.InsertCellPoint(self.vertexId2VtkPointId[_truss.vertices[0].id])
         self.trusses.InsertCellPoint(self.vertexId2VtkPointId[_truss.vertices[1].id])
+
+        if _type=="beam":
+            self.LineColors.InsertNextTuple3(0,255,0)
+        if _type=="column":
+            self.LineColors.InsertNextTuple3(0,0,255)
         #print(_truss.vertices[0].id)
 
     def insert_polygon_as_triangle(self,_beamset):
@@ -203,7 +215,6 @@ class vtk_interactor:
         self.triangles.InsertCellPoint(self.vertexId2VtkPointId[_triangle.vertices[2].id])
         self.VtkTriangleId2Triangleid[VtkTriangleId]=_triangle.id
         self.numberoftriangles+=1
-        
         #print(self.numberoftriangles)
         #self.outfile.write(str(self.numberoftriangles)+"\n")
         
@@ -213,12 +224,12 @@ class vtk_interactor:
                 self.insert_triangle(tri)    
 
     def insert_beamset(self,_beamset):
-        for t in _beamset.trusses:
-            self.insert_truss(t)
+        for t in _beamset.beams:
+            self.insert_truss(t, "beam")
     
     def insert_column(self,_column):
         for t in _column.trusses:
-            self.insert_truss(t)
+            self.insert_truss(t, "column")
 
     def insert_baseset(self,_baseset):
         for t in _baseset.triangles:
@@ -304,28 +315,51 @@ class vtk_interactor:
         if(self.triangles.GetNumberOfCells()==0):
             _wireframe=False
 
+
+        # start triangles.ss
         self.PolyData.SetPoints(self.points)
         
         self.PolyData.SetPolys(self.triangles)
-        self.PolyData.SetLines(self.trusses)
+        #self.PolyData.SetLines(self.trusses)
         
         self.PolyData.GetPointData().SetScalars(self.Colors)
 
         # mapper
-        if vtk.VTK_MAJOR_VERSION <= 5:
-            self.mapper.SetInput(self.PolyData)
-        else:
-            self.mapper.SetInputData(self.PolyData)
-
+        
+        self.mapper.SetInputData(self.PolyData)
+        
         self.mapper.Update()
         # actor
         self.actor = vtk.vtkActor()
         self.actor.SetMapper(self.mapper)
         if not _wireframe:
             self.actor.GetProperty().SetRepresentationToWireframe()
+        #end triangles
+
+
+
+        #start lines
+        self.PolyData_Lines.SetPoints(self.points)
+        self.PolyData_Lines.SetLines(self.trusses)
+        
+        self.PolyData_Lines.GetCellData().SetScalars(self.LineColors)
+        
+        # mapper
+        
+        self.mapper_Lines.SetInputData(self.PolyData_Lines)
+        
+        self.mapper_Lines.Update()
+        # actor
+        self.actor_Lines = vtk.vtkActor()
+        self.actor_Lines.SetMapper(self.mapper_Lines)
+        if not _wireframe:
+            self.actor_Lines.GetProperty().SetRepresentationToWireframe()
+        # end lines
+
 
         # assign actor to the renderer
         self.ren.AddActor(self.actor)
+        self.ren.AddActor(self.actor_Lines)
         self.axes = vtk.vtkAxesActor()
 
 
