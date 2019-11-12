@@ -3,7 +3,7 @@ import trusses
 import vertices
 import columns
 import matplotlib
-
+import math
 
 def rgb(minimum, maximum, value):
     minimum, maximum = float(minimum), float(maximum)
@@ -175,17 +175,21 @@ class vtk_interactor:
     
 
     def insert_vertices(self,_vertices, _colormap=None):
-        min_elevation=min([v.coordsX[1] for v in _vertices])*1.8
+        min_elevation=min([v.coordsX[1] for v in _vertices])
         max_elevation=max([v.coordsX[1] for v in _vertices])
-        #print(min_elevation)
-        #print(max_elevation)
+        print("min elevation: "+str(min_elevation))
+        print("max elevation: "+str(max_elevation))
 
         for v in _vertices:
             VtkPointId=self.points.InsertNextPoint(v.coordsX[0],v.coordsX[1],v.coordsX[2])
             if _colormap!=None:
                 cmap = matplotlib.cm.get_cmap(_colormap)
-                val=v.coordsX[1]/(max_elevation-min_elevation)
-                r,g,b,a = cmap(val)
+                val=(v.coordsX[1]-min_elevation)/(max_elevation-min_elevation)
+                #if val<0 and val>-0.01:
+                #    val=0
+                #if val>0.01 and val<0.2:
+                #    val=0.2
+                r,g,b,a = cmap(val*3)
             else:
                 r,g,b=rgb(min_elevation,max_elevation,v.coordsX[1])
         

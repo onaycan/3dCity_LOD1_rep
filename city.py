@@ -113,7 +113,10 @@ def define_city(vtkWidget):
     print("interactor needs: "+str(elapsed_time))
 
     vtk_interactor.insert_vertices(vertices.values(),_colormap="gray")
-    vtk_interactor.insert_vertices(ground_vertices.values(),_colormap="gist_earth")
+    #vtk_interactor.insert_vertices(ground_vertices.values(),_colormap="gist_earth")
+    vtk_interactor.insert_vertices(ground_vertices.values(),_colormap="terrain")
+    #vtk_interactor.insert_vertices(ground_vertices.values(),_colormap="CMRmap")
+    
     checked_items={'Building Blocks': 2, 'Buildings': 2, 'Panels': 2, 'Panel Facets': 2, 'Panel Beams': 2, 'Walls': 2, 'Wall Facets': 2, "Wall Columns" : 2, "Terrain" :2}
     vtk_interactor.insert_buildings(buildings,checked_items)
     vtk_interactor.insert_triangles(ground_triangles.values(),checked_items)
