@@ -33,9 +33,10 @@ class Ui(QtWidgets.QMainWindow):
         self.adjustSize()
         uic.loadUi('./gui_designer/ideas4all_city_simulator_gui.ui', self)
         self.show()
-        self.checked_items={'basesets': 2, 'beamsets': 2, 'buildings': 2, 'columns': 2, 'walls': 2, 'terrain': 2}
+        self.checked_items={'Building Blocks': 2, 'Buildings': 2, 'Panels': 2, 'Panel Facets': 2, 'Panel Beams': 2, 'Walls': 2, 'Wall Facets': 2, "Wall Columns" : 2, "Terrain" :2}
+
     def handleItemChanged(self, item, column):
-        checked_items={'basesets': 0, 'beamsets': 0, 'buildings': 0, 'columns': 0, 'walls': 0, 'terrain': 0}
+        checked_items={'Building Blocks': 0, 'Buildings': 0, 'Panels': 0, 'Panel Facets': 0, 'Panel Beams': 0, 'Walls': 0, 'Wall Facets': 0, "Wall Columns" : 0, "Terrain" : 0}
         if item.checkState(column) == QtCore.Qt.Checked:
             print('Item Checked')
         elif item.checkState(column) == QtCore.Qt.Unchecked:
@@ -49,6 +50,9 @@ class Ui(QtWidgets.QMainWindow):
         
         self.city_vtk.triangles = vtk.vtkCellArray()
         self.city_vtk.trusses = vtk.vtkCellArray()
+        self.city_vtk.LineColors = vtk.vtkUnsignedCharArray()
+        self.city_vtk.LineColors.SetNumberOfComponents(3)
+        self.city_vtk.LineColors.SetName("LineColors")
         self.city_vtk.insert_buildings(self.buildings,checked_items)
         self.city_vtk.insert_triangles(self.ground_triangles.values(),checked_items)
         #refresh is necessary, otherwise it blows! apperantly set data appends sometimes
@@ -149,7 +153,7 @@ class Ui(QtWidgets.QMainWindow):
             self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(number))
             i += 1
 
-    def show_tree_widget(self, buildings, ground_triangles, city_vtk, vertices, building_blocks):
+    def show_tree_widget(self, buildings, ground_triangles, city_vtk, vertices, building_blocks, beams, beamsets):
         self.city_vtk=city_vtk
         self.buildings=buildings
         self.building_blocks=building_blocks
@@ -159,39 +163,51 @@ class Ui(QtWidgets.QMainWindow):
         tw.setHeaderLabels(['City Item', 'Quantity [-]', 'Remark'])
         tw.setAlternatingRowColors(True)
 
-        bb = QtWidgets.QTreeWidgetItem(tw, ['building_blocks', str(len(building_blocks.keys())), '# of Building Blocks'])
+        bb = QtWidgets.QTreeWidgetItem(tw, ['Building Blocks', str(len(building_blocks.keys())), '# of Building Blocks'])
         bb.setFlags(bb.flags() |QtCore.Qt.ItemIsTristate | QtCore.Qt.ItemIsUserCheckable)
 
-        b = QtWidgets.QTreeWidgetItem(bb, ['buildings', str(len(buildings.keys())), '# of Buildings'])
+        b = QtWidgets.QTreeWidgetItem(bb, ['Buildings', str(len(buildings.keys())), '# of Buildings'])
         b.setFlags(b.flags() |QtCore.Qt.ItemIsTristate | QtCore.Qt.ItemIsUserCheckable)
 
-        self.gt = QtWidgets.QTreeWidgetItem(tw, ['terrain', str(len(ground_triangles.keys())), '# of triangles of geoterrain'])
+        self.gt = QtWidgets.QTreeWidgetItem(tw, ['Terrain', str(len(ground_triangles.keys())), '# of triangles of geoterrain'])
         self.gt.setCheckState(0, QtCore.Qt.Checked)
         
         
-        beamsets=0
-        basesets=0
         columns=0
-        walls=0
+        
+        panltriangles=0
+        walltriangles=0
 
         for bui in buildings.values():
-            beamsets+=len(bui.beamsets)
-            basesets+=len(bui.basesets)
+            for bs in bui.basesets:
+                panltriangles+=len(bs.triangles)
+            
+            for w in bui.walls:
+                walltriangles+=len(w.triangles)
             columns+=len(bui.columns)
-            walls+=len(bui.columns)
 
-        b1=QtWidgets.QTreeWidgetItem(b, ['beamsets', str(beamsets), '# of Horizintal beams'])
-        b1.setFlags(b1.flags() | QtCore.Qt.ItemIsUserCheckable)
-        b1.setCheckState(0, QtCore.Qt.Checked)
-        b2=QtWidgets.QTreeWidgetItem(b, ['basesets', str(basesets), '# of triangles on floors and roofs'])
-        b2.setFlags(b2.flags() | QtCore.Qt.ItemIsUserCheckable)
-        b2.setCheckState(0, QtCore.Qt.Checked)
-        b3=QtWidgets.QTreeWidgetItem(b, ['columns', str(columns), '# of vertical columns'])
-        b3.setFlags(b3.flags() | QtCore.Qt.ItemIsUserCheckable)
-        b3.setCheckState(0, QtCore.Qt.Checked)
-        b4=QtWidgets.QTreeWidgetItem(b, ['walls', str(walls), '# of triangles on walls'])
-        b4.setFlags(b4.flags() | QtCore.Qt.ItemIsUserCheckable)
-        b4.setCheckState(0, QtCore.Qt.Checked)
+
+        b1=QtWidgets.QTreeWidgetItem(b, ['Panels', str(len(beamsets.keys())), '# of Panels'])
+        b1.setFlags(b1.flags() | QtCore.Qt.ItemIsTristate | QtCore.Qt.ItemIsUserCheckable)
+        #b1.setCheckState(0, QtCore.Qt.Checked)
+        b11=QtWidgets.QTreeWidgetItem(b1, ['Panel Facets', str(panltriangles), '# of triangles on Panels'])
+        b11.setFlags(b1.flags() | QtCore.Qt.ItemIsUserCheckable)
+        b11.setCheckState(0, QtCore.Qt.Checked)
+        b12=QtWidgets.QTreeWidgetItem(b1, ['Panel Beams', str(len(beams.keys())), '# of Beams around Panels'])
+        b12.setFlags(b1.flags() | QtCore.Qt.ItemIsUserCheckable)
+        b12.setCheckState(0, QtCore.Qt.Checked)
+
+
+        b2=QtWidgets.QTreeWidgetItem(b, ['Walls', str(columns/2), '# of Walls'])
+        b2.setFlags(b2.flags() | QtCore.Qt.ItemIsTristate | QtCore.Qt.ItemIsUserCheckable)
+        #b1.setCheckState(0, QtCore.Qt.Checked)
+        b21=QtWidgets.QTreeWidgetItem(b2, ['Wall Facets', str(walltriangles), '# of triangles on Walls'])
+        b21.setFlags(b2.flags() | QtCore.Qt.ItemIsUserCheckable)
+        b21.setCheckState(0, QtCore.Qt.Checked)
+        b22=QtWidgets.QTreeWidgetItem(b2, ['Wall Columns', str(columns), '# of Columns along Walls'])
+        b22.setFlags(b2.flags() | QtCore.Qt.ItemIsUserCheckable)
+        b22.setCheckState(0, QtCore.Qt.Checked)
+
         
         #instead of itemchecked, itemlicked need to be used to avoid recursive effects
         self.treeWidget.itemClicked.connect(self.handleItemChanged)
@@ -256,8 +272,8 @@ if __name__=='__main__':
     vtkWidget = QVTKRenderWindowInteractor(frame)
     vl.addWidget(vtkWidget)
 
-    city_vtk, buildings, ground_triangles, vertices, building_blocks=city.define_city(vtkWidget)
-    window.show_tree_widget(buildings, ground_triangles, city_vtk, vertices, building_blocks)
+    city_vtk, buildings, ground_triangles, vertices, building_blocks, beams, beamsets=city.define_city(vtkWidget)
+    window.show_tree_widget(buildings, ground_triangles, city_vtk, vertices, building_blocks, beams, beamsets)
     window.show_table_widget()
     window.EnableSelection_checkBox.stateChanged.connect(window.manage_selection_enablebox)
     #window.facets_pushbutton.clicked.connect(window.manage_selection_box_f)

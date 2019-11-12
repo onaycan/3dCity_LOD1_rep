@@ -219,7 +219,7 @@ class vtk_interactor:
         #self.outfile.write(str(self.numberoftriangles)+"\n")
         
     def insert_triangles(self, _triangles, _checked_items):
-        if _checked_items['terrain']>0:
+        if _checked_items['Terrain']>0:
             for tri in _triangles:
                 self.insert_triangle(tri)    
 
@@ -241,23 +241,23 @@ class vtk_interactor:
 
 
     def insert_building(self,_building, _checked_items):
-        if _checked_items['beamsets']>0:
+        if _checked_items['Panel Beams']>0:
             for b in _building.beamsets:
                 self.insert_beamset(b)
-        if _checked_items['columns']>0:
+        if _checked_items['Wall Columns']>0:
             for c in _building.columns:
                 self.insert_column(c)
-        if _checked_items['basesets']>0:
+        if _checked_items['Panel Facets']>0:
             for bs in _building.basesets:
                 self.insert_baseset(bs)
-        if _checked_items['walls']>0:
+        if _checked_items['Wall Facets']>0:
             for w in _building.walls:
                 self.insert_wall(w)
         #for bb in _building.beamsets:
         #self.insert_polygon_as_triangle(_building.beamsets[0])
 
     def insert_buildings(self,_buildings,_checked_items):
-        if _checked_items['buildings']>0:    
+        if _checked_items['Buildings']>0:    
             for b in _buildings.values():
                 self.insert_building(b,_checked_items)
             #print(b.name)
@@ -384,12 +384,3 @@ class vtk_interactor:
         transform.Translate(self.origin[0],self.origin[1], 0.0)
         self.axes.SetUserTransform(transform)
         self.ren.AddActor(self.axes)
-
-        #self.style = MouseInteractorHighLightActor(self)
-        #self.style.SetDefaultRenderer(self.ren)
-        #self.iren.SetInteractorStyle(self.style)
-
-        # enable user interface interactor
-        #self.iren.Initialize()
-        #self.renWin.Render()
-        #self.iren.Start()
