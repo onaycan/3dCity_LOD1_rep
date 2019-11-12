@@ -68,46 +68,51 @@ class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
                 
 
                 sets=[]
+                notground=True
                 for p in range(numberofids):
                     pid=self.vtkinteractor.PolyData.GetCell(cellid).GetPointIds().GetId(p)
-                    sets.append(self.vertices[self.vtkinteractor.VtkPointId2vertexid[pid]].homes)
-                
-                self.building_vertices=set()
+                    if self.vtkinteractor.VtkPointId2vertexid[pid].startswith("g"):
+                        notground=False
+                    else:
+                        sets.append(self.vertices[self.vtkinteractor.VtkPointId2vertexid[pid]].homes)
 
-                common_home=[set.intersection(*sets)][0] #in fact this is buggy.but you can not choose really a side wall or bottom triangle with common edge without being able to see it 
-                common_home=list(common_home)[0]
-                self.window.comboboxes['buildings'].addItem(common_home)
-                self.window.comboboxes['buildings'].setCurrentIndex(self.window.comboboxes['buildings'].count() - 1)
-                
-                self.get_building_vertices(common_home)
+                if notground:
+                    self.building_vertices=set()
 
+                    common_home=[set.intersection(*sets)][0] #in fact this is buggy.but you can not choose really a side wall or bottom triangle with common edge without being able to see it 
+                    common_home=list(common_home)[0]
+                    self.window.comboboxes['buildings'].addItem(common_home)
+                    self.window.comboboxes['buildings'].setCurrentIndex(self.window.comboboxes['buildings'].count() - 1)
 
-                if self.window.buildingBlocks_pushbutton.isChecked():
-                    self.window.comboboxes['building blocks'].addItem(self.buildings[common_home].buildingblock_id)
-                    self.window.comboboxes['building blocks'].setCurrentIndex(self.window.comboboxes['building blocks'].count() - 1)
-                    for n in self.buildings[common_home].neighbours:
-                        self.window.comboboxes['buildings'].addItem(n)
-                        self.window.comboboxes['buildings'].setCurrentIndex(self.window.comboboxes['buildings'].count() - 1)
-                        for bb in self.buildings[n].beamsets:
-                            for v in bb.vertices:
-                                self.building_vertices.add(v.id)
-
-                self.window.fill_table_widget()
-                    
-
-                for pid in self.building_vertices:
-                    pointids.append(self.vtkinteractor.vertexId2VtkPointId[pid])
+                    self.get_building_vertices(common_home)
 
 
+                    if self.window.buildingBlocks_pushbutton.isChecked():
+                        self.window.comboboxes['building blocks'].addItem(self.buildings[common_home].buildingblock_id)
+                        self.window.comboboxes['building blocks'].setCurrentIndex(self.window.comboboxes['building blocks'].count() - 1)
+                        for n in self.buildings[common_home].neighbours:
+                            self.window.comboboxes['buildings'].addItem(n)
+                            self.window.comboboxes['buildings'].setCurrentIndex(self.window.comboboxes['buildings'].count() - 1)
+                            for bb in self.buildings[n].beamsets:
+                                for v in bb.vertices:
+                                    self.building_vertices.add(v.id)
 
-                print("points of selected cell: "+ str(pointids))
-                for p in pointids:
-                    self.vtkinteractor.Colors.SetTuple3(p,255,0,0)
-                print(self.vtkinteractor.triangles.GetNumberOfCells())
-                self.vtkinteractor.mapper.Update()
-                self.vtkinteractor.mapper.ScalarVisibilityOff()
-                self.vtkinteractor.mapper.ScalarVisibilityOn()
-                self.vtkinteractor.renWin.Render()
+                    self.window.fill_table_widget()
+
+
+                    for pid in self.building_vertices:
+                        pointids.append(self.vtkinteractor.vertexId2VtkPointId[pid])
+
+
+
+                    print("points of selected cell: "+ str(pointids))
+                    for p in pointids:
+                        self.vtkinteractor.Colors.SetTuple3(p,255,0,0)
+                    print(self.vtkinteractor.triangles.GetNumberOfCells())
+                    self.vtkinteractor.mapper.Update()
+                    self.vtkinteractor.mapper.ScalarVisibilityOff()
+                    self.vtkinteractor.mapper.ScalarVisibilityOn()
+                    self.vtkinteractor.renWin.Render()
         
         self.OnLeftButtonDown()
         return 
