@@ -46,6 +46,8 @@ def define_city(vtkWidget):
     max_home_numbers=max([len(v.homes) for b in beamsets.values() for v in b.vertices])
     
     
+
+
     print("max number of home buildings sharing the same vertex: "+str(max_home_numbers))
 
 
@@ -80,6 +82,12 @@ def define_city(vtkWidget):
     print("building needs: "+str(elapsed_time))
 
     print("number of buildings with height: "+str(numberofbuildingswithheight))
+
+    for v in vertices.values():
+        v.convert_CoordsX2FemCoordsX()
+    
+    for v in ground_vertices.values():
+        v.convert_CoordsX2FemCoordsX()
 
     # start assigning homes to vertices and neighbour information
     for b in buildings.values():

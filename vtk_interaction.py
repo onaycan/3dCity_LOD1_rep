@@ -175,8 +175,8 @@ class vtk_interactor:
     
 
     def insert_vertices(self,_vertices, _colormap=None):
-        min_elevation=min([v.coordsX[2] for v in _vertices])*1.8
-        max_elevation=max([v.coordsX[2] for v in _vertices])
+        min_elevation=min([v.coordsX[1] for v in _vertices])*1.8
+        max_elevation=max([v.coordsX[1] for v in _vertices])
         #print(min_elevation)
         #print(max_elevation)
 
@@ -184,10 +184,10 @@ class vtk_interactor:
             VtkPointId=self.points.InsertNextPoint(v.coordsX[0],v.coordsX[1],v.coordsX[2])
             if _colormap!=None:
                 cmap = matplotlib.cm.get_cmap(_colormap)
-                val=v.coordsX[2]/(max_elevation-min_elevation)
+                val=v.coordsX[1]/(max_elevation-min_elevation)
                 r,g,b,a = cmap(val)
             else:
-                r,g,b=rgb(min_elevation,max_elevation,v.coordsX[2])
+                r,g,b=rgb(min_elevation,max_elevation,v.coordsX[1])
         
             self.Colors.InsertNextTuple3(r*255,g*255,b*255)
             self.vertexId2VtkPointId[v.id]=VtkPointId
@@ -386,6 +386,7 @@ class vtk_interactor:
         self.axes.SetNormalizedTipLength(0.05, 0.05, 0.05) 
 
         transform = vtk.vtkTransform()
-        transform.Translate(self.origin[0],self.origin[1], 0.0)
+        # this is necessary for osm
+        transform.Translate(self.origin[0],0.0, -1.0*self.origin[1])
         self.axes.SetUserTransform(transform)
         self.ren.AddActor(self.axes)

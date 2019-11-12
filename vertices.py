@@ -23,3 +23,12 @@ class vertex:
         y_origin=(_origin[0],self.coords_lat_long[1])
         y_target=(self.coords_lat_long[0],self.coords_lat_long[1])
         self.coordsX[1]=geodesic(y_origin, y_target).meters      
+
+    def convert_CoordsX2FemCoordsX(self):
+        old_CoordsX_x=self.coordsX[0]
+        old_CoordsX_y=self.coordsX[1]
+        old_CoordsX_z=self.coordsX[2]
+
+        self.coordsX[0]=old_CoordsX_x
+        self.coordsX[1]=old_CoordsX_z
+        self.coordsX[2]=-1.0*old_CoordsX_y

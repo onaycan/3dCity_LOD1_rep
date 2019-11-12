@@ -237,6 +237,8 @@ class building:
                 for l in range(1,numberoflevels+1):
                     #print("beamset inserted in "+self.name)
                     next_beamset, _lastvertexid=self.beamsets[0].shift_and_copy_beamset(_vertices,_beams, str(l), [0.0,0.0,l*floor_height], _lastvertexid, _origin)
+                    #next_beamset, _lastvertexid=self.beamsets[0].shift_and_copy_beamset(_vertices,_beams, str(l), [0.0,l*floor_height,0.0], _lastvertexid, _origin)
+                    
                     _beamsets[next_beamset.id]=next_beamset
                     self.beamsets.append(next_beamset)
                     
@@ -287,6 +289,8 @@ class building:
                 for v in range(len(self.beamsets[l].vertices)-1):
                     ver=self.beamsets[l].vertices[v]
                     points=np.vstack([points,[ver.coordsX[0],ver.coordsX[1]]])
+                    #points=np.vstack([points,[ver.coordsX[0],ver.coordsX[2]]])
+                    
                     ground_vertices["g"+str(coun)]=ver
                     current_baseset.append_vertex(ver)
                     coun+=1
