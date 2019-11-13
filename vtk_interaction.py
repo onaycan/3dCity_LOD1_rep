@@ -63,18 +63,18 @@ class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
 
                 print("selected cell id: "+str(cellid))
 
-                numberofids=self.vtkinteractor.PolyData.GetCell(cellid).GetPointIds().GetNumberOfIds()
+                numberofids=self.vtkinteractor.PolyData_BuildingCells.GetCell(cellid).GetPointIds().GetNumberOfIds()
                 pointids=[]
                 
 
                 sets=[]
                 notground=True
                 for p in range(numberofids):
-                    pid=self.vtkinteractor.PolyData.GetCell(cellid).GetPointIds().GetId(p)
-                    if self.vtkinteractor.VtkPointId2vertexid[pid].startswith("g"):
+                    pid=self.vtkinteractor.PolyData_BuildingCells.GetCell(cellid).GetPointIds().GetId(p)
+                    if self.vtkinteractor.b_VtkPointId2vertexid[pid].startswith("g"):
                         notground=False
                     else:
-                        sets.append(self.vertices[self.vtkinteractor.VtkPointId2vertexid[pid]].homes)
+                        sets.append(self.vertices[self.vtkinteractor.b_VtkPointId2vertexid[pid]].homes)
 
                 if notground:
                     self.building_vertices=set()
@@ -101,17 +101,19 @@ class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
 
 
                     for pid in self.building_vertices:
-                        pointids.append(self.vtkinteractor.vertexId2VtkPointId[pid])
+                        pointids.append(self.vtkinteractor.b_vertexId2VtkPointId[pid])
 
 
 
                     print("points of selected cell: "+ str(pointids))
                     for p in pointids:
-                        self.vtkinteractor.Colors.SetTuple3(p,255,0,0)
-                    print(self.vtkinteractor.triangles.GetNumberOfCells())
-                    self.vtkinteractor.mapper.Update()
-                    self.vtkinteractor.mapper.ScalarVisibilityOff()
-                    self.vtkinteractor.mapper.ScalarVisibilityOn()
+                        self.vtkinteractor.BuildingColors.SetTuple3(p,255,0,0)
+                    print(self.vtkinteractor.building_triangles.GetNumberOfCells())
+                    #this update kills! 
+                    #self.vtkinteractor.mapper_BuildingCells.Update()
+                    self.vtkinteractor.PolyData_BuildingCells.GetPointData().SetScalars(self.vtkinteractor.BuildingColors)
+                    self.vtkinteractor.mapper_BuildingCells.ScalarVisibilityOff()
+                    self.vtkinteractor.mapper_BuildingCells.ScalarVisibilityOn()
                     self.vtkinteractor.renWin.Render()
         
         self.OnLeftButtonDown()
@@ -144,7 +146,8 @@ class vtk_interactor:
 
         #self.iren.SetInteractorStyle(vtk.vtkInteractorStyleTrackballCamera())
         self.iren.SetRenderWindow(self.renWin)
-        self.PolyData = vtk.vtkPolyData()
+        self.PolyData_BuildingCells = vtk.vtkPolyData()
+        self.PolyData_GroundCells = vtk.vtkPolyData()
         self.PolyData_Lines = vtk.vtkPolyData()
         
         #self.PolyData=vtk.vtkExtractPolyDataGeometry()
@@ -152,36 +155,85 @@ class vtk_interactor:
         self.Colors.SetNumberOfComponents(3)
         self.Colors.SetName("Colors")
 
+        self.BuildingColors = vtk.vtkUnsignedCharArray()
+        self.BuildingColors.SetNumberOfComponents(3)
+        self.BuildingColors.SetName("BuildingColors")
+
+
         self.LineColors = vtk.vtkUnsignedCharArray()
         self.LineColors.SetNumberOfComponents(3)
         self.LineColors.SetName("LineColors")
 
-        
+        self.BuildingCellColors = vtk.vtkUnsignedCharArray()
+        self.BuildingCellColors.SetNumberOfComponents(3)
+        self.BuildingCellColors.SetName("BuildingCellColors")
 
         
 
-        self.points = vtk.vtkPoints()
-        self.triangles = vtk.vtkCellArray()
+        
+
+        self.ground_points = vtk.vtkPoints()
+        self.ground_triangles = vtk.vtkCellArray()
+
+        self.building_points = vtk.vtkPoints()
+        self.building_triangles = vtk.vtkCellArray()
+
+
         self.numberoftriangles=0
         self.trusses = vtk.vtkCellArray()
         
-        self.mapper = vtk.vtkPolyDataMapper()
+        self.mapper_BuildingCells = vtk.vtkPolyDataMapper()
+        self.mapper_GroundCells = vtk.vtkPolyDataMapper()
         self.mapper_Lines = vtk.vtkPolyDataMapper()
-        self.vertexId2VtkPointId={}
-        self.VtkPointId2vertexid={}
-        self.VtkTriangleId2Triangleid={}
         
+        self.b_vertexId2VtkPointId={}
+        self.b_VtkPointId2vertexid={}
         
-    
+        self.g_vertexId2VtkPointId={}
+        self.g_VtkPointId2vertexid={}
+        
 
-    def insert_vertices(self,_vertices, _colormap=None):
+        self.b_VtkTriangleId2Triangleid={} 
+        self.g_VtkTriangleId2Triangleid={}
+        
+        self.LineColorLabels={}
+        self.LineColorLabels['Panel Beams']=[0,0,150]
+        self.LineColorLabels['Wall Columns']=[0,150,0]
+
+        self.BuildingColorLabels={}
+        self.BuildingColorLabels['Panel Facets']=[0,100,150]
+        self.BuildingColorLabels['Wall Facets']=[0,150,100]
+        
+        
+
+    def insert_building_vertices(self,_vertices, _colormap=None):
         min_elevation=min([v.coordsX[1] for v in _vertices])
         max_elevation=max([v.coordsX[1] for v in _vertices])
         print("min elevation: "+str(min_elevation))
         print("max elevation: "+str(max_elevation))
 
         for v in _vertices:
-            VtkPointId=self.points.InsertNextPoint(v.coordsX[0],v.coordsX[1],v.coordsX[2])
+            VtkPointId=self.building_points.InsertNextPoint(v.coordsX[0],v.coordsX[1],v.coordsX[2])
+            if _colormap!=None:
+                cmap = matplotlib.cm.get_cmap(_colormap)
+                val=(v.coordsX[1]-min_elevation)/(max_elevation-min_elevation)
+                r,g,b,a = cmap(val)
+            else:
+                r,g,b=rgb(min_elevation,max_elevation,v.coordsX[1])
+            self.BuildingColors.InsertNextTuple3(r*255,g*255,b*255)
+            self.b_vertexId2VtkPointId[v.id]=VtkPointId
+            self.b_VtkPointId2vertexid[VtkPointId]=v.id
+
+
+
+    def insert_ground_vertices(self,_vertices, _colormap=None):
+        min_elevation=min([v.coordsX[1] for v in _vertices])
+        max_elevation=max([v.coordsX[1] for v in _vertices])
+        print("min elevation: "+str(min_elevation))
+        print("max elevation: "+str(max_elevation))
+
+        for v in _vertices:
+            VtkPointId=self.ground_points.InsertNextPoint(v.coordsX[0],v.coordsX[1],v.coordsX[2])
             if _colormap!=None:
                 cmap = matplotlib.cm.get_cmap(_colormap)
                 val=(v.coordsX[1]-min_elevation)/(max_elevation-min_elevation)
@@ -194,81 +246,105 @@ class vtk_interactor:
                 r,g,b=rgb(min_elevation,max_elevation,v.coordsX[1])
         
             self.Colors.InsertNextTuple3(r*255,g*255,b*255)
-            self.vertexId2VtkPointId[v.id]=VtkPointId
-            self.VtkPointId2vertexid[VtkPointId]=v.id
+            self.g_vertexId2VtkPointId[v.id]=VtkPointId
+            self.g_VtkPointId2vertexid[VtkPointId]=v.id
 
 
-    def insert_truss(self,_truss, _type):
-        
-        self.trusses.InsertNextCell(2)
-        self.trusses.InsertCellPoint(self.vertexId2VtkPointId[_truss.vertices[0].id])
-        self.trusses.InsertCellPoint(self.vertexId2VtkPointId[_truss.vertices[1].id])
+    def insert_truss(self,_truss, _type, _only_colors):
+        if not _only_colors:
+            self.trusses.InsertNextCell(2)
+            self.trusses.InsertCellPoint(self.b_vertexId2VtkPointId[_truss.vertices[0].id])
+            self.trusses.InsertCellPoint(self.b_vertexId2VtkPointId[_truss.vertices[1].id])
 
-        if _type=="beam":
-            self.LineColors.InsertNextTuple3(0,255,0)
-        if _type=="column":
-            self.LineColors.InsertNextTuple3(0,0,255)
+            if _type=="beam":
+                self.LineColors.InsertNextTuple3(self.LineColorLabels['Panel Beams'][0],self.LineColorLabels['Panel Beams'][1],self.LineColorLabels['Panel Beams'][2])
+            if _type=="column":
+                self.LineColors.InsertNextTuple3(self.LineColorLabels['Wall Columns'][0],self.LineColorLabels['Wall Columns'][1],self.LineColorLabels['Wall Columns'][2])
+        else:
+            if _type=="beam":
+                self.LineColors.InsertNextTuple3(self.LineColorLabels['Panel Beams'][0],self.LineColorLabels['Panel Beams'][1],self.LineColorLabels['Panel Beams'][2])
+            if _type=="column":
+                self.LineColors.InsertNextTuple3(self.LineColorLabels['Wall Columns'][0],self.LineColorLabels['Wall Columns'][1],self.LineColorLabels['Wall Columns'][2])
         #print(_truss.vertices[0].id)
 
-    def insert_polygon_as_triangle(self,_beamset):
-        self.triangles.InsertNextCell(len(_beamset.vertices))
-        for v in _beamset.vertices:
-            self.triangles.InsertCellPoint(self.vertexId2VtkPointId[v.id])
+    #def insert_polygon_as_triangle(self,_beamset):
+    #    self.triangles.InsertNextCell(len(_beamset.vertices))
+    #    for v in _beamset.vertices:
+    #        self.triangles.InsertCellPoint(self.vertexId2VtkPointId[v.id])
     
+    def insert_building_triangle(self,_triangle, _type, _only_colors):
+        if not _only_colors:
+            VtkTriangleId=self.building_triangles.InsertNextCell(3)
+            self.building_triangles.InsertCellPoint(self.b_vertexId2VtkPointId[_triangle.vertices[0].id])
+            self.building_triangles.InsertCellPoint(self.b_vertexId2VtkPointId[_triangle.vertices[1].id])
+            self.building_triangles.InsertCellPoint(self.b_vertexId2VtkPointId[_triangle.vertices[2].id])
+            self.b_VtkTriangleId2Triangleid[VtkTriangleId]=_triangle.id
+            self.numberoftriangles+=1
+            if _type=="panel":
+                self.BuildingCellColors.InsertNextTuple3(self.BuildingColorLabels['Panel Facets'][0],self.BuildingColorLabels['Panel Facets'][1],self.BuildingColorLabels['Panel Facets'][2])
+            if _type=="wall":
+                self.BuildingCellColors.InsertNextTuple3(self.BuildingColorLabels['Wall Facets'][0],self.BuildingColorLabels['Wall Facets'][1],self.BuildingColorLabels['Wall Facets'][2])
+        else:
+            if _type=="panel":
+                self.BuildingCellColors.InsertNextTuple3(self.BuildingColorLabels['Panel Facets'][0],self.BuildingColorLabels['Panel Facets'][1],self.BuildingColorLabels['Panel Facets'][2])
+            if _type=="wall":
+                self.BuildingCellColors.InsertNextTuple3(self.BuildingColorLabels['Wall Facets'][0],self.BuildingColorLabels['Wall Facets'][1],self.BuildingColorLabels['Wall Facets'][2])
 
-    def insert_triangle(self,_triangle):
+
+
+    def insert_ground_triangle(self,_triangle):
         
-        VtkTriangleId=self.triangles.InsertNextCell(3)
-        self.triangles.InsertCellPoint(self.vertexId2VtkPointId[_triangle.vertices[0].id])
-        self.triangles.InsertCellPoint(self.vertexId2VtkPointId[_triangle.vertices[1].id])
-        self.triangles.InsertCellPoint(self.vertexId2VtkPointId[_triangle.vertices[2].id])
-        self.VtkTriangleId2Triangleid[VtkTriangleId]=_triangle.id
+        VtkTriangleId=self.ground_triangles.InsertNextCell(3)
+        self.ground_triangles.InsertCellPoint(self.g_vertexId2VtkPointId[_triangle.vertices[0].id])
+        self.ground_triangles.InsertCellPoint(self.g_vertexId2VtkPointId[_triangle.vertices[1].id])
+        self.ground_triangles.InsertCellPoint(self.g_vertexId2VtkPointId[_triangle.vertices[2].id])
+        self.g_VtkTriangleId2Triangleid[VtkTriangleId]=_triangle.id
         self.numberoftriangles+=1
         #print(self.numberoftriangles)
         #self.outfile.write(str(self.numberoftriangles)+"\n")
         
-    def insert_triangles(self, _triangles, _checked_items):
+    def insert_ground_triangles(self, _triangles, _checked_items):
         if _checked_items['Terrain']>0:
             for tri in _triangles:
-                self.insert_triangle(tri)    
+                self.insert_ground_triangle(tri)    
 
-    def insert_beamset(self,_beamset):
+    def insert_beamset(self,_beamset, _only_colors):
         for t in _beamset.beams:
-            self.insert_truss(t, "beam")
+            self.insert_truss(t, "beam", _only_colors)
     
-    def insert_column(self,_column):
+    def insert_column(self,_column, _only_colors):
         for t in _column.trusses:
-            self.insert_truss(t, "column")
+            self.insert_truss(t, "column", _only_colors)
 
-    def insert_baseset(self,_baseset):
+    def insert_baseset(self,_baseset,_only_colors):
         for t in _baseset.triangles:
-            self.insert_triangle(t)
+            self.insert_building_triangle(t,"panel",_only_colors)
 
-    def insert_wall(self,_wall):
+    def insert_wall(self,_wall,_only_colors):
         for t in _wall.triangles:
-            self.insert_triangle(t)
+            self.insert_building_triangle(t,"wall",_only_colors)
 
 
-    def insert_building(self,_building, _checked_items):
+    def insert_building(self,_building, _checked_items, _only_colors):
         if _checked_items['Panel Beams']>0:
             for b in _building.beamsets:
-                self.insert_beamset(b)
+                self.insert_beamset(b, _only_colors)
         if _checked_items['Wall Columns']>0:
             for c in _building.columns:
-                self.insert_column(c)
+                self.insert_column(c, _only_colors)
         if _checked_items['Panel Facets']>0:
             for bs in _building.basesets:
-                self.insert_baseset(bs)
+                self.insert_baseset(bs,_only_colors)
         if _checked_items['Wall Facets']>0:
             for w in _building.walls:
-                self.insert_wall(w)
+                self.insert_wall(w,_only_colors)
         #for bb in _building.beamsets:
         #self.insert_polygon_as_triangle(_building.beamsets[0])
 
-    def insert_buildings(self,_buildings,_checked_items):
+    def insert_buildings(self,_buildings,_checked_items, _only_colors=False):
         if _checked_items['Buildings']>0:    
             for b in _buildings.values():
-                self.insert_building(b,_checked_items)
+                self.insert_building(b,_checked_items, _only_colors)
             #print(b.name)
             
 
@@ -321,53 +397,58 @@ class vtk_interactor:
     def visualize(self):
         
         _wireframe=True
-        if(self.triangles.GetNumberOfCells()==0):
+        if(self.ground_triangles.GetNumberOfCells()==0 and self.building_triangles.GetNumberOfCells()==0):
             _wireframe=False
 
 
-        # start triangles.ss
-        self.PolyData.SetPoints(self.points)
-        
-        self.PolyData.SetPolys(self.triangles)
-        #self.PolyData.SetLines(self.trusses)
-        
-        self.PolyData.GetPointData().SetScalars(self.Colors)
-
-        # mapper
-        
-        self.mapper.SetInputData(self.PolyData)
-        
-        self.mapper.Update()
-        # actor
-        self.actor = vtk.vtkActor()
-        self.actor.SetMapper(self.mapper)
+        # START TRIANGLES OF BUILDINGS
+        self.PolyData_BuildingCells.SetPoints(self.building_points)
+        self.PolyData_BuildingCells.SetPolys(self.building_triangles)
+        #self.PolyData_BuildingCells.GetPointData().SetScalars(self.BuildingColors)
+        self.PolyData_BuildingCells.GetCellData().SetScalars(self.BuildingCellColors)
+        self.mapper_BuildingCells.SetInputData(self.PolyData_BuildingCells)
+        #self.mapper_BuildingCells.ScalarVisibilityOff()
+        self.mapper_BuildingCells.Update()
+        self.actor_BuildingCells = vtk.vtkActor()
+        self.actor_BuildingCells.SetMapper(self.mapper_BuildingCells)
         if not _wireframe:
-            self.actor.GetProperty().SetRepresentationToWireframe()
-        #end triangles
+            self.actor_BuildingCells.GetProperty().SetRepresentationToWireframe()
+        # START TRIANGLES OF BUILDINGS
+        print("actor of building triangles are finished")
+
+
+        # START TRIANGLES OF GROUND
+        self.PolyData_GroundCells.SetPoints(self.ground_points)
+        self.PolyData_GroundCells.SetPolys(self.ground_triangles)
+        self.PolyData_GroundCells.GetPointData().SetScalars(self.Colors)
+        self.mapper_GroundCells.SetInputData(self.PolyData_GroundCells)
+        self.mapper_GroundCells.Update()
+        self.actor_GroundCells = vtk.vtkActor()
+        self.actor_GroundCells.SetMapper(self.mapper_GroundCells)
+        if not _wireframe:
+            self.actor_GroundCells.GetProperty().SetRepresentationToWireframe()
+        # START TRIANGLES OF GROUND
+        print("actor of ground triangles are finished")
 
 
 
-        #start lines
-        self.PolyData_Lines.SetPoints(self.points)
+        #START BULDING LINES
+        self.PolyData_Lines.SetPoints(self.building_points)
         self.PolyData_Lines.SetLines(self.trusses)
-        
         self.PolyData_Lines.GetCellData().SetScalars(self.LineColors)
-        
-        # mapper
-        
         self.mapper_Lines.SetInputData(self.PolyData_Lines)
-        
         self.mapper_Lines.Update()
-        # actor
         self.actor_Lines = vtk.vtkActor()
         self.actor_Lines.SetMapper(self.mapper_Lines)
         if not _wireframe:
             self.actor_Lines.GetProperty().SetRepresentationToWireframe()
-        # end lines
+        #END BUILDING LINES
+        print("actor of building lines are finished")
 
 
         # assign actor to the renderer
-        self.ren.AddActor(self.actor)
+        self.ren.AddActor(self.actor_BuildingCells)
+        self.ren.AddActor(self.actor_GroundCells)
         self.ren.AddActor(self.actor_Lines)
         self.axes = vtk.vtkAxesActor()
 
@@ -394,3 +475,4 @@ class vtk_interactor:
         transform.Translate(self.origin[0],0.0, -1.0*self.origin[1])
         self.axes.SetUserTransform(transform)
         self.ren.AddActor(self.axes)
+        print("all actors are added to renderer")

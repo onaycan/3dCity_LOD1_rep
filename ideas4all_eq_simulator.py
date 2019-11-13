@@ -3,7 +3,7 @@ import sys
 import pprint
 import time
 from PyQt5 import QtWidgets, uic
-from PyQt5.QtWidgets import QTreeWidgetItem
+from PyQt5.QtWidgets import QTreeWidgetItem, QColorDialog
 from PyQt5 import Qt, QtCore, QtGui
 from PyQt5.QtCore import Qt as qut
 import sys
@@ -11,6 +11,40 @@ import city
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 import vtk
 import vtk_interaction
+
+
+class ColorButton(QtWidgets.QPushButton):
+    def __init__(self,_city_vtk, _objects_key, _buildings, _checked_items):
+        super().__init__()
+        self.setText('')
+        self.city_vtk=_city_vtk
+        self.objects_key=_objects_key
+        self.buildings=_buildings
+        self.checked_items=_checked_items
+
+    def on_click(self):
+        color = QColorDialog.getColor()
+        #print(color.getRgb())
+        self.setStyleSheet("background:rgb("+str(color.getRgb()[0])+","+str(color.getRgb()[1])+","+str(color.getRgb()[2])+")")
+        current_color=[color.getRgb()[0],color.getRgb()[1],color.getRgb()[2]]
+        if self.objects_key=='Panel Beams' or self.objects_key=='Wall Columns':
+            self.city_vtk.LineColorLabels[self.objects_key]=current_color
+            self.city_vtk.LineColors = vtk.vtkUnsignedCharArray()
+            self.city_vtk.LineColors.SetNumberOfComponents(3)
+            self.city_vtk.LineColors.SetName("LineColors")
+            self.city_vtk.insert_buildings(self.buildings,self.checked_items,_only_colors=True)
+            self.city_vtk.PolyData_Lines = vtk.vtkPolyData()
+            self.city_vtk.visualize()
+            city_vtk.renWin.Render()
+        else:
+            self.city_vtk.BuildingColorLabels[self.objects_key]=current_color
+            self.city_vtk.BuildingCellColors = vtk.vtkUnsignedCharArray()
+            self.city_vtk.BuildingCellColors.SetNumberOfComponents(3)
+            self.city_vtk.BuildingCellColors.SetName("BuildingCellColors")
+            self.city_vtk.insert_buildings(self.buildings,self.checked_items,_only_colors=True)
+            self.city_vtk.PolyData_BuildingCells = vtk.vtkPolyData()
+            self.city_vtk.visualize()
+            city_vtk.renWin.Render()
 
 
 # overwrite combobox, so that no duplicates are allowed. 
@@ -48,15 +82,18 @@ class Ui(QtWidgets.QMainWindow):
         print(checked_items)
 
         
-        self.city_vtk.triangles = vtk.vtkCellArray()
+        self.city_vtk.ground_triangles = vtk.vtkCellArray()
+        self.city_vtk.building_triangles = vtk.vtkCellArray()
         self.city_vtk.trusses = vtk.vtkCellArray()
         self.city_vtk.LineColors = vtk.vtkUnsignedCharArray()
         self.city_vtk.LineColors.SetNumberOfComponents(3)
         self.city_vtk.LineColors.SetName("LineColors")
         self.city_vtk.insert_buildings(self.buildings,checked_items)
-        self.city_vtk.insert_triangles(self.ground_triangles.values(),checked_items)
+        self.city_vtk.insert_ground_triangles(self.ground_triangles.values(),checked_items)
         #refresh is necessary, otherwise it blows! apperantly set data appends sometimes
-        self.city_vtk.PolyData = vtk.vtkPolyData()
+        self.city_vtk.PolyData_BuildingCells = vtk.vtkPolyData()
+        self.city_vtk.PolyData_GroundCells = vtk.vtkPolyData()
+        self.city_vtk.PolyData_Lines = vtk.vtkPolyData()
         self.city_vtk.visualize()
         city_vtk.renWin.Render()
         self.checked_items=checked_items
@@ -160,7 +197,7 @@ class Ui(QtWidgets.QMainWindow):
         self.vertices=vertices
         self.ground_triangles=ground_triangles
         tw    = self.treeWidget
-        tw.setHeaderLabels(['City Item', 'Quantity [-]', 'Remark'])
+        tw.setHeaderLabels(['City Item', 'Quantity [-]', 'Remark', 'Color'])
         tw.setAlternatingRowColors(True)
 
         bb = QtWidgets.QTreeWidgetItem(tw, ['Building Blocks', str(len(building_blocks.keys())), '# of Building Blocks'])
@@ -191,9 +228,19 @@ class Ui(QtWidgets.QMainWindow):
         b1.setFlags(b1.flags() | QtCore.Qt.ItemIsTristate | QtCore.Qt.ItemIsUserCheckable)
         #b1.setCheckState(0, QtCore.Qt.Checked)
         b11=QtWidgets.QTreeWidgetItem(b1, ['Panel Facets', str(panltriangles), '# of triangles on Panels'])
+        self.PanelFacetPushbutton=ColorButton(self.city_vtk,'Panel Facets', self.buildings, self.checked_items)
+        self.PanelFacetPushbutton.setStyleSheet("background:rgb(0,100,150)")
+        self.PanelFacetPushbutton.clicked.connect(self.PanelFacetPushbutton.on_click)
+        tw.setItemWidget(b11,3,self.PanelFacetPushbutton)
         b11.setFlags(b1.flags() | QtCore.Qt.ItemIsUserCheckable)
         b11.setCheckState(0, QtCore.Qt.Checked)
+
+
         b12=QtWidgets.QTreeWidgetItem(b1, ['Panel Beams', str(len(beams.keys())), '# of Beams around Panels'])
+        self.PanelBeamPushbutton=ColorButton(self.city_vtk,'Panel Beams', self.buildings, self.checked_items)
+        self.PanelBeamPushbutton.setStyleSheet("background:rgb(0,0,150)")
+        self.PanelBeamPushbutton.clicked.connect(self.PanelBeamPushbutton.on_click)
+        tw.setItemWidget(b12,3,self.PanelBeamPushbutton)
         b12.setFlags(b1.flags() | QtCore.Qt.ItemIsUserCheckable)
         b12.setCheckState(0, QtCore.Qt.Checked)
 
@@ -202,9 +249,20 @@ class Ui(QtWidgets.QMainWindow):
         b2.setFlags(b2.flags() | QtCore.Qt.ItemIsTristate | QtCore.Qt.ItemIsUserCheckable)
         #b1.setCheckState(0, QtCore.Qt.Checked)
         b21=QtWidgets.QTreeWidgetItem(b2, ['Wall Facets', str(walltriangles), '# of triangles on Walls'])
+        self.WallFacetPushbutton=ColorButton(self.city_vtk, 'Wall Facets', self.buildings, self.checked_items)
+        self.WallFacetPushbutton.setStyleSheet("background:rgb(0,150,100)")
+        self.WallFacetPushbutton.clicked.connect(self.WallFacetPushbutton.on_click)
+        tw.setItemWidget(b21,3,self.WallFacetPushbutton)
         b21.setFlags(b2.flags() | QtCore.Qt.ItemIsUserCheckable)
         b21.setCheckState(0, QtCore.Qt.Checked)
+
+
+
         b22=QtWidgets.QTreeWidgetItem(b2, ['Wall Columns', str(columns), '# of Columns along Walls'])
+        self.WallColumnPushbutton=ColorButton(self.city_vtk, 'Wall Columns', self.buildings, self.checked_items)
+        self.WallColumnPushbutton.setStyleSheet("background:rgb(0,150,0)")
+        self.WallColumnPushbutton.clicked.connect(self.WallColumnPushbutton.on_click)
+        tw.setItemWidget(b22,3,self.WallColumnPushbutton)
         b22.setFlags(b2.flags() | QtCore.Qt.ItemIsUserCheckable)
         b22.setCheckState(0, QtCore.Qt.Checked)
 
@@ -287,6 +345,7 @@ if __name__=='__main__':
 
     city_vtk.visualize()
     city_vtk.renWin.Render()
+    print("render window is rendered")
     city_vtk.iren.Initialize()
     city_vtk.iren.Start()
     edit=window.textEdit_Log
