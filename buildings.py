@@ -289,7 +289,6 @@ class building:
                 for v in range(len(self.beamsets[l].vertices)-1):
                     ver=self.beamsets[l].vertices[v]
                     points=np.vstack([points,[ver.coordsX[0],ver.coordsX[1]]])
-                    #points=np.vstack([points,[ver.coordsX[0],ver.coordsX[2]]])
                     
                     ground_vertices["g"+str(coun)]=ver
                     current_baseset.append_vertex(ver)

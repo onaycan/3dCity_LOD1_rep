@@ -74,7 +74,7 @@ def define_city(vtkWidget):
 
 
     start_time = time.time()
-    last_vertex_id=max([int(v) for v in vertices.keys()])
+    last_vertex_id=max([int(v) for v in vertices.keys() if "#" not in v])
     numberofbuildingswithheight=0
     for b in buildings.values():
         numberofbuildingswithheight,last_vertex_id=b.build_building(beamsets,vertices,trusses,beams,numberofbuildingswithheight,last_vertex_id, origin, all_triangles)

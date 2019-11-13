@@ -1,4 +1,5 @@
 from geopy.distance import geodesic
+import math
 
 class vertex:
     def __init__(self,_id,_coords_lat_long):
@@ -23,6 +24,18 @@ class vertex:
         y_origin=(_origin[0],self.coords_lat_long[1])
         y_target=(self.coords_lat_long[0],self.coords_lat_long[1])
         self.coordsX[1]=geodesic(y_origin, y_target).meters      
+
+    def dist_2_another_vertex_in_m(self, _origin):
+
+        x_origin=(self.coords_lat_long[0],_origin[1])
+        x_target=(self.coords_lat_long[0],self.coords_lat_long[1])
+        retx=geodesic(x_origin, x_target).meters        
+
+        y_origin=(_origin[0],self.coords_lat_long[1])
+        y_target=(self.coords_lat_long[0],self.coords_lat_long[1])
+        rety=geodesic(y_origin, y_target).meters      
+
+        return math.sqrt(retx*retx+rety*rety)
 
     def convert_CoordsX2FemCoordsX(self):
         old_CoordsX_x=self.coordsX[0]
