@@ -47,7 +47,7 @@ class ColorButton(QtWidgets.QPushButton):
         #print(color.getRgb())
         self.setStyleSheet("background:rgb("+str(color.getRgb()[0])+","+str(color.getRgb()[1])+","+str(color.getRgb()[2])+")")
         current_color=[color.getRgb()[0],color.getRgb()[1],color.getRgb()[2]]
-        if self.objects_key=='Panel Beams' or self.objects_key=='Wall Columns':
+        if self.objects_key=='Panel Beams' or self.objects_key=='Wall Columns' or self.objects_key=='Panel Girders':
             self.city_vtk.LineColorLabels[self.objects_key]=current_color
             self.city_vtk.LineColors = vtk.vtkUnsignedCharArray()
             self.city_vtk.LineColors.SetNumberOfComponents(3)
@@ -77,10 +77,10 @@ class Ui(QtWidgets.QMainWindow):
         self.adjustSize()
         uic.loadUi('./gui_designer/ideas4all_city_simulator_gui.ui', self)
         self.show()
-        self.checked_items={'Building Blocks': 2, 'Buildings': 2, 'Panels': 2, 'Panel Facets': 2, 'Panel Beams': 2, 'Walls': 2, 'Wall Facets': 2, "Wall Columns" : 2, "Terrain" :2}
+        self.checked_items={'Building Blocks': 2, 'Buildings': 2, 'Panels': 2, 'Panel Facets': 2, 'Panel Beams': 2, 'Panel Girders': 2, 'Walls': 2, 'Wall Facets': 2, "Wall Columns" : 2, "Terrain" :2}
 
     def handleItemChanged(self, item, column):
-        checked_items={'Building Blocks': 0, 'Buildings': 0, 'Panels': 0, 'Panel Facets': 0, 'Panel Beams': 0, 'Walls': 0, 'Wall Facets': 0, "Wall Columns" : 0, "Terrain" : 0}
+        checked_items={'Building Blocks': 0, 'Buildings': 0, 'Panels': 0, 'Panel Facets': 0, 'Panel Beams': 0, 'Panel Girders': 0, 'Walls': 0, 'Wall Facets': 0, "Wall Columns" : 0, "Terrain" : 0}
         if item.checkState(column) == QtCore.Qt.Checked:
             print('Item Checked')
         elif item.checkState(column) == QtCore.Qt.Unchecked:
@@ -288,14 +288,23 @@ class Ui(QtWidgets.QMainWindow):
         b11.setFlags(b1.flags() | QtCore.Qt.ItemIsUserCheckable)
         b11.setCheckState(0, QtCore.Qt.Checked)
 
-
-        b12=QtWidgets.QTreeWidgetItem(b1, ['Panel Beams', str(len(beams.keys())), '# of Beams around Panels'])
+        bms=[b for b in beams.values() if b._type=="beam"]
+        b12=QtWidgets.QTreeWidgetItem(b1, ['Panel Beams', str(len(bms)), '# of Beams around Panels'])
         self.PanelBeamPushbutton=ColorButton(self.city_vtk,'Panel Beams', self.buildings, self.checked_items)
         self.PanelBeamPushbutton.setStyleSheet("background:rgb(0,0,150)")
         self.PanelBeamPushbutton.clicked.connect(self.PanelBeamPushbutton.on_click)
         tw.setItemWidget(b12,3,self.PanelBeamPushbutton)
         b12.setFlags(b1.flags() | QtCore.Qt.ItemIsUserCheckable)
         b12.setCheckState(0, QtCore.Qt.Checked)
+
+        grds=[b for b in beams.values() if b._type=="girder"]
+        b13=QtWidgets.QTreeWidgetItem(b1, ['Panel Girders', str(len(grds)), '# of Girders around Panels'])
+        self.PanelGirderPushbutton=ColorButton(self.city_vtk,'Panel Girders', self.buildings, self.checked_items)
+        self.PanelGirderPushbutton.setStyleSheet("background:rgb(150,0,150)")
+        self.PanelGirderPushbutton.clicked.connect(self.PanelGirderPushbutton.on_click)
+        tw.setItemWidget(b13,3,self.PanelGirderPushbutton)
+        b13.setFlags(b1.flags() | QtCore.Qt.ItemIsUserCheckable)
+        b13.setCheckState(0, QtCore.Qt.Checked)
 
 
         b2=QtWidgets.QTreeWidgetItem(b, ['Walls', str(columns/2), '# of Walls'])
@@ -404,7 +413,7 @@ if __name__=='__main__':
     city_vtk.iren.Initialize()
     city_vtk.iren.Start()
     edit=window.textEdit_Log
-    sys.stdout = OutLog( edit, sys.stdout)
+    #sys.stdout = OutLog( edit, sys.stdout)
 
     app.exec_()
     

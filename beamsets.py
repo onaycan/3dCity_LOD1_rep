@@ -45,7 +45,7 @@ class beamset:
         for ndid in range(len(copied_vertex_ids)-1):
             nd_tip=copied_vertex_ids[ndid]
             nd_tail=copied_vertex_ids[ndid+1]
-            _beams[self.id+delim+nd_tip]=beams.beam(self.id+delim+nd_tip,[_vertices[nd_tip],_vertices[nd_tail]])
+            _beams[self.id+delim+nd_tip]=beams.beam(self.id+delim+nd_tip,[_vertices[nd_tip],_vertices[nd_tail]],self.beams[ndid]._type)
             return_beamset.append_beam(_beams[self.id+delim+nd_tip])
         
         return return_beamset, _last_vertex_id

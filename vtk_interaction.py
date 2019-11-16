@@ -237,6 +237,7 @@ class vtk_interactor:
 
         self.LineColorLabels={}
         self.LineColorLabels['Panel Beams']=[0,0,150]
+        self.LineColorLabels['Panel Girders']=[100,0,150]
         self.LineColorLabels['Wall Columns']=[0,150,0]
 
         self.BuildingColorLabels={}
@@ -297,11 +298,15 @@ class vtk_interactor:
 
             if _type=="beam":
                 self.LineColors.InsertNextTuple3(self.LineColorLabels['Panel Beams'][0],self.LineColorLabels['Panel Beams'][1],self.LineColorLabels['Panel Beams'][2])
+            if _type=="girder":
+                self.LineColors.InsertNextTuple3(self.LineColorLabels['Panel Girders'][0],self.LineColorLabels['Panel Girders'][1],self.LineColorLabels['Panel Girders'][2])
             if _type=="column":
                 self.LineColors.InsertNextTuple3(self.LineColorLabels['Wall Columns'][0],self.LineColorLabels['Wall Columns'][1],self.LineColorLabels['Wall Columns'][2])
         else:
             if _type=="beam":
                 self.LineColors.InsertNextTuple3(self.LineColorLabels['Panel Beams'][0],self.LineColorLabels['Panel Beams'][1],self.LineColorLabels['Panel Beams'][2])
+            if _type=="girder":
+                self.LineColors.InsertNextTuple3(self.LineColorLabels['Panel Girders'][0],self.LineColorLabels['Panel Girders'][1],self.LineColorLabels['Panel Girders'][2])
             if _type=="column":
                 self.LineColors.InsertNextTuple3(self.LineColorLabels['Wall Columns'][0],self.LineColorLabels['Wall Columns'][1],self.LineColorLabels['Wall Columns'][2])
         #print(_truss.vertices[0].id)
@@ -353,7 +358,7 @@ class vtk_interactor:
 
     def insert_beamset(self,_beamset, _only_colors):
         for t in _beamset.beams:
-            self.insert_truss(t, "beam", _only_colors)
+            self.insert_truss(t, t._type, _only_colors)
     
     def insert_column(self,_column, _only_colors):
         for t in _column.trusses:

@@ -3,12 +3,13 @@ import math
 
 
 class beam:
-    def __init__(self,_id,_vertices):
+    def __init__(self,_id,_vertices, _type):
         self.id=_id
         self.vertices=[]
         self.vertices.append(_vertices[0])
         self.vertices.append(_vertices[1])
         self.dir=[]
+        self._type=_type
         for i in range(3):
             self.dir.append(self.vertices[1].coordsX[i]-self.vertices[0].coordsX[i])
     #def dot_product(self, _anytruss):
