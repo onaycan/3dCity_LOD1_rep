@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 
 def parse_objs(osmfile,_vertices, _beamsets, _beams, _buildings,_origin):
     #osmlines=osmfile.read()
-    column_interval=3
+    column_interval=8
     delim="##"
     valid_buildings=["building","building:part"]
     tree = ET.parse(osmfile)

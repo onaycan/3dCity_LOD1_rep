@@ -264,6 +264,7 @@ class building:
                         numberofvertices=len(self.beamsets[l-1].vertices)
                         current_vertices=[self.beamsets[l-1].vertices[v],self.beamsets[l-1].vertices[int((v+1)%numberofvertices)],self.beamsets[l].vertices[int((v+1)%numberofvertices)]]
                         current_triangle=triangles.triangle(self.name+delim+str(l)+delim+str(self.beamsets[l-1].vertices[v].id+delim+"0"),current_vertices,triangle_counter)
+                        _all_triangles[triangle_counter]=current_triangle
                         triangle_counter+=1
                         current_wall.append_triangle(current_triangle)
                         current_wall.append_vertex(self.beamsets[l-1].vertices[1])
@@ -272,6 +273,7 @@ class building:
 
                         current_vertices=[self.beamsets[l-1].vertices[v],self.beamsets[l].vertices[v],self.beamsets[l].vertices[int((v+1)%numberofvertices)]]
                         current_triangle=triangles.triangle(self.name+delim+str(l)+delim+str(self.beamsets[l-1].vertices[v].id+delim+"1"),current_vertices,triangle_counter)
+                        _all_triangles[triangle_counter]=current_triangle
                         triangle_counter+=1
                         current_wall.append_triangle(current_triangle)
                         current_wall.append_vertex(self.beamsets[l-1].vertices[1])
@@ -301,6 +303,8 @@ class building:
                 if ret:
                     for tri in tris:
                         ground_triangles["t"+str(coun)]=triangles.triangle("t"+str(coun),[ground_vertices["g"+str(tri[0])],ground_vertices["g"+str(tri[1])],ground_vertices["g"+str(tri[2])]],triangle_counter)
+                        _all_triangles[triangle_counter]=ground_triangles["t"+str(coun)]
+                        
                         triangle_counter+=1
                         current_baseset.append_triangle(ground_triangles["t"+str(coun)])
                         coun+=1
@@ -321,6 +325,7 @@ class building:
                     if ret:
                         for tri in tris:
                             ground_triangles["t"+str(coun)]=triangles.triangle("t"+str(coun),[ground_vertices["g"+str(tri[0])],ground_vertices["g"+str(tri[1])],ground_vertices["g"+str(tri[2])]],triangle_counter)
+                            _all_triangles[triangle_counter]=ground_triangles["t"+str(coun)]
                             triangle_counter+=1
                             current_baseset.append_triangle(ground_triangles["t"+str(coun)])
                             coun+=1

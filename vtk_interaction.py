@@ -5,6 +5,13 @@ import columns
 import matplotlib
 import math
 
+
+def mkVtkIdList(it):
+    vil = vtk.vtkIdList()
+    for i in it:
+        vil.InsertNextId(int(i))
+    return vil
+
 def rgb(minimum, maximum, value):
     minimum, maximum = float(minimum), float(maximum)
     ratio = 2 * (value-minimum) / (maximum - minimum)
@@ -52,20 +59,25 @@ class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
         
         if self.spressed:
             if self.window.buildings_pushbutton.isChecked() or self.window.buildingBlocks_pushbutton.isChecked():
+            
+                print("number of building triangles: "+str(self.vtkinteractor.building_triangles.GetNumberOfCells()))
+                
                 self.spressed=False
                 clickPos = self.GetInteractor().GetEventPosition()
                 picker = vtk.vtkCellPicker()
-                #picker.Pick(clickPos[0], clickPos[1], 0, self.vtkinteractor.ren)
-                picker.Pick(clickPos[0], clickPos[1], 0, self.GetDefaultRenderer())
+                picker.Pick(clickPos[0], clickPos[1], 0, self.vtkinteractor.ren)
+                #picker.Pick(clickPos[0], clickPos[1], 0, self.GetDefaultRenderer())
 
-                #cellids=picker.GetSubId()
+                #cellid=picker.GetSubId()
                 cellid=picker.GetCellId()
+                print("selected cell id: "+str(cellid))
+                #cellid=picker.GetFlatBlockIndex()
 
                 print("selected cell id: "+str(cellid))
 
                 numberofids=self.vtkinteractor.PolyData_BuildingCells.GetCell(cellid).GetPointIds().GetNumberOfIds()
                 pointids=[]
-                
+                facetids=[]
 
                 sets=[]
                 notground=True
@@ -78,6 +90,7 @@ class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
 
                 if notground:
                     self.building_vertices=set()
+                    self.building_facets=set()
 
                     common_home=[set.intersection(*sets)][0] #in fact this is buggy.but you can not choose really a side wall or bottom triangle with common edge without being able to see it 
                     common_home=list(common_home)[0]
@@ -85,6 +98,7 @@ class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
                     self.window.comboboxes['buildings'].setCurrentIndex(self.window.comboboxes['buildings'].count() - 1)
 
                     self.get_building_vertices(common_home)
+                    self.get_building_facets(common_home)
 
 
                     if self.window.buildingBlocks_pushbutton.isChecked():
@@ -93,9 +107,10 @@ class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
                         for n in self.buildings[common_home].neighbours:
                             self.window.comboboxes['buildings'].addItem(n)
                             self.window.comboboxes['buildings'].setCurrentIndex(self.window.comboboxes['buildings'].count() - 1)
-                            for bb in self.buildings[n].beamsets:
-                                for v in bb.vertices:
-                                    self.building_vertices.add(v.id)
+                            self.get_building_facets(n)
+                            #for bb in self.buildings[n].beamsets:
+                            #    for v in bb.vertices:
+                            #        self.building_vertices.add(v.id)
 
                     self.window.fill_table_widget()
 
@@ -103,19 +118,27 @@ class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
                     for pid in self.building_vertices:
                         pointids.append(self.vtkinteractor.b_vertexId2VtkPointId[pid])
 
+                    for fid in self.building_facets:
+                        facetids.append(self.vtkinteractor.b_TriangleId2VtkTriangleid[fid])
+
+
 
 
                     print("points of selected cell: "+ str(pointids))
-                    for p in pointids:
-                        self.vtkinteractor.BuildingColors.SetTuple3(p,255,0,0)
+                    #for p in pointids:
+                    #    self.vtkinteractor.BuildingColors.SetTuple3(p,255,0,0)
+                    for f in facetids:
+                        print("cell to be colored: "+str(f))
+                        self.vtkinteractor.BuildingCellColors.SetTuple3(int(f),255,0,0)
                     print(self.vtkinteractor.building_triangles.GetNumberOfCells())
+                    self.vtkinteractor.PolyData_BuildingCells.GetCellData().SetScalars(self.vtkinteractor.BuildingCellColors)
                     #this update kills! 
                     #self.vtkinteractor.mapper_BuildingCells.Update()
-                    self.vtkinteractor.PolyData_BuildingCells.GetPointData().SetScalars(self.vtkinteractor.BuildingColors)
+                    #self.vtkinteractor.PolyData_BuildingCells.GetPointData().SetScalars(self.vtkinteractor.BuildingColors)
                     self.vtkinteractor.mapper_BuildingCells.ScalarVisibilityOff()
                     self.vtkinteractor.mapper_BuildingCells.ScalarVisibilityOn()
                     self.vtkinteractor.renWin.Render()
-        
+                
         self.OnLeftButtonDown()
         return 
     
@@ -126,6 +149,15 @@ class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
             for v in self.buildings[b].beamsets[bb].vertices:
                 self.building_vertices.add(v.id)
 
+    def get_building_facets(self,_home):
+        b=_home
+        print("home is selected: "+str(b))
+        for bs in range(0,len(self.buildings[b].basesets)):
+            for f in self.buildings[b].basesets[bs].triangles:
+                self.building_facets.add(f.id)
+        for w in range(0,len(self.buildings[b].walls)):
+            for f in self.buildings[b].walls[w].triangles:
+                self.building_facets.add(f.id)
 
 
 class vtk_interactor:
@@ -135,11 +167,12 @@ class vtk_interactor:
         self.origin=_origin
         # create a rendering window and renderer
         self.ren = vtk.vtkRenderer()
+        self.bren = vtk.vtkRenderer()
         #vtkWidget.GetRenderWindow().AddRenderer(self.ren)
         #self.renWin = vtk.vtkRenderWindow()
         self.renWin=vtkWidget.GetRenderWindow()
         self.renWin.AddRenderer(self.ren)
-
+        
         # create a renderwindowinteractor
         #self.iren = vtk.vtkRenderWindowInteractor()
         self.iren=vtkWidget.GetRenderWindow().GetInteractor()
@@ -195,7 +228,11 @@ class vtk_interactor:
 
         self.b_VtkTriangleId2Triangleid={} 
         self.g_VtkTriangleId2Triangleid={}
+
+        self.b_TriangleId2VtkTriangleid={} 
+        self.g_TriangleId2VtkTriangleid={}
         
+
         self.LineColorLabels={}
         self.LineColorLabels['Panel Beams']=[0,0,150]
         self.LineColorLabels['Wall Columns']=[0,150,0]
@@ -278,8 +315,12 @@ class vtk_interactor:
             self.building_triangles.InsertCellPoint(self.b_vertexId2VtkPointId[_triangle.vertices[0].id])
             self.building_triangles.InsertCellPoint(self.b_vertexId2VtkPointId[_triangle.vertices[1].id])
             self.building_triangles.InsertCellPoint(self.b_vertexId2VtkPointId[_triangle.vertices[2].id])
+            
             self.b_VtkTriangleId2Triangleid[VtkTriangleId]=_triangle.id
-            self.numberoftriangles+=1
+
+            self.b_TriangleId2VtkTriangleid[_triangle.id]=VtkTriangleId
+            #self.outfile.write(str(_triangle.id)+"\t"+str(VtkTriangleId)+"\n")
+            #self.numberoftriangles+=1
             if _type=="panel":
                 self.BuildingCellColors.InsertNextTuple3(self.BuildingColorLabels['Panel Facets'][0],self.BuildingColorLabels['Panel Facets'][1],self.BuildingColorLabels['Panel Facets'][2])
             if _type=="wall":
@@ -299,7 +340,7 @@ class vtk_interactor:
         self.ground_triangles.InsertCellPoint(self.g_vertexId2VtkPointId[_triangle.vertices[1].id])
         self.ground_triangles.InsertCellPoint(self.g_vertexId2VtkPointId[_triangle.vertices[2].id])
         self.g_VtkTriangleId2Triangleid[VtkTriangleId]=_triangle.id
-        self.numberoftriangles+=1
+        #self.numberoftriangles+=1
         #print(self.numberoftriangles)
         #self.outfile.write(str(self.numberoftriangles)+"\n")
         
@@ -407,7 +448,7 @@ class vtk_interactor:
         #self.PolyData_BuildingCells.GetPointData().SetScalars(self.BuildingColors)
         self.PolyData_BuildingCells.GetCellData().SetScalars(self.BuildingCellColors)
         self.mapper_BuildingCells.SetInputData(self.PolyData_BuildingCells)
-        #self.mapper_BuildingCells.ScalarVisibilityOff()
+        #self.mapper_BuildingCells.ScalarVisibilityOn()
         self.mapper_BuildingCells.Update()
         self.actor_BuildingCells = vtk.vtkActor()
         self.actor_BuildingCells.SetMapper(self.mapper_BuildingCells)

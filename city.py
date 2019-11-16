@@ -27,7 +27,9 @@ def define_city(vtkWidget):
     all_triangles={}
     origin,ground_vertices,ground_triangles=ground.ground_geometry()
     print("origin: "+str(origin))
-    all_triangles=ground_triangles
+
+    for gi,gv in ground_triangles.items():
+        all_triangles[gi]=gv
 
     debugfile=open("debugfile.inp", 'w')
 

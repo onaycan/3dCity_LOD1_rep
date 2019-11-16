@@ -32,6 +32,7 @@ class ColorButton(QtWidgets.QPushButton):
             self.city_vtk.LineColors = vtk.vtkUnsignedCharArray()
             self.city_vtk.LineColors.SetNumberOfComponents(3)
             self.city_vtk.LineColors.SetName("LineColors")
+            
             self.city_vtk.insert_buildings(self.buildings,self.checked_items,_only_colors=True)
             self.city_vtk.PolyData_Lines = vtk.vtkPolyData()
             self.city_vtk.visualize()
@@ -43,6 +44,7 @@ class ColorButton(QtWidgets.QPushButton):
             self.city_vtk.BuildingCellColors.SetName("BuildingCellColors")
             self.city_vtk.insert_buildings(self.buildings,self.checked_items,_only_colors=True)
             self.city_vtk.PolyData_BuildingCells = vtk.vtkPolyData()
+            
             self.city_vtk.visualize()
             city_vtk.renWin.Render()
 
