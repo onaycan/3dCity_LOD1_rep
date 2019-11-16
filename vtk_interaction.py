@@ -94,25 +94,25 @@ class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
 
                     common_home=[set.intersection(*sets)][0] #in fact this is buggy.but you can not choose really a side wall or bottom triangle with common edge without being able to see it 
                     common_home=list(common_home)[0]
-                    self.window.comboboxes['buildings'].addItem(common_home)
-                    self.window.comboboxes['buildings'].setCurrentIndex(self.window.comboboxes['buildings'].count() - 1)
+                    self.window.comboboxes['Buildings'].addItem(common_home)
+                    self.window.comboboxes['Buildings'].setCurrentIndex(self.window.comboboxes['Buildings'].count() - 1)
 
                     self.get_building_vertices(common_home)
                     self.get_building_facets(common_home)
 
 
                     if self.window.buildingBlocks_pushbutton.isChecked():
-                        self.window.comboboxes['building blocks'].addItem(self.buildings[common_home].buildingblock_id)
-                        self.window.comboboxes['building blocks'].setCurrentIndex(self.window.comboboxes['building blocks'].count() - 1)
+                        self.window.comboboxes['Building Blocks'].addItem(self.buildings[common_home].buildingblock_id)
+                        self.window.comboboxes['Building Blocks'].setCurrentIndex(self.window.comboboxes['Building Blocks'].count() - 1)
                         for n in self.buildings[common_home].neighbours:
-                            self.window.comboboxes['buildings'].addItem(n)
-                            self.window.comboboxes['buildings'].setCurrentIndex(self.window.comboboxes['buildings'].count() - 1)
+                            self.window.comboboxes['Buildings'].addItem(n)
+                            self.window.comboboxes['Buildings'].setCurrentIndex(self.window.comboboxes['Buildings'].count() - 1)
                             self.get_building_facets(n)
                             #for bb in self.buildings[n].beamsets:
                             #    for v in bb.vertices:
                             #        self.building_vertices.add(v.id)
 
-                    self.window.fill_table_widget()
+                    #self.window.fill_table_widget()
 
 
                     for pid in self.building_vertices:
@@ -128,9 +128,10 @@ class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
                     #for p in pointids:
                     #    self.vtkinteractor.BuildingColors.SetTuple3(p,255,0,0)
                     for f in facetids:
-                        print("cell to be colored: "+str(f))
+                        #print("cell to be colored: "+str(f))
                         self.vtkinteractor.BuildingCellColors.SetTuple3(int(f),255,0,0)
-                    print(self.vtkinteractor.building_triangles.GetNumberOfCells())
+                        
+                    #print(self.vtkinteractor.building_triangles.GetNumberOfCells())
                     self.vtkinteractor.PolyData_BuildingCells.GetCellData().SetScalars(self.vtkinteractor.BuildingCellColors)
                     #this update kills! 
                     #self.vtkinteractor.mapper_BuildingCells.Update()

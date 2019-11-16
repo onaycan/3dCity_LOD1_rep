@@ -135,28 +135,51 @@ class Ui(QtWidgets.QMainWindow):
             self.buildings_pushbutton.setChecked(False)
         
     def fill_table_widget(self):
-        attr = ['building blocks','buildings', 'beamsets', 'columns', 'basesets', 'walls', 'vertices']
-        selected_buildings=[self.comboboxes['buildings'].itemText(i) for i in range(self.comboboxes['buildings'].count())]
+        attr = ['Building Blocks','Buildings', 'Panel Facets', 'Panel Beams', 'Wall Facets', 'Wall Columns', 'Vertices']
+        selected_buildings=[self.comboboxes['Buildings'].itemText(i) for i in range(self.comboboxes['Buildings'].count())]
 
         for s in selected_buildings:
             if s!="None":
                 current_building=self.buildings[s]
-                for bs in current_building.beamsets:
-                    self.comboboxes['beamsets'].addItem(bs.id)
-                    self.comboboxes['beamsets'].setCurrentIndex(self.comboboxes['beamsets'].count() - 1)
-                    for v in bs.vertices:
-                        self.comboboxes['vertices'].addItem(v.id)
-                        self.comboboxes['vertices'].setCurrentIndex(self.comboboxes['vertices'].count() - 1)
+                for bs in current_building.basesets:
+                    for f in bs.triangles:    
+                        self.comboboxes['Panel Facets'].addItem(str(f.id))
+                        self.comboboxes['Panel Facets'].setCurrentIndex(self.comboboxes['Panel Facets'].count() - 1)
+                
+                for bm in current_building.beamsets:
+                    for b in bm.beams:    
+                        self.comboboxes['Panel Beams'].addItem(str(b.id))
+                        self.comboboxes['Panel Beams'].setCurrentIndex(self.comboboxes['Panel Beams'].count() - 1)
+                    for v in bm.vertices:
+                        self.comboboxes['Vertices'].addItem(str(v.id))
+                        self.comboboxes['Vertices'].setCurrentIndex(self.comboboxes['Vertices'].count() - 1)
+
+                for w in current_building.walls:
+                    for f in w.triangles:
+                        self.comboboxes['Wall Facets'].addItem(str(f.id))
+                        self.comboboxes['Wall Facets'].setCurrentIndex(self.comboboxes['Wall Facets'].count() - 1)
 
                 for c in current_building.columns:
-                    self.comboboxes['columns'].addItem(c.id)
-                    self.comboboxes['columns'].setCurrentIndex(self.comboboxes['columns'].count() - 1)
-                for bas in current_building.basesets:
-                    self.comboboxes['basesets'].addItem(bas.id)
-                    self.comboboxes['basesets'].setCurrentIndex(self.comboboxes['basesets'].count() - 1)
-                for w in current_building.walls:
-                    self.comboboxes['walls'].addItem(w.id)
-                    self.comboboxes['walls'].setCurrentIndex(self.comboboxes['walls'].count() - 1)
+                    self.comboboxes['Wall Columns'].addItem(str(c.id))
+                    self.comboboxes['Wall Columns'].setCurrentIndex(self.comboboxes['Wall Columns'].count() - 1)
+
+
+                #for bs in current_building.beamsets:
+                #    self.comboboxes['beamsets'].addItem(bs.id)
+                #    self.comboboxes['beamsets'].setCurrentIndex(self.comboboxes['beamsets'].count() - 1)
+                #    for v in bs.vertices:
+                #        self.comboboxes['vertices'].addItem(v.id)
+                #        self.comboboxes['vertices'].setCurrentIndex(self.comboboxes['vertices'].count() - 1)
+
+                #for c in current_building.columns:
+                #    self.comboboxes['columns'].addItem(c.id)
+                #    self.comboboxes['columns'].setCurrentIndex(self.comboboxes['columns'].count() - 1)
+                #for bas in current_building.basesets:
+                #    self.comboboxes['basesets'].addItem(bas.id)
+                #    self.comboboxes['basesets'].setCurrentIndex(self.comboboxes['basesets'].count() - 1)
+                #for w in current_building.walls:
+                #    self.comboboxes['walls'].addItem(w.id)
+                #    self.comboboxes['walls'].setCurrentIndex(self.comboboxes['walls'].count() - 1)
             i=0
             for j in attr:
                 number=str(self.comboboxes[j].count()-1)
@@ -166,7 +189,7 @@ class Ui(QtWidgets.QMainWindow):
 
 
     def show_table_widget(self, triggered=False):
-        attr = ['building blocks','buildings', 'beamsets', 'columns', 'basesets', 'walls', 'vertices']
+        attr = ['Building Blocks','Buildings', 'Panel Facets', 'Panel Beams', 'Wall Facets', 'Wall Columns', 'Vertices']
 
         if not triggered:
             self.comboboxes={}
