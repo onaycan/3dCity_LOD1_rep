@@ -6,12 +6,32 @@ from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QTreeWidgetItem, QColorDialog
 from PyQt5 import Qt, QtCore, QtGui
 from PyQt5.QtCore import Qt as qut
+from PyQt5.QtCore import QTimer
 import sys
 import city
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 import vtk
 import vtk_interaction
 
+
+class CheckableComboBox(QtWidgets.QComboBox):
+    def __init__(self):    
+        super(CheckableComboBox, self).__init__()
+ 
+
+    def addItem(self, item):
+        if item not in self.get_set_items():
+            super(CheckableComboBox, self).addItem(item)
+
+    def addItems(self, items):
+        items = list(self.get_set_items() | set(items))
+        super(CheckableComboBox, self).addItems(items)
+
+    def get_set_items(self):
+        return set([self.itemText(i) for i in range(self.count())])
+
+    def flags(self):
+        return Qt.ItemIsUserCheckable | Qt.ItemIsSelectable | Qt.ItemIsEnabled
 
 class ColorButton(QtWidgets.QPushButton):
     def __init__(self,_city_vtk, _objects_key, _buildings, _checked_items):
@@ -49,18 +69,6 @@ class ColorButton(QtWidgets.QPushButton):
             city_vtk.renWin.Render()
 
 
-# overwrite combobox, so that no duplicates are allowed. 
-class ComboBox(QtWidgets.QComboBox):
-    def addItem(self, item):
-        if item not in self.get_set_items():
-            super(ComboBox, self).addItem(item)
-
-    def addItems(self, items):
-        items = list(self.get_set_items() | set(items))
-        super(ComboBox, self).addItems(items)
-
-    def get_set_items(self):
-        return set([self.itemText(i) for i in range(self.count())])
 
 
 class Ui(QtWidgets.QMainWindow):
@@ -133,58 +141,72 @@ class Ui(QtWidgets.QMainWindow):
             print("Building Block selection is activated")
             #self.facets_pushbutton.setChecked(False)
             self.buildings_pushbutton.setChecked(False)
+
+    def change_background_of_tablewidget(self):
+        self.tableWidget.item(1,2).setBackground(QtGui.QColor(255, 255, 255))
+        
         
     def fill_table_widget(self):
+
+        #timer = QTimer(self)
+        #timer.timeout.connect(self.change_background_of_tablewidget)
+        #timer.start(100)
+        
+        
         attr = ['Building Blocks','Buildings', 'Panel Facets', 'Panel Beams', 'Wall Facets', 'Wall Columns', 'Vertices']
         selected_buildings=[self.comboboxes['Buildings'].itemText(i) for i in range(self.comboboxes['Buildings'].count())]
+
+        pf=[]
+        pb=[]
+        vc=[]
+        wf=[]
+        wc=[]
+
 
         for s in selected_buildings:
             if s!="None":
                 current_building=self.buildings[s]
                 for bs in current_building.basesets:
                     for f in bs.triangles:    
-                        self.comboboxes['Panel Facets'].addItem(str(f.id))
-                        self.comboboxes['Panel Facets'].setCurrentIndex(self.comboboxes['Panel Facets'].count() - 1)
+                        #self.comboboxes['Panel Facets'].addItem(str(f.id))
+                        pf.append(str(f.id))
                 
                 for bm in current_building.beamsets:
                     for b in bm.beams:    
-                        self.comboboxes['Panel Beams'].addItem(str(b.id))
-                        self.comboboxes['Panel Beams'].setCurrentIndex(self.comboboxes['Panel Beams'].count() - 1)
+                        #self.comboboxes['Panel Beams'].addItem(str(b.id))
+                        pb.append(str(b.id))
                     for v in bm.vertices:
-                        self.comboboxes['Vertices'].addItem(str(v.id))
-                        self.comboboxes['Vertices'].setCurrentIndex(self.comboboxes['Vertices'].count() - 1)
+                        #self.comboboxes['Vertices'].addItem(str(v.id))
+                        vc.append(str(v.id))
 
                 for w in current_building.walls:
                     for f in w.triangles:
-                        self.comboboxes['Wall Facets'].addItem(str(f.id))
-                        self.comboboxes['Wall Facets'].setCurrentIndex(self.comboboxes['Wall Facets'].count() - 1)
+                        #self.comboboxes['Wall Facets'].addItem(str(f.id))
+                        wf.append(str(f.id))
 
                 for c in current_building.columns:
-                    self.comboboxes['Wall Columns'].addItem(str(c.id))
-                    self.comboboxes['Wall Columns'].setCurrentIndex(self.comboboxes['Wall Columns'].count() - 1)
+                    #self.comboboxes['Wall Columns'].addItem(str(c.id))
+                    wc.append(str(c.id))
 
+        self.comboboxes['Panel Facets'].addItems(pf)    
+        self.comboboxes['Panel Beams'].addItems(pb)    
+        self.comboboxes['Vertices'].addItems(vc)
+        self.comboboxes['Wall Facets'].addItems(wf)
+        self.comboboxes['Wall Columns'].addItems(wc)
 
-                #for bs in current_building.beamsets:
-                #    self.comboboxes['beamsets'].addItem(bs.id)
-                #    self.comboboxes['beamsets'].setCurrentIndex(self.comboboxes['beamsets'].count() - 1)
-                #    for v in bs.vertices:
-                #        self.comboboxes['vertices'].addItem(v.id)
-                #        self.comboboxes['vertices'].setCurrentIndex(self.comboboxes['vertices'].count() - 1)
+        i=0
+        for j in attr:
+            number=str(self.comboboxes[j].count()-1)
+            self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(number))
+            i += 1
+        # performing these actions in the loop is very time conduming
+        self.comboboxes['Panel Facets'].setCurrentIndex(self.comboboxes['Panel Facets'].count() - 1)
+        self.comboboxes['Panel Beams'].setCurrentIndex(self.comboboxes['Panel Beams'].count() - 1)
+        self.comboboxes['Vertices'].setCurrentIndex(self.comboboxes['Vertices'].count() - 1)
+        self.comboboxes['Wall Facets'].setCurrentIndex(self.comboboxes['Wall Facets'].count() - 1)
+        self.comboboxes['Wall Columns'].setCurrentIndex(self.comboboxes['Wall Columns'].count() - 1)
 
-                #for c in current_building.columns:
-                #    self.comboboxes['columns'].addItem(c.id)
-                #    self.comboboxes['columns'].setCurrentIndex(self.comboboxes['columns'].count() - 1)
-                #for bas in current_building.basesets:
-                #    self.comboboxes['basesets'].addItem(bas.id)
-                #    self.comboboxes['basesets'].setCurrentIndex(self.comboboxes['basesets'].count() - 1)
-                #for w in current_building.walls:
-                #    self.comboboxes['walls'].addItem(w.id)
-                #    self.comboboxes['walls'].setCurrentIndex(self.comboboxes['walls'].count() - 1)
-            i=0
-            for j in attr:
-                number=str(self.comboboxes[j].count()-1)
-                self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(number))
-                i += 1
+        
 
 
 
@@ -193,26 +215,32 @@ class Ui(QtWidgets.QMainWindow):
 
         if not triggered:
             self.comboboxes={}
+            self.checkboxes={}
             for i in attr:
-                current_comboBox = QtWidgets.QComboBox()
+                #current_comboBox = QtWidgets.QComboBox()
+                current_comboBox=CheckableComboBox()
                 self.comboboxes[i]=current_comboBox
                 self.comboboxes[i].addItem("None")
-                self.comboboxes[i].setEditable(True)
+                #self.comboboxes[i].setEditable(True)
                 self.comboboxes[i].setMaxVisibleItems(5)
+
+                self.checkboxes[i]=QtWidgets.QCheckBox()
+                self.checkboxes[i].setCheckState(False)
 
         
 
 
-        self.tableWidget.setColumnCount(3)
+        self.tableWidget.setColumnCount(4)
         self.tableWidget.setRowCount(7)
         self.tableWidget.show()
-        self.tableWidget.setHorizontalHeaderLabels(["Item Type","Item Id[s]","# of Selected Items"])
+        self.tableWidget.setHorizontalHeaderLabels(["Item Type","Item Id[s]","# of Selected Items","Annotations"])
         i=0
         for j in attr:
             self.tableWidget.setItem(i, 0, QtWidgets.QTableWidgetItem(j))
             self.tableWidget.setCellWidget(i, 1, self.comboboxes[j])
             number=str(self.comboboxes[j].count()-1)
             self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(number))
+            self.tableWidget.setCellWidget(i, 3, self.checkboxes[j])
             i += 1
 
     def show_tree_widget(self, buildings, ground_triangles, city_vtk, vertices, building_blocks, beams, beamsets):

@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 
 def parse_objs(osmfile,_vertices, _beamsets, _beams, _buildings,_origin):
     #osmlines=osmfile.read()
-    column_interval=8
+    column_interval=15
     delim="##"
     valid_buildings=["building","building:part"]
     tree = ET.parse(osmfile)
@@ -75,6 +75,8 @@ def parse_objs(osmfile,_vertices, _beamsets, _beams, _buildings,_origin):
                             _beamsets[current_beamset_id].append_beam(_beams[current_beamset_id+delim+nd_tip])
                         #END OF ESTIMATED COLUMNS IMPLEMENTATION
 
+
+                        #START ORIGINAL COLUMNS IMPLEMENTATION
                         #for nd in current_node_ids: # the start id is twice inside! this may cause problem! 
                         #    _beamsets[current_beamset_id].append_vertex(_vertices[nd])
                         #for ndid in range(len(current_node_ids)-1):
@@ -82,6 +84,7 @@ def parse_objs(osmfile,_vertices, _beamsets, _beams, _buildings,_origin):
                         #    nd_tail=current_node_ids[ndid+1]
                         #    _beams[current_beamset_id+delim+nd_tip]=beams.beam(current_beamset_id+delim+nd_tip,[_vertices[nd_tip],_vertices[nd_tail]])
                         #    _beamsets[current_beamset_id].append_beam(_beams[current_beamset_id+delim+nd_tip])
+                        #END ORIGINAL COLUMNS IMPLEMENTATION
                         _buildings[child.attrib["id"]].append_beamset(_beamsets[current_beamset_id])
             if isbuilding:
                 _buildings[child.attrib["id"]].assign_attributes(current_attributes)
