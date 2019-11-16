@@ -113,6 +113,7 @@ class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
                             #        self.building_vertices.add(v.id)
 
                     #self.window.fill_table_widget()
+                    self.window.append_pushbutton.setEnabled(True)
 
 
                     for pid in self.building_vertices:

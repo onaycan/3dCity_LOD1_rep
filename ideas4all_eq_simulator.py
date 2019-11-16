@@ -291,6 +291,7 @@ class Ui(QtWidgets.QMainWindow):
         b22.setFlags(b2.flags() | QtCore.Qt.ItemIsUserCheckable)
         b22.setCheckState(0, QtCore.Qt.Checked)
 
+
         
         #instead of itemchecked, itemlicked need to be used to avoid recursive effects
         self.treeWidget.itemClicked.connect(self.handleItemChanged)
@@ -362,6 +363,7 @@ if __name__=='__main__':
     #window.facets_pushbutton.clicked.connect(window.manage_selection_box_f)
     window.buildings_pushbutton.clicked.connect(window.manage_selection_box_b)
     window.buildingBlocks_pushbutton.clicked.connect(window.manage_selection_box_bb)
+    window.append_pushbutton.clicked.connect(window.fill_table_widget)
 
     city_vtk.style = vtk_interaction.MouseInteractorHighLightActor(city_vtk, window)
     city_vtk.style.SetDefaultRenderer(city_vtk.ren)

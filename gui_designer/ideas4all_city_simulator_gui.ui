@@ -52,12 +52,26 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_6">
           <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Al Entitites</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QTreeWidget" name="treeWidget">
             <column>
              <property name="text">
               <string notr="true">1</string>
              </property>
             </column>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Simulation Pool Selected Entities</string>
+            </property>
            </widget>
           </item>
           <item>
@@ -173,6 +187,22 @@
                     </widget>
                    </item>
                   </layout>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="append_pushbutton">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="text">
+                    <string>&lt;----x  Append to the Simulation Pool</string>
+                   </property>
+                   <property name="default">
+                    <bool>false</bool>
+                   </property>
+                   <property name="flat">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
