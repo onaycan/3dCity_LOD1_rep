@@ -356,10 +356,11 @@ class vtk_interactor:
             for tri in _triangles:
                 self.insert_ground_triangle(tri)    
 
-    def insert_beamset(self,_beamset, _only_colors):
+    def insert_beamset(self,_beamset, _prefered_type, _only_colors):
         for t in _beamset.beams:
-            self.insert_truss(t, t._type, _only_colors)
-    
+            if t._type==_prefered_type:
+                self.insert_truss(t, t._type, _only_colors)
+ 
     def insert_column(self,_column, _only_colors):
         for t in _column.trusses:
             self.insert_truss(t, "column", _only_colors)
@@ -376,7 +377,10 @@ class vtk_interactor:
     def insert_building(self,_building, _checked_items, _only_colors):
         if _checked_items['Panel Beams']>0:
             for b in _building.beamsets:
-                self.insert_beamset(b, _only_colors)
+                self.insert_beamset(b,"beam", _only_colors)
+        if _checked_items['Panel Girders']>0:
+            for b in _building.beamsets:
+                self.insert_beamset(b,"girder", _only_colors)
         if _checked_items['Wall Columns']>0:
             for c in _building.columns:
                 self.insert_column(c, _only_colors)
@@ -455,10 +459,11 @@ class vtk_interactor:
         #self.PolyData_BuildingCells.GetPointData().SetScalars(self.BuildingColors)
         self.PolyData_BuildingCells.GetCellData().SetScalars(self.BuildingCellColors)
         self.mapper_BuildingCells.SetInputData(self.PolyData_BuildingCells)
-        #self.mapper_BuildingCells.ScalarVisibilityOn()
+        self.mapper_BuildingCells.ScalarVisibilityOn()
         self.mapper_BuildingCells.Update()
         self.actor_BuildingCells = vtk.vtkActor()
         self.actor_BuildingCells.SetMapper(self.mapper_BuildingCells)
+        self.actor_BuildingCells.GetProperty().SetRepresentationToSurface()
         if not _wireframe:
             self.actor_BuildingCells.GetProperty().SetRepresentationToWireframe()
         # START TRIANGLES OF BUILDINGS

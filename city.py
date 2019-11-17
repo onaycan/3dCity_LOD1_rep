@@ -119,7 +119,7 @@ def define_city(vtkWidget):
     vtk_interactor.insert_ground_vertices(ground_vertices.values(),_colormap="terrain")
     #vtk_interactor.insert_vertices(ground_vertices.values(),_colormap="CMRmap")
     
-    checked_items={'Building Blocks': 2, 'Buildings': 2, 'Panels': 2, 'Panel Facets': 2, 'Panel Beams': 2, 'Walls': 2, 'Wall Facets': 2, "Wall Columns" : 2, "Terrain" :2}
+    checked_items={'Building Blocks': 2, 'Buildings': 2, 'Panels': 2, 'Panel Facets': 2, 'Panel Beams': 2, 'Panel Girders': 2, 'Walls': 2, 'Wall Facets': 2, "Wall Columns" : 2, "Terrain" :2}
     vtk_interactor.insert_buildings(buildings,checked_items)
     print("Buldings are inserted")
     vtk_interactor.insert_ground_triangles(ground_triangles.values(),checked_items)
