@@ -169,7 +169,7 @@ class vtk_interactor:
         self.origin=_origin
         # create a rendering window and renderer
         self.ren = vtk.vtkRenderer()
-        self.bren = vtk.vtkRenderer()
+        #self.bren = vtk.vtkRenderer()
         #vtkWidget.GetRenderWindow().AddRenderer(self.ren)
         #self.renWin = vtk.vtkRenderWindow()
         self.renWin=vtkWidget.GetRenderWindow()
@@ -446,7 +446,7 @@ class vtk_interactor:
             self.insert_building_triangle(b)
             #print(b.name)
     '''
-    def visualize(self):
+    def visualize(self,_initial=False):
         
         _wireframe=True
         if(self.ground_triangles.GetNumberOfCells()==0 and self.building_triangles.GetNumberOfCells()==0):
@@ -500,32 +500,32 @@ class vtk_interactor:
 
 
         # assign actor to the renderer
-        self.ren.AddActor(self.actor_BuildingCells)
-        self.ren.AddActor(self.actor_GroundCells)
-        self.ren.AddActor(self.actor_Lines)
-        self.axes = vtk.vtkAxesActor()
+        if _initial:
+            self.ren.AddActor(self.actor_BuildingCells)
+            self.ren.AddActor(self.actor_GroundCells)
+            self.ren.AddActor(self.actor_Lines)
+            self.axes = vtk.vtkAxesActor()
 
 
-        xAxisLabel = self.axes.GetXAxisCaptionActor2D()#.GetTextActor().SetTextScaleModeToNone()
-        xAxisLabel.GetTextActor().SetTextScaleModeToNone()
-        xAxisLabel.GetCaptionTextProperty().SetFontSize(10) 
-        yAxisLabel = self.axes.GetYAxisCaptionActor2D()#.GetTextActor().SetTextScaleModeToNone()
-        yAxisLabel.GetCaptionTextProperty().SetFontSize(10) #
-        yAxisLabel.GetTextActor().SetTextScaleModeToNone()
-        
-        zAxisLabel = self.axes.GetZAxisCaptionActor2D()#.GetTextActor().SetTextScaleModeToNone()
-        zAxisLabel.GetCaptionTextProperty().SetFontSize(10) 
-        zAxisLabel.GetTextActor().SetTextScaleModeToNone()
-         
+            xAxisLabel = self.axes.GetXAxisCaptionActor2D()#.GetTextActor().SetTextScaleModeToNone()
+            xAxisLabel.GetTextActor().SetTextScaleModeToNone()
+            xAxisLabel.GetCaptionTextProperty().SetFontSize(10) 
+            yAxisLabel = self.axes.GetYAxisCaptionActor2D()#.GetTextActor().SetTextScaleModeToNone()
+            yAxisLabel.GetCaptionTextProperty().SetFontSize(10) #
+            yAxisLabel.GetTextActor().SetTextScaleModeToNone()
 
-        self.axes.SetShaftTypeToLine()
-        self.axes.SetTotalLength(100, 100, 100)
-        self.axes.SetNormalizedShaftLength(1.0, 1.0, 1.0)
-        self.axes.SetNormalizedTipLength(0.05, 0.05, 0.05) 
+            zAxisLabel = self.axes.GetZAxisCaptionActor2D()#.GetTextActor().SetTextScaleModeToNone()
+            zAxisLabel.GetCaptionTextProperty().SetFontSize(10) 
+            zAxisLabel.GetTextActor().SetTextScaleModeToNone()
 
-        transform = vtk.vtkTransform()
-        # this is necessary for osm
-        transform.Translate(self.origin[0],0.0, -1.0*self.origin[1])
-        self.axes.SetUserTransform(transform)
-        self.ren.AddActor(self.axes)
+
+            self.axes.SetShaftTypeToLine()
+            self.axes.SetTotalLength(100, 100, 100)
+            self.axes.SetNormalizedShaftLength(1.0, 1.0, 1.0)
+            self.axes.SetNormalizedTipLength(0.05, 0.05, 0.05) 
+
+            transform = vtk.vtkTransform()
+            transform.Translate(self.origin[0],0.0, -1.0*self.origin[1])
+            self.axes.SetUserTransform(transform)
+            self.ren.AddActor(self.axes)
         print("all actors are added to renderer")

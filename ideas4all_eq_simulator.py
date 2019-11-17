@@ -43,11 +43,12 @@ class ColorButton(QtWidgets.QPushButton):
         self.checked_items=_checked_items
 
     def on_click(self):
+
+        
         color = QColorDialog.getColor()
         #print(color.getRgb())
         self.setStyleSheet("background:rgb("+str(color.getRgb()[0])+","+str(color.getRgb()[1])+","+str(color.getRgb()[2])+")")
         current_color=[color.getRgb()[0],color.getRgb()[1],color.getRgb()[2]]
-        #if self.objects_key=='Panel Beams' or self.objects_key=='Wall Columns' or self.objects_key=='Panel Girders':
         self.city_vtk.LineColorLabels[self.objects_key]=current_color
         self.city_vtk.LineColors = vtk.vtkUnsignedCharArray()
         self.city_vtk.LineColors.SetNumberOfComponents(3)
@@ -58,11 +59,6 @@ class ColorButton(QtWidgets.QPushButton):
         self.city_vtk.BuildingCellColors.SetNumberOfComponents(3)
         self.city_vtk.BuildingCellColors.SetName("BuildingCellColors")
         
-        
-        #self.city_vtk.building_triangles = vtk.vtkCellArray()
-        #self.city_vtk.trusses.DeleteCells()
-        #self.city_vtk.building_triangles = vtk.vtkCellArray()
-        #self.city_vtk.trusses = vtk.vtkCellArray()
         self.city_vtk.insert_buildings(self.buildings,self.checked_items, _only_colors=True)
         
         self.city_vtk.PolyData_Lines = vtk.vtkPolyData()
@@ -70,21 +66,7 @@ class ColorButton(QtWidgets.QPushButton):
         self.city_vtk.visualize()
         #self.city_vtk.mapper_BuildingCells.ScalarVisibilityOn()
         self.city_vtk.renWin.Render()
-        #else:
-        #    #self.city_vtk.ren = vtk.vtkRenderer()
-        #    #self.city_vtk.renWin=vtkWidget.GetRenderWindow()
-        #    #self.city_vtk.renWin.AddRenderer(self.city_vtk.ren)
-        #    self.city_vtk.BuildingColorLabels[self.objects_key]=current_color
-        #    self.city_vtk.BuildingCellColors = vtk.vtkUnsignedCharArray()
-        #    self.city_vtk.BuildingCellColors.SetNumberOfComponents(3)
-        #    self.city_vtk.BuildingCellColors.SetName("BuildingCellColors")
-        #    self.city_vtk.building_triangles = vtk.vtkCellArray()
-        #    self.city_vtk.insert_buildings(self.buildings,self.checked_items,_only_colors=False)
-        #    self.city_vtk.PolyData_BuildingCells = vtk.vtkPolyData()
-        #    self.city_vtk.visualize()
-        #    #self.city_vtk.mapper_BuildingCells.ScalarVisibilityOn()
-        #    self.city_vtk.renWin.Render()
-        #    #self.city_vtk.iren.Start()
+       
 
 
 
@@ -109,6 +91,7 @@ class Ui(QtWidgets.QMainWindow):
         print(checked_items)
 
         
+        
         self.city_vtk.ground_triangles = vtk.vtkCellArray()
         self.city_vtk.building_triangles = vtk.vtkCellArray()
         self.city_vtk.trusses = vtk.vtkCellArray()
@@ -125,7 +108,7 @@ class Ui(QtWidgets.QMainWindow):
         self.city_vtk.PolyData_GroundCells = vtk.vtkPolyData()
         self.city_vtk.PolyData_Lines = vtk.vtkPolyData()
         self.city_vtk.visualize()
-        city_vtk.renWin.Render()
+        self.city_vtk.renWin.Render()
         self.checked_items=checked_items
     
     def manage_selection_enablebox(self):
@@ -427,7 +410,7 @@ if __name__=='__main__':
     city_vtk.iren.SetInteractorStyle(city_vtk.style)
 
 
-    city_vtk.visualize()
+    city_vtk.visualize(_initial=True)
     city_vtk.renWin.Render()
     print("render window is rendered")
     city_vtk.iren.Initialize()
