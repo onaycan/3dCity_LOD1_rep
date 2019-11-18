@@ -28,7 +28,7 @@ class CheckableComboBox(QtWidgets.QComboBox):
         super(CheckableComboBox, self).addItems(items)
 
     def get_set_items(self):
-        return set([self.itemText(i) for i in range(self.count())])
+        return set([self.itemText(i) for i in range(1,self.count())])
 
     def flags(self):
         return Qt.ItemIsUserCheckable | Qt.ItemIsSelectable | Qt.ItemIsEnabled
@@ -150,17 +150,14 @@ class Ui(QtWidgets.QMainWindow):
         
         
     def fill_table_widget(self):
-
-        #timer = QTimer(self)
-        #timer.timeout.connect(self.change_background_of_tablewidget)
-        #timer.start(100)
         
         
-        attr = ['Building Blocks','Buildings', 'Panel Facets', 'Panel Beams', 'Wall Facets', 'Wall Columns', 'Vertices']
+        attr = ['Building Blocks','Buildings', 'Panel Facets', 'Panel Beams', 'Panel Girders', 'Wall Facets', 'Wall Columns', 'Vertices']
         selected_buildings=[self.comboboxes['Buildings'].itemText(i) for i in range(self.comboboxes['Buildings'].count())]
 
         pf=[]
         pb=[]
+        pg=[]
         vc=[]
         wf=[]
         wc=[]
@@ -176,8 +173,11 @@ class Ui(QtWidgets.QMainWindow):
                 
                 for bm in current_building.beamsets:
                     for b in bm.beams:    
-                        #self.comboboxes['Panel Beams'].addItem(str(b.id))
-                        pb.append(str(b.id))
+                        if b._type=="beam":
+                            #self.comboboxes['Panel Beams'].addItem(str(b.id))
+                            pb.append(str(b.femid))
+                        if b._type=="girder":
+                            pg.append(str(b.femid))
                     for v in bm.vertices:
                         #self.comboboxes['Vertices'].addItem(str(v.id))
                         vc.append(str(v.id))
@@ -188,11 +188,11 @@ class Ui(QtWidgets.QMainWindow):
                         wf.append(str(f.id))
 
                 for c in current_building.columns:
-                    #self.comboboxes['Wall Columns'].addItem(str(c.id))
-                    wc.append(str(c.id))
+                    wc.append(str(c.femid))
 
         self.comboboxes['Panel Facets'].addItems(pf)    
-        self.comboboxes['Panel Beams'].addItems(pb)    
+        self.comboboxes['Panel Beams'].addItems(pb) 
+        self.comboboxes['Panel Girders'].addItems(pg)    
         self.comboboxes['Vertices'].addItems(vc)
         self.comboboxes['Wall Facets'].addItems(wf)
         self.comboboxes['Wall Columns'].addItems(wc)
@@ -202,9 +202,10 @@ class Ui(QtWidgets.QMainWindow):
             number=str(self.comboboxes[j].count()-1)
             self.tableWidget.setItem(i, 2, QtWidgets.QTableWidgetItem(number))
             i += 1
-        # performing these actions in the loop is very time conduming
+        # performing these actions in the loop is very time consuming
         self.comboboxes['Panel Facets'].setCurrentIndex(self.comboboxes['Panel Facets'].count() - 1)
         self.comboboxes['Panel Beams'].setCurrentIndex(self.comboboxes['Panel Beams'].count() - 1)
+        self.comboboxes['Panel Girders'].setCurrentIndex(self.comboboxes['Panel Girders'].count() - 1)
         self.comboboxes['Vertices'].setCurrentIndex(self.comboboxes['Vertices'].count() - 1)
         self.comboboxes['Wall Facets'].setCurrentIndex(self.comboboxes['Wall Facets'].count() - 1)
         self.comboboxes['Wall Columns'].setCurrentIndex(self.comboboxes['Wall Columns'].count() - 1)
@@ -213,28 +214,28 @@ class Ui(QtWidgets.QMainWindow):
 
 
 
-    def show_table_widget(self, triggered=False):
-        attr = ['Building Blocks','Buildings', 'Panel Facets', 'Panel Beams', 'Wall Facets', 'Wall Columns', 'Vertices']
+    def show_table_widget(self):
+        attr = ['Building Blocks','Buildings', 'Panel Facets', 'Panel Beams', 'Panel Girders', 'Wall Facets', 'Wall Columns', 'Vertices']
 
-        if not triggered:
-            self.comboboxes={}
-            self.checkboxes={}
-            for i in attr:
-                #current_comboBox = QtWidgets.QComboBox()
-                current_comboBox=CheckableComboBox()
-                self.comboboxes[i]=current_comboBox
-                self.comboboxes[i].addItem("None")
-                #self.comboboxes[i].setEditable(True)
-                self.comboboxes[i].setMaxVisibleItems(5)
-
-                self.checkboxes[i]=QtWidgets.QCheckBox()
-                self.checkboxes[i].setCheckState(False)
-
+        
+        
+        self.comboboxes={}
+        self.checkboxes={}
+        
+        for i in attr:
+            #current_comboBox = QtWidgets.QComboBox()
+            current_comboBox=CheckableComboBox()
+            self.comboboxes[i]=current_comboBox
+            self.comboboxes[i].addItem("None")
+            #self.comboboxes[i].setEditable(True)
+            self.comboboxes[i].setMaxVisibleItems(5)
+            self.checkboxes[i]=QtWidgets.QCheckBox()
+            self.checkboxes[i].setCheckState(False)
         
 
 
         self.tableWidget.setColumnCount(4)
-        self.tableWidget.setRowCount(7)
+        self.tableWidget.setRowCount(8)
         self.tableWidget.show()
         self.tableWidget.setHorizontalHeaderLabels(["Item Type","Item Id[s]","# of Selected Items","Annotations"])
         i=0
@@ -342,8 +343,6 @@ class Ui(QtWidgets.QMainWindow):
         
 
 
-
-
 class OutLog:
     def __init__(self, edit, out=None, color=None):
 
@@ -388,19 +387,25 @@ if __name__=='__main__':
     
     window = Ui()
     window.showMaximized()
+    window.show_table_widget()
+
 
     frame = window.tabWidget
 
 
+
+
+    
     vl=window.vtkLayout
     vtkWidget = QVTKRenderWindowInteractor(frame)
     vl.addWidget(vtkWidget)
 
+    
+
     city_vtk, buildings, ground_triangles, vertices, building_blocks, beams, beamsets=city.define_city(vtkWidget)
     window.show_tree_widget(buildings, ground_triangles, city_vtk, vertices, building_blocks, beams, beamsets)
-    window.show_table_widget()
+    
     window.EnableSelection_checkBox.stateChanged.connect(window.manage_selection_enablebox)
-    #window.facets_pushbutton.clicked.connect(window.manage_selection_box_f)
     window.buildings_pushbutton.clicked.connect(window.manage_selection_box_b)
     window.buildingBlocks_pushbutton.clicked.connect(window.manage_selection_box_bb)
     window.append_pushbutton.clicked.connect(window.fill_table_widget)
@@ -408,15 +413,15 @@ if __name__=='__main__':
     city_vtk.style = vtk_interaction.MouseInteractorHighLightActor(city_vtk, window)
     city_vtk.style.SetDefaultRenderer(city_vtk.ren)
     city_vtk.iren.SetInteractorStyle(city_vtk.style)
-
-
     city_vtk.visualize(_initial=True)
     city_vtk.renWin.Render()
     print("render window is rendered")
     city_vtk.iren.Initialize()
     city_vtk.iren.Start()
     edit=window.textEdit_Log
-    #sys.stdout = OutLog( edit, sys.stdout)
+    sys.stdout = OutLog( edit, sys.stdout)
+    
+
 
     app.exec_()
     

@@ -362,8 +362,8 @@ class vtk_interactor:
                 self.insert_truss(t, t._type, _only_colors)
  
     def insert_column(self,_column, _only_colors):
-        for t in _column.trusses:
-            self.insert_truss(t, "column", _only_colors)
+        t=_column.truss
+        self.insert_truss(t, "column", _only_colors)
 
     def insert_baseset(self,_baseset,_only_colors):
         for t in _baseset.triangles:

@@ -22,6 +22,7 @@ def define_city(vtkWidget):
     beamsets={}
     trusses={}
     beams={}
+    columns_and_beams={}
     buildings={}
     buildingblocks={}
     all_triangles={}
@@ -47,7 +48,13 @@ def define_city(vtkWidget):
     osmparser.parse_objs(osmfile,vertices,beamsets,beams,buildings,origin)
     max_home_numbers=max([len(v.homes) for b in beamsets.values() for v in b.vertices])
     
-    
+
+    # setting the fem id for the ground beams
+    columns_and_beams_counter=len(columns_and_beams.keys())
+    for b in beams.values():
+        columns_and_beams[columns_and_beams_counter]=b
+        b.femid=columns_and_beams_counter
+        columns_and_beams_counter+=1
 
 
     print("max number of home buildings sharing the same vertex: "+str(max_home_numbers))
@@ -79,7 +86,7 @@ def define_city(vtkWidget):
     last_vertex_id=max([int(v) for v in vertices.keys() if "#" not in v])
     numberofbuildingswithheight=0
     for b in buildings.values():
-        numberofbuildingswithheight,last_vertex_id=b.build_building(beamsets,vertices,trusses,beams,numberofbuildingswithheight,last_vertex_id, origin, all_triangles)
+        numberofbuildingswithheight,last_vertex_id=b.build_building(beamsets,vertices,trusses,columns_and_beams,beams,numberofbuildingswithheight,last_vertex_id, origin, all_triangles)
     elapsed_time = time.time() - start_time
     print("building needs: "+str(elapsed_time))
 

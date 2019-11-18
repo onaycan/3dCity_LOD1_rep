@@ -3,8 +3,9 @@ import math
 
 
 class beam:
-    def __init__(self,_id,_vertices, _type):
+    def __init__(self,_id,_vertices, _type, _femid=None):
         self.id=_id
+        self.femid=_femid
         self.vertices=[]
         self.vertices.append(_vertices[0])
         self.vertices.append(_vertices[1])

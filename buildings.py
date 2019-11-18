@@ -225,8 +225,9 @@ class building:
             
 
 
-    def build_building(self,_beamsets,_vertices,_trusses,_beams,_numberofbuildingswithheight, _lastvertexid, _origin, _all_triangles):
+    def build_building(self,_beamsets,_vertices,_trusses,_columns_and_beams,_beams,_numberofbuildingswithheight, _lastvertexid, _origin, _all_triangles):
         triangle_counter=len(_all_triangles.keys())
+        columns_and_beams_counter=len(_columns_and_beams.keys())
         delim="##"
         retval=_numberofbuildingswithheight
         floor_height=16.0/5.0
@@ -237,6 +238,12 @@ class building:
                 for l in range(1,numberoflevels+1):
                     #print("beamset inserted in "+self.name)
                     next_beamset, _lastvertexid=self.beamsets[0].shift_and_copy_beamset(_vertices,_beams, str(l), [0.0,0.0,l*floor_height], _lastvertexid, _origin)
+                    for nb in next_beamset.beams:
+                        _columns_and_beams[columns_and_beams_counter]=nb
+                        nb.femid=columns_and_beams_counter
+                        columns_and_beams_counter+=1
+
+
                     #next_beamset, _lastvertexid=self.beamsets[0].shift_and_copy_beamset(_vertices,_beams, str(l), [0.0,l*floor_height,0.0], _lastvertexid, _origin)
                     
                     _beamsets[next_beamset.id]=next_beamset
@@ -246,16 +253,17 @@ class building:
 
                     
                     #start columns
-                    current_column=columns.column(self.name)
-                    both_vertices=self.beamsets[l-1].vertices+self.beamsets[l-1].vertices
-                    current_column.vertices=both_vertices
-                    for v in range(len(self.beamsets[l-1].vertices)):
+                    
+                    for v in range(len(self.beamsets[l-1].vertices)-1):
                         #this id plus from which stage to which, and the corner counter
                         truss_id=self.name+delim+str(l-1)+delim+str(l)+delim+str(v)
+                        current_column=columns.column(self.name, columns_and_beams_counter)
                         current_truss=trusses.truss(truss_id,[self.beamsets[l-1].vertices[v],self.beamsets[l].vertices[v]])
                         _trusses[truss_id]=current_truss
-                        current_column.append_truss(current_truss)
-                    self.columns.append(current_column)
+                        current_column.define_truss(current_truss)
+                        _columns_and_beams[columns_and_beams_counter]=current_column
+                        columns_and_beams_counter+=1
+                        self.columns.append(current_column)
                     #end columns
 
                     #start walls
