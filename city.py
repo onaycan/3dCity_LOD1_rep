@@ -9,6 +9,7 @@ import json
 import ground
 import numpy as np
 import misc
+import vertices as _vertices
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -98,7 +99,7 @@ def define_city(vtkWidget):
     for v in ground_vertices.values():
         v.convert_CoordsX2FemCoordsX(nw)
 
-    # start assigning homes to vertices and neighbour information
+    # start assigning homes to vertices and neighbour information and calculation of the floor mids
     for b in buildings.values():
         b.assign_homes_to_vertices(vertices)
     
@@ -107,9 +108,13 @@ def define_city(vtkWidget):
         b.find_neighbours(vertices,buildings,neighboursofthis)
         b.neighbours=neighboursofthis
     
+    last_vertex_id=max([int(v) for v in vertices.keys() if "#" not in v])
+    floorvertices=[]
+    dummy_vertex=_vertices.vertex(str(last_vertex_id+1),[0.0,0.0])
+    floorvertices.append(dummy_vertex)
     for b in buildings.values():
         b.adoptto_building_blocks(buildingblocks,buildings)
-        b.set_floor_mid()
+        b.set_floor_mid(floorvertices)
     # end assigning homes to vertices and neighbour information
     
 

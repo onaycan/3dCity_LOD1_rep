@@ -62,10 +62,10 @@ class building:
                 self.osm_feasible=True
                 #self.print_building(intersection)
     
-    def set_floor_mid(self):
-        self.mid=self.beamsets[0].set_floor_mid()
+    def set_floor_mid(self, _floorvertices):
+        self.mid=self.beamsets[0].set_floor_mid(_floorvertices)
         for bs in range(1,len(self.beamsets)):
-            self.beamsets[bs].set_floor_mid()
+            self.beamsets[bs].set_floor_mid(_floorvertices)
 
     def set_footprint_max_elev(self):
         self.fp_max_elev=self.beamsets[0].set_footprint_max_elev()
@@ -359,6 +359,11 @@ class building:
             self.file.write("#FLOOR #"+str(bsi)+"\n")
             for v in bs.vertices:
                 self.file.write("node"+"\t"+str(v.id)+"\t"+str(v.coordsX[0]*meter2inches)+"\t"+str(v.coordsX[1]*meter2inches)+"\t"+str(v.coordsX[2]*meter2inches)+"\n")
+        self.file.write("#MASTERNODES"+"\n")
+        for bsi in range(1,len(self.beamsets)):
+            bs=self.beamsets[bsi]
+            self.file.write("node"+"\t"+str(bs.mid_vertex.id)+"\t"+str(bs.mid_vertex.coordsX[0]*meter2inches)+"\t"+str(bs.mid_vertex.coordsX[1]*meter2inches)+"\t"+str(bs.mid_vertex.coordsX[2]*meter2inches)+"\n")
+
 
 
         self.file.close()

@@ -12,12 +12,16 @@ class beamset:
         self.vertices.append(_vertex)
     def append_beam(self,_beam):
         self.beams.append(_beam)
-    def set_floor_mid(self):
+    def set_floor_mid(self, _floorvertices):
         all_coords=np.array([]).reshape(0,3)
         for v in range(len(self.vertices)-1):
             ver=self.vertices[v]
             all_coords=np.vstack([all_coords,[ver.coordsX[0],ver.coordsX[1],ver.coordsX[2]]])
         self.mid=np.mean(all_coords,axis=0)
+        self.mid_vertex=vertices.vertex(str(int(_floorvertices[-1].id)+1),[0.0,0.0])
+        for i in range(3):
+            self.mid_vertex.coordsX[i]=self.mid[i]
+        _floorvertices.append(self.mid_vertex)
         return self.mid
     def set_footprint_max_elev(self):
         self.fp_max_elev=max([v.coordsX[2] for v in self.vertices])
