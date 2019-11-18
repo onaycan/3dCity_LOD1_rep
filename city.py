@@ -26,7 +26,7 @@ def define_city(vtkWidget):
     buildings={}
     buildingblocks={}
     all_triangles={}
-    origin,ground_vertices,ground_triangles=ground.ground_geometry()
+    origin,ground_vertices,ground_triangles, nw=ground.ground_geometry()
     print("origin: "+str(origin))
 
     for gi,gv in ground_triangles.items():
@@ -93,10 +93,10 @@ def define_city(vtkWidget):
     print("number of buildings with height: "+str(numberofbuildingswithheight))
 
     for v in vertices.values():
-        v.convert_CoordsX2FemCoordsX()
+        v.convert_CoordsX2FemCoordsX(nw)
     
     for v in ground_vertices.values():
-        v.convert_CoordsX2FemCoordsX()
+        v.convert_CoordsX2FemCoordsX(nw)
 
     # start assigning homes to vertices and neighbour information
     for b in buildings.values():
@@ -109,8 +109,10 @@ def define_city(vtkWidget):
     
     for b in buildings.values():
         b.adoptto_building_blocks(buildingblocks,buildings)
+        b.set_floor_mid()
     # end assigning homes to vertices and neighbour information
     
+
 
 
 

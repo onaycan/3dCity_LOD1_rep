@@ -32,6 +32,9 @@ def parse_objs(osmfile,_vertices, _beamsets, _beams, _buildings,_origin):
             _vertices[child.attrib["id"]]=vertices.vertex(child.attrib["id"],[child.attrib["lat"],child.attrib["lon"]])
             _vertices[child.attrib["id"]].convert_lat_long2m(_origin)
 
+    ids=[int(v) for v in _vertices.keys()]
+    vertex_id_counter=1+max(ids)
+
     for child in root: 
         if child.tag=="way":
             #print(child.attrib)
@@ -72,12 +75,16 @@ def parse_objs(osmfile,_vertices, _beamsets, _beams, _buildings,_origin):
                                 for an in range(number_of_columns_2_inverted-1):
                                     ani=an+1
                                     # id: building id plus delim + tip node id + delim + counter
+                                    # this can be used to distinguish in between the intermediate nodes and the counter nodes
                                     thisvertexid=child.attrib["id"]+delim+nd_tip+delim+str(an)
+                                    thisvertexkey=str(vertex_id_counter)
+                                    vertex_id_counter+=1
                                     thislat=d_lat/number_of_columns_2_inverted*ani+_vertices[nd_tip].coords_lat_long[0]
                                     thislong=d_lon/number_of_columns_2_inverted*ani+_vertices[nd_tip].coords_lat_long[1]
-                                    _vertices[thisvertexid]=vertices.vertex(thisvertexid, [thislat,thislong])
-                                    _vertices[thisvertexid].convert_lat_long2m(_origin)
-                                    current_node_appended_ids.append(thisvertexid)
+                                    
+                                    _vertices[thisvertexkey]=vertices.vertex(thisvertexkey, [thislat,thislong])
+                                    _vertices[thisvertexkey].convert_lat_long2m(_origin)
+                                    current_node_appended_ids.append(thisvertexkey)
                         current_node_appended_ids.append(nd_tail)
 
 

@@ -344,6 +344,26 @@ class building:
                    
                 retval=_numberofbuildingswithheight+1
         return retval, _lastvertexid
+
+
+    def print_simulation_file(self,_filename):
+        meter2inches=39.3701
+        self.file=open(_filename,'w')
+        self.file.write("#BUILDING ID "+str(self.name)+"\n")
+        self.file.write("#GROUND"+"\n")
+        for v in self.beamsets[0].vertices:
+            self.file.write("node"+"\t"+str(v.id)+"\t"+str(v.coordsX[0]*meter2inches)+"\t"+str(v.coordsX[1]*meter2inches)+"\t"+str(v.coordsX[2]*meter2inches)+"\n")
+
+        for bsi in range(1,len(self.beamsets)):
+            bs=self.beamsets[bsi]
+            self.file.write("#FLOOR #"+str(bsi)+"\n")
+            for v in bs.vertices:
+                self.file.write("node"+"\t"+str(v.id)+"\t"+str(v.coordsX[0]*meter2inches)+"\t"+str(v.coordsX[1]*meter2inches)+"\t"+str(v.coordsX[2]*meter2inches)+"\n")
+
+
+        self.file.close()
+
+    '''    
     
     def building2opensees(self):
         file=open("./OpenSeesFiles/building_"+str(self.name)+".tcl","w")
@@ -387,3 +407,5 @@ class building:
                 
                 
         file.close()
+
+        '''

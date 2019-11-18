@@ -1,4 +1,5 @@
 
+import os
 import sys
 import pprint
 import time
@@ -209,6 +210,7 @@ class Ui(QtWidgets.QMainWindow):
         self.comboboxes['Vertices'].setCurrentIndex(self.comboboxes['Vertices'].count() - 1)
         self.comboboxes['Wall Facets'].setCurrentIndex(self.comboboxes['Wall Facets'].count() - 1)
         self.comboboxes['Wall Columns'].setCurrentIndex(self.comboboxes['Wall Columns'].count() - 1)
+        self.configure_simulation_pushbutton.setEnabled(True)
 
         
 
@@ -340,7 +342,27 @@ class Ui(QtWidgets.QMainWindow):
         tw.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         tw.header().setStretchLastSection(False)
         tw.show()
-        
+
+    def configure_simulation(self):
+        #bbs=[]
+        bs=set()
+        #for i in range(self.comboboxes['Building Blocks'].count()):
+        #    bbs.append(self.comboboxes['Building Blocks'].ItemText(i))
+        #
+        #for bb in bbs:
+        #    for b in self.building_blocks[bb].buildings:
+        #        bs.add(b.id)      
+
+        for i in range(self.comboboxes['Buildings'].count()):
+            current_building_id=self.comboboxes['Buildings'].itemText(i)
+            if current_building_id!="None":
+                bs.add(current_building_id)
+        for b in bs:
+            path="./outputs/b_"+str(b)
+            os.makedirs(path, exist_ok=True)
+            self.buildings[b].print_simulation_file(path+"/"+"INPUT_1.tcl")
+
+
 
 
 class OutLog:
@@ -409,6 +431,7 @@ if __name__=='__main__':
     window.buildings_pushbutton.clicked.connect(window.manage_selection_box_b)
     window.buildingBlocks_pushbutton.clicked.connect(window.manage_selection_box_bb)
     window.append_pushbutton.clicked.connect(window.fill_table_widget)
+    window.configure_simulation_pushbutton.clicked.connect(window.configure_simulation)
 
     city_vtk.style = vtk_interaction.MouseInteractorHighLightActor(city_vtk, window)
     city_vtk.style.SetDefaultRenderer(city_vtk.ren)

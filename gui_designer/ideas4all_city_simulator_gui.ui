@@ -78,7 +78,7 @@
            <widget class="QTableWidget" name="tableWidget"/>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="configure_simulation_pushbutton">
             <property name="enabled">
              <bool>false</bool>
             </property>

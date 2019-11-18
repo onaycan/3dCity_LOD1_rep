@@ -23,8 +23,15 @@ def ground_geometry():
             coun+=1 
             
 
-    for i in range(2):
-        origin.append(min([v.coords_lat_long[i] for v in ground_vertices.values()]))
+    #for i in range(2):
+    origin.append(min([v.coords_lat_long[0] for v in ground_vertices.values()]))
+    origin.append(min([v.coords_lat_long[1] for v in ground_vertices.values()]))
+    maxo=max([v.coords_lat_long[0] for v in ground_vertices.values()])
+
+    dummy_v1=vertices.vertex("-1",[maxo,origin[1]])
+    nw=dummy_v1.dist_2_another_vertex_in_m(origin)
+
+
 
     for gv in ground_vertices.values():
         gv.convert_lat_long2m(origin)
@@ -42,7 +49,7 @@ def ground_geometry():
         number_of_triangles+=1
         coun+=1
 
-    return origin,ground_vertices,ground_triangles
+    return origin,ground_vertices,ground_triangles ,nw
 #print(trigls.simplices)
 #
 #triangle_or_truss=True

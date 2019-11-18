@@ -37,11 +37,16 @@ class vertex:
 
         return math.sqrt(retx*retx+rety*rety)
 
-    def convert_CoordsX2FemCoordsX(self):
+    def convert_CoordsX2FemCoordsX(self,nw):
         old_CoordsX_x=self.coordsX[0]
         old_CoordsX_y=self.coordsX[1]
         old_CoordsX_z=self.coordsX[2]
 
+        #self.coordsX[0]=old_CoordsX_y
+        #self.coordsX[1]=-1*old_CoordsX_z
+        #self.coordsX[2]=-1*old_CoordsX_x
+               
+
         self.coordsX[0]=old_CoordsX_x
         self.coordsX[1]=old_CoordsX_z
-        self.coordsX[2]=-1.0*old_CoordsX_y
+        self.coordsX[2]=-1.0*old_CoordsX_y+nw

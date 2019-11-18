@@ -525,7 +525,7 @@ class vtk_interactor:
             self.axes.SetNormalizedTipLength(0.05, 0.05, 0.05) 
 
             transform = vtk.vtkTransform()
-            transform.Translate(self.origin[0],0.0, -1.0*self.origin[1])
+            transform.Translate(self.origin[0],0.0, -1*self.origin[1])
             self.axes.SetUserTransform(transform)
             self.ren.AddActor(self.axes)
         print("all actors are added to renderer")
