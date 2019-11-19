@@ -27,6 +27,7 @@ class beamset:
         self.fp_max_elev=max([v.coordsX[2] for v in self.vertices])
         return self.fp_max_elev
     def shift_and_copy_beamset(self,_vertices,_beams, _level, _shift, _last_vertex_id,_origin):
+        precision=4
         delim="##"
         #last_vertex_id=max([int(v) for v in _vertices.keys()])
         #print(last_vertex_id)

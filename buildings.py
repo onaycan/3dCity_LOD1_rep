@@ -348,23 +348,37 @@ class building:
 
     def print_simulation_file(self,_filename):
         meter2inches=39.3701
+        precision=4
+        
         self.file=open(_filename,'w')
         self.file.write("#BUILDING ID "+str(self.name)+"\n")
         self.file.write("#GROUND"+"\n")
         for vi in range(len(self.beamsets[0].vertices)-1):
             v=self.beamsets[0].vertices[vi]
-            self.file.write("node"+"\t"+str(v.id)+"\t"+str(v.coordsX[0]*meter2inches)+"\t"+str(v.coordsX[1]*meter2inches)+"\t"+str(v.coordsX[2]*meter2inches)+"\n")
+            printed=[]
+            printed.append(round(v.coordsX[0]*meter2inches,precision))
+            printed.append(round(v.coordsX[1]*meter2inches,precision))
+            printed.append(round(v.coordsX[2]*meter2inches,precision))
+            self.file.write("node"+"\t"+str(v.id)+"\t"+str(printed[0])+"\t"+str(printed[1])+"\t"+str(printed[2])+"\n")
 
         for bsi in range(1,len(self.beamsets)):
             bs=self.beamsets[bsi]
             self.file.write("#FLOOR #"+str(bsi)+"\n")
             for vi in range(len(bs.vertices)-1):
                 v=bs.vertices[vi]
-                self.file.write("node"+"\t"+str(v.id)+"\t"+str(v.coordsX[0]*meter2inches)+"\t"+str(v.coordsX[1]*meter2inches)+"\t"+str(v.coordsX[2]*meter2inches)+"\n")
+                printed=[]
+                printed.append(round(v.coordsX[0]*meter2inches,precision))
+                printed.append(round(v.coordsX[1]*meter2inches,precision))
+                printed.append(round(v.coordsX[2]*meter2inches,precision))
+                self.file.write("node"+"\t"+str(v.id)+"\t"+str(printed[0])+"\t"+str(printed[1])+"\t"+str(printed[2])+"\n")
         self.file.write("#MASTERNODES"+"\n")
         for bsi in range(1,len(self.beamsets)):
             bs=self.beamsets[bsi]
-            self.file.write("node"+"\t"+str(bs.mid_vertex.id)+"\t"+str(bs.mid_vertex.coordsX[0]*meter2inches)+"\t"+str(bs.mid_vertex.coordsX[1]*meter2inches)+"\t"+str(bs.mid_vertex.coordsX[2]*meter2inches)+"\n")
+            printed=[]
+            printed.append(round(bs.mid_vertex.coordsX[0]*meter2inches,precision))
+            printed.append(round(bs.mid_vertex.coordsX[1]*meter2inches,precision))
+            printed.append(round(bs.mid_vertex.coordsX[2]*meter2inches,precision))
+            self.file.write("node"+"\t"+str(bs.mid_vertex.id)+"\t"+str(printed[0])+"\t"+str(printed[1])+"\t"+str(printed[2])+"\n")
 
         self.file.write("#BEAM"+"\n")
         beamlengths={}
@@ -376,7 +390,7 @@ class building:
                     beamlengths[b.femid]=b.length*meter2inches
         self.file.write("#BEAMLENGTH"+"\n")
         for b in beamlengths.keys():
-            self.file.write("Beamlength_"+str(b)+"\t"+str(beamlengths[b])+"\n")
+            self.file.write("Beamlength_"+str(b)+"\t"+str(round(beamlengths[b],precision))+"\n")
 
         
         self.file.write("#GIRDER"+"\n")
@@ -389,7 +403,7 @@ class building:
                     beamlengths[b.femid]=b.length*meter2inches
         self.file.write("#GIRDERLENGTH"+"\n")
         for b in beamlengths.keys():
-            self.file.write("Beamlength_"+str(b)+"\t"+str(beamlengths[b])+"\n")
+            self.file.write("Beamlength_"+str(b)+"\t"+str(round(beamlengths[b],precision))+"\n")
 
 
         self.file.write("#COLUMN"+"\n")
@@ -399,7 +413,7 @@ class building:
             columnlengths[c.femid]=c.truss.length*meter2inches
         self.file.write("#COLUMNLENGTH"+"\n")
         for b in columnlengths.keys():
-            self.file.write("Columnlength_"+str(b)+"\t"+str(columnlengths[b])+"\n")
+            self.file.write("Columnlength_"+str(b)+"\t"+str(round(columnlengths[b],precision))+"\n")
         
         self.file.write("#END"+"\n")
 
