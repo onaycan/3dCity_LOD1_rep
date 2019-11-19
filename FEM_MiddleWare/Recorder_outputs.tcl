@@ -19,10 +19,10 @@
 	set FirstColumntmp2 ""
 	for {set i 0} {$i <= [expr [llength [lindex $iSupportNode $numInFile]]-1]} {incr i 1} {
 		for {set j 0} {$j <= [expr [llength [lindex $LCol $numInFile]]-1]} {incr j 1} {
-			if {[lindex $elidcolumnnodes $numInFile $j 1] == [lindex $iSupportNode $numInFile $i]} {
-				set FirstColumntmp [lindex $elidcolumnnodes $numInFile $j 0];	# Take the Ground Columns for outputing purposes 
-			} elseif {[lindex $elidcolumnnodes $numInFile $j 2] == [lindex $iSupportNode $numInFile $i]} {
-				set FirstColumntmp [lindex $elidcolumnnodes $numInFile $j 0];	# Take the Ground Columns for outputing purposes 
+			if {[lindex $iColumnConnect $numInFile $j 1] == [lindex $iSupportNode $numInFile $i]} {
+				set FirstColumntmp [lindex $iColumnConnect $numInFile $j 0];	# Take the Ground Columns for outputing purposes 
+			} elseif {[lindex $iColumnConnect $numInFile $j 2] == [lindex $iSupportNode $numInFile $i]} {
+				set FirstColumntmp [lindex $iColumnConnect $numInFile $j 0];	# Take the Ground Columns for outputing purposes 
 			}
 		}
 		lappend FirstColumntmp2 $FirstColumntmp

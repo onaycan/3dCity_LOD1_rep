@@ -1,11 +1,20 @@
 #
+#	LINEAR TRANSFORMATIONS for EACH ELEMENT
+#		to GLOBAL COORDINATES
+#			by PERPENDICULAR VECTORS to ELEMENT LOCAL AXIS  
+#
 # Script Identifying:
 #		IDBeamTransf   IDGirdTransf   IDColTransf
 # 	(Perpendicular unit vectors to each element axis)
 # 	For the Linear Transformation Purpose
+# Notes: Script handles element axis directions regardless of their initial directions by user
+# 
+# Script also calculates each Element Length 
+# 	
+#	by: Serhat Adilak, 2019
 #
-#
-# --------- Take all Element ID's with their nodes  ---------
+
+# --------- Take all Element ID's with their nodes from INPUT FILE ---------
    if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {
       puts stderr "Cannot open input file"
    } else {
@@ -63,9 +72,8 @@
 lappend iBeamConnect $BeamConnect
 lappend iGirderConnect $GirderConnect
 lappend iColumnConnect $ColumnConnect
-						
 
-# --------- Take all Node ID's with their coordinates  ---------						
+# --------- Take all Node ID's with their coordinates from INPUT FILE ---------						
    if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {
       puts stderr "Cannot open input file"
    } else {
@@ -103,41 +111,76 @@ lappend iColumnConnect $ColumnConnect
       close $inFileID
    }
 lappend iNodeList $NodeList
-	
-# --------- Make the list for perpendicular vectors for each element axis  ---------			
+#
+# -----------------     PERPENDICULAR VECTORS TO EACH ELEMENT AXIS  ------------
+# 
+# ----------------   FOR BEAMs  -----------------		
 set Beamvecxz ""
 set Girdervecxz ""
 set Columnvecxz ""
+set LBeamtmp ""
 for {set k 0} {$k <= [expr [llength [lindex $iBeamConnect $numInFile]]-1]} {incr k 1} {;	# For Beams
-set vecxztmp ""
+	set vecxztmp ""
+	set LBeamtmp2 ""
 	for {set m 0} {$m <= [expr [llength [lindex $iNodeList $numInFile]]-1]} {incr m 1} {
 		if {[lindex $iBeamConnect $numInFile $k 1]==[lindex $iNodeList $numInFile $m 0]} {; # search element's first node in Nodelist
-			set vecxztmp1x [lindex $iNodeList $numInFile $m 1]
+			set nodeI [lindex $iNodeList $numInFile $m 0]; # Node ID
+			set vecxztmp1x [lindex $iNodeList $numInFile $m 1]; # Node coordinates
 			set vecxztmp1y [lindex $iNodeList $numInFile $m 2]
 			set vecxztmp1z [lindex $iNodeList $numInFile $m 3]
 		}
 		if {[lindex $iBeamConnect $numInFile $k 2]==[lindex $iNodeList $numInFile $m 0]} {; # search element's second node in Nodelist
-			set vecxztmp2x [lindex $iNodeList $numInFile $m 1]
+			set nodeJ [lindex $iNodeList $numInFile $m 0]; # Node ID
+			set vecxztmp2x [lindex $iNodeList $numInFile $m 1]; # Node coordinates
 			set vecxztmp2y [lindex $iNodeList $numInFile $m 2]
 			set vecxztmp2z [lindex $iNodeList $numInFile $m 3]
 		}
 	}
+	# Length of each Beam element
+	set elementid [lindex $iBeamConnect $numInFile $k 0]
+	set tmpelementlength [expr pow(($vecxztmp2x-$vecxztmp1x),2)+pow(($vecxztmp2y-$vecxztmp1y),2)+pow(($vecxztmp2z-$vecxztmp1z),2)]
+	set elementlength [expr sqrt($tmpelementlength)]
+	lappend LBeamtmp2 $elementid
+	lappend LBeamtmp2 $elementlength
+	lappend LBeamtmp $LBeamtmp2
+
+# Set element axis direction to default directions first
 	if {$vecxztmp1x>$vecxztmp2x} {
-		#set changetmp $vecxztmp1z
-		#set vecxztmp1z $vecxztmp2z
-		#set vecxztmp2z $changetmp
-		#set changetmp $vecxztmp1x
-		#set vecxztmp1x $vecxztmp2x
-		#set vecxztmp2x $changetmp
-	# { x, z } becomes { -z, x } : perpendicular CCW
-		set vecxztmpx [expr $vecxztmp2z-$vecxztmp1z]
-		set vecxztmpz [expr $vecxztmp1x-$vecxztmp2x]		
-	}
+		set changetmp $vecxztmp1z
+		set vecxztmp1z $vecxztmp2z
+		set vecxztmp2z $changetmp
+		set changetmp $vecxztmp1x
+		set vecxztmp1x $vecxztmp2x
+		set vecxztmp2x $changetmp
+		set changetmp $nodeI
+		set nodeI $nodeJ
+		set nodeJ $changetmp
 		
-	# { x, z } becomes { z, -x } : perpendicular CW
-	set vecxztmpx [expr $vecxztmp1z-$vecxztmp2z]
-	set vecxztmpz [expr $vecxztmp2x-$vecxztmp1x]
-	
+		# { x, z } becomes { -z, x } : perpendicular CCW
+		set vecxztmpx [expr $vecxztmp1z-$vecxztmp2z]
+		set vecxztmpz [expr $vecxztmp2x-$vecxztmp1x]
+
+	} elseif {$vecxztmp1x==$vecxztmp2x} {
+		if {$vecxztmp1z<$vecxztmp2z} {
+			set changetmp $vecxztmp1z
+			set vecxztmp1z $vecxztmp2z
+			set vecxztmp2z $changetmp
+			set changetmp $vecxztmp1x
+			set vecxztmp1x $vecxztmp2x
+			set vecxztmp2x $changetmp
+			set changetmp $nodeI
+			set nodeI $nodeJ
+			set nodeJ $changetmp		
+		}
+			# { x, z } becomes { -z, x } : perpendicular CCW
+			set vecxztmpx [expr $vecxztmp1z-$vecxztmp2z]
+			set vecxztmpz 0.0
+	} else {
+		# { x, z } becomes { -z, x } : perpendicular CCW
+		set vecxztmpx [expr $vecxztmp1z-$vecxztmp2z]
+		set vecxztmpz [expr $vecxztmp2x-$vecxztmp1x]
+	}
+
 	set vecxztmpabs [expr {sqrt($vecxztmpx*$vecxztmpx+$vecxztmpz*$vecxztmpz)}]
 	set vecxztmpx [expr {$vecxztmpx/$vecxztmpabs}]
 	set vecxztmpz [expr {$vecxztmpz/$vecxztmpabs}]
@@ -145,39 +188,94 @@ set vecxztmp ""
 	lappend vecxztmp $vecxztmpx
 	lappend vecxztmp $vecxztmpz
 	lappend Beamvecxz $vecxztmp
+	
+	# Update the element Connectivity Nodes to set element axis correctly while creating the element later
+	lset iBeamConnect $numInFile $k 1 $nodeI
+	lset iBeamConnect $numInFile $k 2 $nodeJ
 }
+lappend LBeam $LBeamtmp; # {Beam ID,lengths}
 
+#
+# ----------------   FOR GIRDERs  ---------------------
+#
+set LGirdtmp ""
 for {set k 0} {$k <= [expr [llength [lindex $iGirderConnect $numInFile]]-1]} {incr k 1} {;	# For Girder
-set vecxztmp ""
+	set vecxztmp ""
+	set LGirdtmp2 ""
 	for {set m 0} {$m <= [expr [llength [lindex $iNodeList $numInFile]]-1]} {incr m 1} {
 		if {[lindex $iGirderConnect $numInFile $k 1]==[lindex $iNodeList $numInFile $m 0]} {; # search element's first node in Nodelist
-			set vecxztmp1x [lindex $iNodeList $numInFile $m 1]
+			set nodeI [lindex $iNodeList $numInFile $m 0]; # Node ID
+			set vecxztmp1x [lindex $iNodeList $numInFile $m 1]; # Node coordinates
 			set vecxztmp1y [lindex $iNodeList $numInFile $m 2]
 			set vecxztmp1z [lindex $iNodeList $numInFile $m 3]
 		}
 		if {[lindex $iGirderConnect $numInFile $k 2]==[lindex $iNodeList $numInFile $m 0]} {; # search element's second node in Nodelist
-			set vecxztmp2x [lindex $iNodeList $numInFile $m 1]
+			set nodeJ [lindex $iNodeList $numInFile $m 0]; # Node ID
+			set vecxztmp2x [lindex $iNodeList $numInFile $m 1]; # Node coordinates
 			set vecxztmp2y [lindex $iNodeList $numInFile $m 2]
 			set vecxztmp2z [lindex $iNodeList $numInFile $m 3]
 		}
 	}
-	if {$vecxztmp1z>$vecxztmp2z} {
-#		set changetmp $vecxztmp1z
-#		set vecxztmp1z $vecxztmp2z
-#		set vecxztmp2z $changetmp
-#		set changetmp $vecxztmp1x
-#		set vecxztmp1x $vecxztmp2x
-#		set vecxztmp2x $changetmp
-	# { x, z } becomes { z, -x } : perpendicular CW
-	
-	set vecxztmpx [expr $vecxztmp1z-$vecxztmp2z]
-	set vecxztmpz [expr $vecxztmp2x-$vecxztmp1x]
-	} 
-	# { x, z } becomes { -z, x } : perpendicular CCW
-	set vecxztmpx [expr $vecxztmp2z-$vecxztmp1z]
-	set vecxztmpz [expr $vecxztmp1x-$vecxztmp2x]	
+	# Length of each girder element
+	set elementid [lindex $iGirderConnect $numInFile $k 0]
+	set tmpelementlength [expr pow(($vecxztmp2x-$vecxztmp1x),2)+pow(($vecxztmp2y-$vecxztmp1y),2)+pow(($vecxztmp2z-$vecxztmp1z),2)]
+	set elementlength [expr sqrt($tmpelementlength)]
+	lappend LGirdtmp2 $elementid
+	lappend LGirdtmp2 $elementlength
+	lappend LGirdtmp $LGirdtmp2
 
-	
+# Set element axis direction to default directions first	
+	if {$vecxztmp1x<$vecxztmp2x} {
+		if {$vecxztmp1z<$vecxztmp2z} {
+			# { x, z } becomes { z, -x } : perpendicular CW
+			set vecxztmpx [expr $vecxztmp2z-$vecxztmp1z]
+			set vecxztmpz [expr $vecxztmp1x-$vecxztmp2x]		
+		} else {
+			set changetmp $vecxztmp1z
+			set vecxztmp1z $vecxztmp2z
+			set vecxztmp2z $changetmp
+			set changetmp $vecxztmp1x
+			set vecxztmp1x $vecxztmp2x
+			set vecxztmp2x $changetmp
+			set changetmp $nodeI
+			set nodeI $nodeJ
+			set nodeJ $changetmp
+			# { x, z } becomes { z, -x } : perpendicular CW
+			set vecxztmpx [expr $vecxztmp2z-$vecxztmp1z]
+			set vecxztmpz [expr $vecxztmp1x-$vecxztmp2x]
+		}
+	} elseif {$vecxztmp1x>$vecxztmp2x} {
+		if {$vecxztmp1z>$vecxztmp2z} {
+			set changetmp $vecxztmp1z
+			set vecxztmp1z $vecxztmp2z
+			set vecxztmp2z $changetmp
+			set changetmp $vecxztmp1x
+			set vecxztmp1x $vecxztmp2x
+			set vecxztmp2x $changetmp
+			set changetmp $nodeI
+			set nodeI $nodeJ
+			set nodeJ $changetmp
+		}
+		# { x, z } becomes { z, -x } : perpendicular CW
+		set vecxztmpx [expr $vecxztmp2z-$vecxztmp1z]
+		set vecxztmpz [expr $vecxztmp1x-$vecxztmp2x]		
+	} else {
+		if {$vecxztmp1z>$vecxztmp2z} {
+			set changetmp $vecxztmp1z
+			set vecxztmp1z $vecxztmp2z
+			set vecxztmp2z $changetmp
+			set changetmp $vecxztmp1x
+			set vecxztmp1x $vecxztmp2x
+			set vecxztmp2x $changetmp
+			set changetmp $nodeI
+			set nodeI $nodeJ
+			set nodeJ $changetmp
+		}
+		# { x, z } becomes { z, -x } : perpendicular CW
+		set vecxztmpx [expr $vecxztmp2z-$vecxztmp1z]
+		set vecxztmpz [expr $vecxztmp1x-$vecxztmp2x]
+	} 
+
 	set vecxztmpabs [expr {sqrt($vecxztmpx*$vecxztmpx+$vecxztmpz*$vecxztmpz)}]
 	set vecxztmpx [expr {$vecxztmpx/$vecxztmpabs}]
 	set vecxztmpz [expr {$vecxztmpz/$vecxztmpabs}]
@@ -185,8 +283,15 @@ set vecxztmp ""
 	lappend vecxztmp $vecxztmpx
 	lappend vecxztmp $vecxztmpz
 	lappend Girdervecxz $vecxztmp
-}
 
+	# Update the element Connectivity Nodes to set element axis correctly while creating the element later	
+	lset iGirderConnect $numInFile $k 1 $nodeI
+	lset iGirderConnect $numInFile $k 2 $nodeJ
+}
+lappend LGird $LGirdtmp; # {Girder ID,lengths}
+#
+#
+#
 set ivecxztmp ""
 lappend ivecxztmp 0.0
 lappend ivecxztmp 0.0
@@ -217,29 +322,60 @@ for {set k 0} {$k <= [expr [llength [lindex $iGirderConnect $numInFile]]-1]} {in
 	lset IDGirdTransf $numInFile $k 1 [lindex $Girdervecxz $k 0]
 	lset IDGirdTransf $numInFile $k 3 [lindex $Girdervecxz $k 1]
 }
-
-for {set i 0} {$i <= [expr [llength [lindex $iColumnConnect $numInFile]]-1]} {incr i 1} {;	# For Column
-set vecxztmp ""
-	for {set k 0} {$k <= [expr [llength [lindex $iBeamConnect $numInFile]]-1]} {incr k 1} {
-		if {[lindex $iBeamConnect $numInFile $k 1]==[lindex $iColumnConnect $numInFile $i 1]} {
-			set vecxztmpx [lindex $IDBeamTransf $numInFile $k 1]
-			set vecxztmpz [lindex $IDBeamTransf $numInFile $k 3]
-		} elseif {[lindex $iBeamConnect $numInFile $k 1]==[lindex $iColumnConnect $numInFile $i 2]} {
-			set vecxztmpx [lindex $IDBeamTransf $numInFile $k 1]
-			set vecxztmpz [lindex $IDBeamTransf $numInFile $k 3]			
+#
+# ----------------   FOR COLUMNs  ---------------------
+#
+set LColtmp ""
+for {set k 0} {$k <= [expr [llength [lindex $iColumnConnect $numInFile]]-1]} {incr k 1} {;	# For Column
+	set vecxztmp ""
+	set LColtmp2 ""
+	for {set n 0} {$n <= [expr [llength [lindex $iBeamConnect $numInFile]]-1]} {incr n 1} {
+		if {[lindex $iBeamConnect $numInFile $n 1]==[lindex $iColumnConnect $numInFile $k 1]} {
+			set vecxztmpx [lindex $IDBeamTransf $numInFile $n 1]
+			set vecxztmpz [lindex $IDBeamTransf $numInFile $n 3]
+		} elseif {[lindex $iBeamConnect $numInFile $n 1]==[lindex $iColumnConnect $numInFile $k 2]} {
+			set vecxztmpx [lindex $IDBeamTransf $numInFile $n 1]
+			set vecxztmpz [lindex $IDBeamTransf $numInFile $n 3]			
 		}
-		if {[lindex $iBeamConnect $numInFile $k 2]==[lindex $iColumnConnect $numInFile $i 1]} {
-			set vecxztmpx [lindex $IDBeamTransf $numInFile $k 1]
-			set vecxztmpz [lindex $IDBeamTransf $numInFile $k 3]
-		} elseif {[lindex $iBeamConnect $numInFile $k 2]==[lindex $iColumnConnect $numInFile $i 2]} {
-			set vecxztmpx [lindex $IDBeamTransf $numInFile $k 1]
-			set vecxztmpz [lindex $IDBeamTransf $numInFile $k 3]
+		if {[lindex $iBeamConnect $numInFile $n 2]==[lindex $iColumnConnect $numInFile $k 1]} {
+			set vecxztmpx [lindex $IDBeamTransf $numInFile $n 1]
+			set vecxztmpz [lindex $IDBeamTransf $numInFile $n 3]
+		} elseif {[lindex $iBeamConnect $numInFile $n 2]==[lindex $iColumnConnect $numInFile $k 2]} {
+			set vecxztmpx [lindex $IDBeamTransf $numInFile $n 1]
+			set vecxztmpz [lindex $IDBeamTransf $numInFile $n 3]
 		}
 	}
+
+	for {set m 0} {$m <= [expr [llength [lindex $iNodeList $numInFile]]-1]} {incr m 1} {
+		if {[lindex $iColumnConnect $numInFile $k 1]==[lindex $iNodeList $numInFile $m 0]} {; # search element's first node in Nodelist
+			set nodeI [lindex $iNodeList $numInFile $m 0]; # Node ID
+			set vecxztmp1x [lindex $iNodeList $numInFile $m 1]; # Node coordinates
+			set vecxztmp1y [lindex $iNodeList $numInFile $m 2]
+			set vecxztmp1z [lindex $iNodeList $numInFile $m 3]
+		}
+		if {[lindex $iColumnConnect $numInFile $k 2]==[lindex $iNodeList $numInFile $m 0]} {; # search element's second node in Nodelist
+			set nodeJ [lindex $iNodeList $numInFile $m 0]; # Node ID
+			set vecxztmp2x [lindex $iNodeList $numInFile $m 1]; # Node coordinates
+			set vecxztmp2y [lindex $iNodeList $numInFile $m 2]
+			set vecxztmp2z [lindex $iNodeList $numInFile $m 3]
+		}
+	}	
+	
+	# Length of each column element
+	set elementid [lindex $iColumnConnect $numInFile $k 0]
+	set tmpelementlength [expr pow(($vecxztmp2x-$vecxztmp1x),2)+pow(($vecxztmp2y-$vecxztmp1y),2)+pow(($vecxztmp2z-$vecxztmp1z),2)]
+	set elementlength [expr sqrt($tmpelementlength)]
+	lappend LColtmp2 $elementid
+	lappend LColtmp2 $elementlength
+	lappend LColtmp $LColtmp2
+	#
 	lappend vecxztmp $vecxztmpx
 	lappend vecxztmp $vecxztmpz
 	lappend Columnvecxz $vecxztmp
 }
+lappend LCol $LColtmp; # {Column ID,lengths}
+#
+#
 
 set ivecxztmp2 ""
 for {set i 0} {$i <= [expr [llength [lindex $iColumnConnect $numInFile]]-1]} {incr i 1} {
@@ -263,6 +399,9 @@ set ColTransfType Linear ;		# options for columns: Linear PDelta  Corotational
 #
 puts IDBeamTransf$IDBeamTransf
 puts IDGirdTransf$IDGirdTransf
+puts IDColTransf$IDColTransf
+#
+# ----------------  DEFINE TRANSFORMATIONS  ---------------
 for {set k 0} {$k <= [expr [llength [lindex $iBeamConnect $numInFile]]-1]} {incr k 1} {
 	set vecxzX [lindex $IDBeamTransf $numInFile $k 1]
 	set vecxzY [lindex $IDBeamTransf $numInFile $k 2]
