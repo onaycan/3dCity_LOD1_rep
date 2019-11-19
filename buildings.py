@@ -364,6 +364,43 @@ class building:
             bs=self.beamsets[bsi]
             self.file.write("node"+"\t"+str(bs.mid_vertex.id)+"\t"+str(bs.mid_vertex.coordsX[0]*meter2inches)+"\t"+str(bs.mid_vertex.coordsX[1]*meter2inches)+"\t"+str(bs.mid_vertex.coordsX[2]*meter2inches)+"\n")
 
+        self.file.write("#BEAM"+"\n")
+        beamlengths={}
+        for bsi in range(1,len(self.beamsets)):
+            bs=self.beamsets[bsi]
+            for b in bs.beams:
+                if b._type=="beam":
+                    self.file.write("beam"+"\t"+str(b.femid)+"\t"+str(b.vertices[0].id)+"\t"+str(b.vertices[1].id)+"\n")
+                    beamlengths[b.femid]=b.length*meter2inches
+        self.file.write("#BEAMLENGTH"+"\n")
+        for b in beamlengths.keys():
+            self.file.write("Beamlength_"+str(b)+"\t"+str(beamlengths[b])+"\n")
+
+        
+        self.file.write("#GIRDER"+"\n")
+        beamlengths={}
+        for bsi in range(1,len(self.beamsets)):
+            bs=self.beamsets[bsi]
+            for b in bs.beams:
+                if b._type=="girder":
+                    self.file.write("girder"+"\t"+str(b.femid)+"\t"+str(b.vertices[0].id)+"\t"+str(b.vertices[1].id)+"\n")
+                    beamlengths[b.femid]=b.length*meter2inches
+        self.file.write("#GIRDERLENGTH"+"\n")
+        for b in beamlengths.keys():
+            self.file.write("Beamlength_"+str(b)+"\t"+str(beamlengths[b])+"\n")
+
+
+        self.file.write("#COLUMN"+"\n")
+        columnlengths={}
+        for c in self.columns:
+            self.file.write("column"+"\t"+str(c.femid)+"\t"+str(c.truss.vertices[0].id)+"\t"+str(c.truss.vertices[1].id)+"\n")
+            columnlengths[c.femid]=c.truss.length*meter2inches
+        self.file.write("#COLUMNLENGTH"+"\n")
+        for b in columnlengths.keys():
+            self.file.write("Columnlength_"+str(b)+"\t"+str(columnlengths[b])+"\n")
+        
+        self.file.write("#END"+"\n")
+
 
 
         self.file.close()

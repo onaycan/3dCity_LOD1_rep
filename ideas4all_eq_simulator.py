@@ -358,10 +358,12 @@ class Ui(QtWidgets.QMainWindow):
             if current_building_id!="None":
                 bs.add(current_building_id)
         for b in bs:
-            path="./outputs/b_"+str(b)
+            path="./FEM_MiddleWare/inputs/b_"+str(b)
             os.makedirs(path, exist_ok=True)
             self.buildings[b].print_simulation_file(path+"/"+"INPUT_1.tcl")
-
+            os.system("cd FEM_MiddleWare")
+            os.system("OpenSees.exe Frame3D_analyze_Dynamic_EQ_bidirect.tcl "+"b_"+str(b))
+            os.system("cd ..")
 
 
 

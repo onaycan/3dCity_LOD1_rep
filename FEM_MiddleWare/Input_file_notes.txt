@@ -1,0 +1,3 @@
+input dosyasinda belirlenmis commentler disinda asla baska comment olmayacak
+
+input dosyasindaki belirli commentler belirlendiginin disindaki sekilde olmayacak

@@ -13,6 +13,7 @@ class beam:
         self._type=_type
         for i in range(3):
             self.dir.append(self.vertices[1].coordsX[i]-self.vertices[0].coordsX[i])
+        self.length=math.sqrt(self.dir[0]*self.dir[0]+self.dir[1]*self.dir[1]+self.dir[2]*self.dir[2])
     #def dot_product(self, _anytruss):
     #    return math.sqrt(self.dir[0]*_anytruss.dir[0]+self.dir[1]*_anytruss.dir[1]+self.dir[2]*_anytruss.dir[2])
     #def check_if_beam(self):
