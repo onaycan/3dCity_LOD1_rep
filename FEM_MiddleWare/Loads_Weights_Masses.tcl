@@ -7,6 +7,7 @@ set Tslab [expr 6*$in];			# 6-inch slab
 set DLfactor 1.0;				# scale dead load up a little
 set QdlGird $QGird; 			# dead load distributed along girder
 #
+#
 # ---------- Column Weights -----------------------
 	set WeightColtmp ""
 	set WeightColtmp2 ""
@@ -41,8 +42,6 @@ set QdlGird $QGird; 			# dead load distributed along girder
 	lappend WeightGird $WeightGirdtmp2
 	lappend Lslab $Lslabtmp2
 
-#exteriorBeamnodesID   exteriorGirdernodesID
-
 	for {set i 0} {$i <= [expr [llength [lindex $LGird $numInFile]]-1]} {incr i 1} {
 		 lset WeightGird $numInFile  $i 1 [expr $QdlGird*[lindex $LGird $numInFile $i 1]];    # total Gird weight
 		 lset Lslab $numInFile  $i 1 [expr [lindex $LGird $numInFile $i 1]/2]; 			# slab extends a distance of $LGird/2 in/out of plane
@@ -73,7 +72,6 @@ set QdlGird $QGird; 			# dead load distributed along girder
 		 lset WeightBeam $numInFile $i 0 [lindex $LBeam $numInFile $i 0]
 	}
 
-	
 # 
 # assign masses to the nodes that the columns are connected to 
 # each connection takes the mass of 1/2 of each element framing into it (mass=weight/$g)
@@ -119,16 +117,16 @@ if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {
 						set WeightNodetmp 0
 						# Column Weights contribution to nodal mass
 						for {set i 0} {$i <= [expr [llength [lindex $LCol $numInFile]]-1]} {incr i 1} {
-							if {[lindex $elidcolumnnodes $numInFile $i 1] == $word} {
-								set a [lindex $elidcolumnnodes $numInFile $i 0]; #Element ID of connected elements for this node
+							if {[lindex $iColumnConnect $numInFile $i 1] == $word} {
+								set a [lindex $iColumnConnect $numInFile $i 0]; #Element ID of connected elements for this node
 								for {set j 0} {$j <= [expr [llength [lindex $LCol $numInFile]]-1]} {incr j 1} {
 									if {[lindex $WeightCol $numInFile $j 0] == $a} {
 										set WeightNodetmp [expr $WeightNodetmp + [expr [lindex $WeightCol $numInFile $j 1]/2]]
 									}
 								}
 							}
-							if {[lindex $elidcolumnnodes $numInFile $i 2] == $word} {
-								set b [lindex $elidcolumnnodes $numInFile $i 0]; #Element ID of connected elements for this node
+							if {[lindex $iColumnConnect $numInFile $i 2] == $word} {
+								set b [lindex $iColumnConnect $numInFile $i 0]; #Element ID of connected elements for this node
 								for {set j 0} {$j <= [expr [llength [lindex $LCol $numInFile]]-1]} {incr j 1} {
 									if {[lindex $WeightCol $numInFile $j 0] == $b} {
 										set WeightNodetmp [expr $WeightNodetmp + [expr [lindex $WeightCol $numInFile $j 1]/2]]
@@ -138,16 +136,16 @@ if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {
 						}
 						# Beam Weights contribution to nodal mass
 						for {set i 0} {$i <= [expr [llength [lindex $LBeam $numInFile]]-1]} {incr i 1} {
-							if {[lindex $elidbeamnodes $numInFile $i 1] == $word} {
-								set a [lindex $elidbeamnodes $numInFile $i 0]; #Element ID of connected elements for this node
+							if {[lindex $iBeamConnect $numInFile $i 1] == $word} {
+								set a [lindex $iBeamConnect $numInFile $i 0]; #Element ID of connected elements for this node
 								for {set j 0} {$j <= [expr [llength [lindex $LBeam $numInFile]]-1]} {incr j 1} {
 									if {[lindex $WeightBeam $numInFile $j 0] == $a} {
 										set WeightNodetmp [expr $WeightNodetmp + [expr [lindex $WeightBeam $numInFile $j 1]/2]]
 									}
 								}
 							}
-							if {[lindex $elidbeamnodes $numInFile $i 2] == $word} {
-								set b [lindex $elidbeamnodes $numInFile $i 0]; #Element ID of connected elements for this node
+							if {[lindex $iBeamConnect $numInFile $i 2] == $word} {
+								set b [lindex $iBeamConnect $numInFile $i 0]; #Element ID of connected elements for this node
 								for {set j 0} {$j <= [expr [llength [lindex $LBeam $numInFile]]-1]} {incr j 1} {
 									if {[lindex $WeightBeam $numInFile $j 0] == $b} {
 										set WeightNodetmp [expr $WeightNodetmp + [expr [lindex $WeightBeam $numInFile $j 1]/2]]
@@ -157,16 +155,16 @@ if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {
 						}
 						# Girder Weights contribution to nodal mass
 						for {set i 0} {$i <= [expr [llength [lindex $LGird $numInFile]]-1]} {incr i 1} {
-							if {[lindex $elidgirdnodes $numInFile $i 1] == $word} {
-								set a [lindex $elidgirdnodes $numInFile $i 0]; #Element ID of connected elements for this node
+							if {[lindex $iGirderConnect $numInFile $i 1] == $word} {
+								set a [lindex $iGirderConnect $numInFile $i 0]; #Element ID of connected elements for this node
 								for {set j 0} {$j <= [expr [llength [lindex $LGird $numInFile]]-1]} {incr j 1} {
 									if {[lindex $WeightGird $numInFile $j 0] == $a} {
 										set WeightNodetmp [expr $WeightNodetmp + [expr [lindex $WeightGird $numInFile $j 1]/2]]
 									}
 								}
 							}
-							if {[lindex $elidgirdnodes $numInFile $i 2] == $word} {
-								set b [lindex $elidgirdnodes $numInFile $i 0]; #Element ID of connected elements for this node
+							if {[lindex $iGirderConnect $numInFile $i 2] == $word} {
+								set b [lindex $iGirderConnect $numInFile $i 0]; #Element ID of connected elements for this node
 								for {set j 0} {$j <= [expr [llength [lindex $LGird $numInFile]]-1]} {incr j 1} {
 									if {[lindex $WeightGird $numInFile $j 0] == $b} {
 										set WeightNodetmp [expr $WeightNodetmp + [expr [lindex $WeightGird $numInFile $j 1]/2]]
@@ -225,11 +223,11 @@ lset MassTotal $numInFile 1 [expr $WeightTotaltmp/$g]; # total mass for each bui
 
 
 set sumWiHitmp 0.0;		
-for {set i 1} {$i <= [lindex $NStory $numInFile]} {incr i 1} {
+#for {set i 1} {$i <= [lindex $NStory $numInFile]} {incr i 1} {
 	# sum of storey weight times height, for lateral-load distribution
-	set sumWiHitmp [expr $sumWiHitmp + [lindex $aFloorWeight $numInFile [expr $i-1]]*[lindex $FloorHeight $numInFile [expr $i-1]]]
-}
-lset sumWiHi $numInFile 1 $sumWiHitmp; 	# sum of storey weight times height, for lateral-load distribution
+#	set sumWiHitmp [expr $sumWiHitmp + [lindex $aFloorWeight $numInFile [expr $i-1]]*[lindex $FloorHeight $numInFile [expr $i-1]]]
+#}
+#lset sumWiHi $numInFile 1 $sumWiHitmp; 	# sum of storey weight times height, for lateral-load distribution
 
 # --------------------------------------------------------------------------------------------------------------------------------
 # LATERAL-LOAD distribution for static pushover analysis
@@ -239,28 +237,28 @@ lset sumWiHi $numInFile 1 $sumWiHitmp; 	# sum of storey weight times height, for
 set iFPush "";			#lateral load for pushover
 set iNodePush "";		# nodes for pushover/cyclic, vectorized
 set iFjtmp ""
-for {set i 1} {$i <= [lindex $NStory $numInFile]} {incr i 1} {
-	lappend iFjtmp 0
-}
-	lappend iFj $iFjtmp;   # per floor per building
+#for {set i 1} {$i <= [lindex $NStory $numInFile]} {incr i 1} {
+#	lappend iFjtmp 0
+#}
+#	lappend iFj $iFjtmp;   # per floor per building
 
-for {set j 0} {$j <=[expr [lindex $NStory $numInFile]-1]} {incr j 1} {	
-	set FloorWeight [lindex $iFloorWeight $numInFile 0 $j];
-	lset iFj $numInFile $j [expr $FloorWeight*[lindex $FloorHeight $numInFile $j]/[lindex $sumWiHi $numInFile 1]*[lindex $WeightTotal $numInFile 1]];		
-}
+#for {set j 0} {$j <=[expr [lindex $NStory $numInFile]-1]} {incr j 1} {	
+#	set FloorWeight [lindex $iFloorWeight $numInFile 0 $j];
+#	lset iFj $numInFile $j [expr $FloorWeight*[lindex $FloorHeight $numInFile $j]/[lindex $sumWiHi $numInFile 1]*[lindex $WeightTotal $numInFile 1]];		
+#}
 
 
-lappend iNodePush [lindex $iMasterNode $numInFile] ;		# nodes for pushover/cyclic, vectorized
-set iFPush $iFj;				# lateral load for pushover, vectorized for each building (list)
+#lappend iNodePush [lindex $iMasterNode $numInFile] ;		# nodes for pushover/cyclic, vectorized
+#set iFPush $iFj;				# lateral load for pushover, vectorized for each building (list)
 
-puts WeightTotal:$WeightTotal
-puts MassTotal:$MassTotal
-puts sumWiHi:$sumWiHi
-puts iFloorWeight:$iFloorWeight
-puts aFloorWeight:$aFloorWeight
-puts FloorHeight$FloorHeight
-puts FloorWeight$FloorWeight
-puts iFj$iFj
-puts iFPush$iFPush
+#puts WeightTotal:$WeightTotal
+#puts MassTotal:$MassTotal
+#puts sumWiHi:$sumWiHi
+#puts iFloorWeight:$iFloorWeight
+#puts aFloorWeight:$aFloorWeight
+#puts FloorHeight$FloorHeight
+#puts FloorWeight$FloorWeight
+#puts iFj$iFj
+#puts iFPush$iFPush
 #
 #

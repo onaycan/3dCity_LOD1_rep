@@ -34,13 +34,10 @@ set NStorytmp 0
 
 
 # --------- CREATE MODEL from input files -----------------------------------------------------
-	source Transformation_Vectors.tcl;				# for Transformation purposes
+	source AssemblefromElements.tcl;				# Beam/Girder tags, Transformation, vector definitions, etc.
+	source AssemblefromNodes.tcl;					# Identify special lists from Nodal input, define output node lists, etc.
 	source CreateNodes.tcl;							# Creates nodes
 	source CreateElements.tcl;						# Creates elements
-	source AssemblefromNodes.tcl; 					# Do some work from the Node info from INPUT file
-	source AssemblefromElements.tcl;				# Do some work from the Element info from INPUT file
-
-	
 #
 # --------------------- FLOOR HEIGHTs ---------------------------------------------------------  
 #
@@ -88,7 +85,7 @@ set NStorytmp 0
 							set list [regexp -all -inline -- {[-+]?[0-9]*\.?[0-9]+} $line]
 							foreach word [split $list] {
 								for {set i 0} {$i <= [expr [llength [lindex $LCol $numInFile]]-1]} {incr i 1} {
-									if {[lindex $elidcolumnnodes $numInFile $i 1] == $word || [lindex $elidcolumnnodes $numInFile $i 2] == $word} {
+									if {[lindex $iColumnConnect $numInFile $i 1] == $word || [lindex $iColumnConnect $numInFile $i 2] == $word} {
 										lset aFloorHeight $numInFile [expr $floorlevel-1] [lindex $LCol $numInFile $i 1];  # assuming all colums same length!!!
 										set incr [expr $incr+1]
 										break
@@ -111,6 +108,5 @@ set NStorytmp 0
 	}
 	
 #
-	puts "Number of Stories in Y: $NStorytmp and Number of Frames in each floor: $NFrame"
 #
 #

@@ -65,3 +65,20 @@ def processNGAfile(filepath, scalefactor=None):
         return desc, npts, dt, time, inp_acc
     except IOError:
         print("processMotion FAILED!: File is not in the directory")
+
+accfile = 'H-E01140.at2'
+desc, npts, dt, time, inp_acc = processNGAfile (accfile)
+plt.plot(time,inp_acc)
+
+outfile = open("outputacc.txt","w+")
+for j in range(len(time)):
+	outfile.write(str(inp_acc[j]))
+	outfile.write("\n")
+outfile.close()
+
+outfile = open("outputtime.txt","w+")
+for j in range(len(time)):
+	outfile.write(str(time[j]))
+	outfile.write("\n")
+outfile.close()
+

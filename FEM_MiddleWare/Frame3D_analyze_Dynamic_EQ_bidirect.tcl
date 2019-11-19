@@ -5,35 +5,31 @@
 #
 puts " -------------Uniaxial Inelastic Section, Nonlinear Model -------------"
 puts " -------------Uniform Earthquake Excitation -------------"
-
+puts " -------------Bidirectional GroundMotion -------------"
+#
 # source in procedures
 source ReadSMDfile.tcl;		# procedure for reading GM file and converting it to proper format
-
-# Bidirectional Uniform Earthquake ground motion (uniform acceleration input at all support nodes)
-set iGMfile "H-E01140 H-E12140" ;		# ground-motion filenames, should be different files
-set iGMdirection "1 3";			# ground-motion direction
-set iGMfact "1.5 0.75";			# ground-motion scaling factor
-set dtInput 0.00500 ;		    # DT
-
-# ------------  SET UP -------------------------------------------------------------------------
-wipe;				# clear memory of all past model definitions
-model BasicBuilder -ndm 3 -ndf 6;	# Define the model builder, ndm=#dimension, ndf=#dofs
-
-puts "Enter the folder name inside the input folder which includes simulation include files: "
-gets stdin inputFoldername
-set inputFilename "inputs/$inputFoldername/INPUT_"
-set InputDir inputs/$inputFoldername;			# set up name of input directory
-set FileExt ".tcl"
-set outputFilename $inputFoldername
-set dataDir outputs/$outputFilename;			# set up name of data directory
-file mkdir "$dataDir"; 			# create data directory
-set GMdir "GMfiles";		# ground-motion file directory
 source LibUnits.tcl;			# define units (kip-in-sec)
 source DisplayPlane.tcl;		# procedure for displaying a plane in model
 source DisplayModel3D.tcl;		# procedure for displaying 3D perspectives of model
 source BuildRCrectSection.tcl;		# procedure for definining RC fiber section
-
-set numModes 3; # decide the number of Modes in total for Modal Analysis
+source AreaPolygon.tcl
+#
+# Bidirectional Uniform Earthquake ground motion (uniform acceleration input at all support nodes)
+set iGMdirection "1 3";			# ground-motion direction
+set iGMfact "1.5 0.75";			# ground-motion scaling factor
+set dtInput 0.00500 ;		    # DT
+#
+# ------------  SET UP -------------------------------------------------------------------------
+wipe;				# clear memory of all past model definitions
+model BasicBuilder -ndm 3 -ndf 6;	# Define the model builder, ndm=#dimension, ndf=#dofs
+#
+set inputFilename "$inputFilepath/INPUT_"
+set InputDir $inputFilepath;			# set up name of input directory
+set FileExt ".tcl"
+set outputFilename $inputFoldername
+set dataDir outputs/$outputFilename;			# set up name of data directory
+file mkdir "$dataDir"; 			# create data directory
 #
 # Define SECTIONS -------------------------------------------------------------
 set SectionType FiberSection;		# options: Elastic FiberSection
@@ -52,20 +48,25 @@ set SecTagTorsion 70
 # ---------------------- Define SECTIONs --------------------------------
 source SectionProperties.tcl
 #
-# ---------------------   INPUT DATA from FILE  -----------------------------------------------------
+# ---------------------   Input File Names List  -----------------------------------------------------
 set Buildingnum 0; # initialize the total number of buildings
 set ainputFilename ""
 source split_inputFileNames.tcl; # take file names, define number of buildings and take the building IDs
 #
 # ---------------------   CREATE THE MODEL  ----------------------------------------------------------
 for {set numInFile 0} {$numInFile <= [expr $Buildingnum-1]} {incr numInFile 1} {
- source Frame3D_Build_RC.tcl ;  			#inputing many building parameters
- source Loads_Weights_Masses.tcl; 		#Gravity, Nodal Weights, Lateral Loads, Masses
+	source Frame3D_Build_RC.tcl ;  			#inputing many building parameters
+}
+source Anglebtw.tcl
+for {set numInFile 0} {$numInFile <= [expr $Buildingnum-1]} {incr numInFile 1} {
+	source FloorLoadDistribution.tcl; 		# Dead Load Distribution on Floors among interior Frames with unknown slab geometries
+	source Loads_Weights_Masses.tcl; 		# Gravity, Nodal Weights, Lateral Loads, Masses
 }
 if {$Buildingnum>1} {
 	source Pounding_buildings.tcl
 }
 puts "Model Built"
+
 #
 # -------------------------  MODAL ANALYSIS  ---------------------------------------------------
 source ModalAnalysis.tcl
@@ -105,7 +106,6 @@ recorder plot $dataDir/Disp_FreeNodes$_aBID.out DisplDOF[lindex $iGMdirection 1]
 
 # set up ground-motion-analysis parameters
 set DtAnalysis	[expr 0.01*$sec];	# time-step Dt for lateral analysis
-set TmaxAnalysis	[expr 10. *$sec];	# maximum duration of ground-motion analysis -- should be 50*$sec
 
 # ----------- set up analysis parameters
 source LibAnalysisDynamicParameters.tcl;	# constraintsHandler,DOFnumberer,system-ofequations,convergenceTest,solutionAlgorithm,integrator

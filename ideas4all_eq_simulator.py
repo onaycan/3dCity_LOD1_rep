@@ -358,12 +358,32 @@ class Ui(QtWidgets.QMainWindow):
             if current_building_id!="None":
                 bs.add(current_building_id)
         for b in bs:
-            path="./FEM_MiddleWare/inputs/b_"+str(b)
-            os.makedirs(path, exist_ok=True)
-            self.buildings[b].print_simulation_file(path+"/"+"INPUT_1.tcl")
-            os.system("cd FEM_MiddleWare")
-            os.system("OpenSees.exe Frame3D_analyze_Dynamic_EQ_bidirect.tcl "+"b_"+str(b))
-            os.system("cd ..")
+            root="./FEM_MiddleWare"
+            inputpath=root+"/inputs/b_"+str(b)
+            os.makedirs(inputpath, exist_ok=True)
+            self.buildings[b].print_simulation_file(inputpath+"/"+"INPUT_1.tcl")
+            configfile=open(root+"/Paramaters_Input.txt",'w')
+            
+            configfile.write("#Input folder path:\n")
+            configfile.write(os.path.abspath(inputpath).replace("\\","/")+"\n")
+            lateral_path=os.path.abspath(root+"/GMfiles/H-E12140.at2").replace("\\","/")
+            perp_path=os.path.abspath(root+"/GMfiles/H-E01140.at2").replace("\\","/")
+            
+            configfile.write("#Acceleration recording in lateral direction:\n")
+            configfile.write(lateral_path+"\n")
+            configfile.write("#Acceleration recording in perpendicular direction:\n")
+            configfile.write(perp_path+"\n")
+            configfile.write("#Simulation type: Dynamic or Static Pushover:\n")
+            configfile.write("Dynamic\n")
+            configfile.write("#Maximum duration for simulation in seconds:\n")
+            configfile.write("10.\n")
+            configfile.write("#Number of modes in Modal Analysis:\n")
+            configfile.write("3\n")
+            configfile.close()
+
+            os.chdir(root)
+            os.system("OpenSees.exe ./StartSimulation.tcl "+"b_"+str(b))
+            os.chdir("..")
 
 
 
