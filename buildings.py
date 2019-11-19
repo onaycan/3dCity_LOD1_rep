@@ -351,13 +351,15 @@ class building:
         self.file=open(_filename,'w')
         self.file.write("#BUILDING ID "+str(self.name)+"\n")
         self.file.write("#GROUND"+"\n")
-        for v in self.beamsets[0].vertices:
+        for vi in range(len(self.beamsets[0].vertices)-1):
+            v=self.beamsets[0].vertices[vi]
             self.file.write("node"+"\t"+str(v.id)+"\t"+str(v.coordsX[0]*meter2inches)+"\t"+str(v.coordsX[1]*meter2inches)+"\t"+str(v.coordsX[2]*meter2inches)+"\n")
 
         for bsi in range(1,len(self.beamsets)):
             bs=self.beamsets[bsi]
             self.file.write("#FLOOR #"+str(bsi)+"\n")
-            for v in bs.vertices:
+            for vi in range(len(bs.vertices)-1):
+                v=bs.vertices[vi]
                 self.file.write("node"+"\t"+str(v.id)+"\t"+str(v.coordsX[0]*meter2inches)+"\t"+str(v.coordsX[1]*meter2inches)+"\t"+str(v.coordsX[2]*meter2inches)+"\n")
         self.file.write("#MASTERNODES"+"\n")
         for bsi in range(1,len(self.beamsets)):

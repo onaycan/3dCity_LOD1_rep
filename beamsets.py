@@ -33,19 +33,26 @@ class beamset:
         return_beamset_id=self.id.split(delim)[0]+delim+_level
         return_beamset=beamset(return_beamset_id)
         copied_vertex_ids=[]
-        for v in self.vertices:
+        original_id=_last_vertex_id+1
+        for vi in range(0,len(self.vertices)):
+            if vi<len(self.vertices)-1:
+                new_vertex_id=_last_vertex_id+1
+                _last_vertex_id+=1
+            else:
+                new_vertex_id=original_id
+            v=self.vertices[vi]
             new_coords_lat_long=[0.0,0.0]
             for c in range(2):
                 new_coords_lat_long[c]=v.coords_lat_long[c]
-            _vertices[str(_last_vertex_id+1)]=vertices.vertex(str(_last_vertex_id+1),new_coords_lat_long)
+            _vertices[str(new_vertex_id)]=vertices.vertex(str(new_vertex_id),new_coords_lat_long)
             for c in range(2):
-                _vertices[str(_last_vertex_id+1)].coordsX[c]=v.coordsX[c]
-            _vertices[str(_last_vertex_id+1)].coordsX[2]=self.fp_max_elev
+                _vertices[str(new_vertex_id)].coordsX[c]=v.coordsX[c]
+            _vertices[str(new_vertex_id)].coordsX[2]=self.fp_max_elev
             for c in range(3):
-                _vertices[str(_last_vertex_id+1)].coordsX[c]+=_shift[c]
-            copied_vertex_ids.append(str(_last_vertex_id+1))
-            return_beamset.append_vertex(_vertices[str(_last_vertex_id+1)])
-            _last_vertex_id+=1
+                _vertices[str(new_vertex_id)].coordsX[c]+=_shift[c]
+            copied_vertex_ids.append(str(new_vertex_id))
+            return_beamset.append_vertex(_vertices[str(new_vertex_id)])
+            
         for ndid in range(len(copied_vertex_ids)-1):
             nd_tip=copied_vertex_ids[ndid]
             nd_tail=copied_vertex_ids[ndid+1]
