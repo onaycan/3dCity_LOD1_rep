@@ -108,16 +108,22 @@ def define_city(vtkWidget):
         b.find_neighbours(vertices,buildings,neighboursofthis)
         b.neighbours=neighboursofthis
     
-    last_vertex_id=max([int(v) for v in vertices.keys() if "#" not in v])
+    #set femids for the vertices:
+    _femid=1
+    for v in vertices.values():
+        v.set_fem_id(_femid)
+        _femid+=1
+    
+    last_vertex_femid=max([int(v.femid) for v in vertices.values()])
     floorvertices=[]
-    dummy_vertex=_vertices.vertex(str(last_vertex_id+1),[0.0,0.0])
+    dummy_vertex=_vertices.vertex(str(last_vertex_femid+1),[0.0,0.0])
     floorvertices.append(dummy_vertex)
     for b in buildings.values():
         b.adoptto_building_blocks(buildingblocks,buildings)
         b.set_floor_mid(floorvertices)
     # end assigning homes to vertices and neighbour information
     
-
+    
 
 
 
