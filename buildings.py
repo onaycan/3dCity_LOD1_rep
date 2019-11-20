@@ -359,7 +359,7 @@ class building:
             printed.append(round(v.coordsX[0]*meter2inches,precision))
             printed.append(round(v.coordsX[1]*meter2inches,precision))
             printed.append(round(v.coordsX[2]*meter2inches,precision))
-            self.file.write("node"+"\t"+str(v.id)+"\t"+str(printed[0])+"\t"+str(printed[1])+"\t"+str(printed[2])+"\n")
+            self.file.write("node"+"\t"+str(v.femid)+"\t"+str(printed[0])+"\t"+str(printed[1])+"\t"+str(printed[2])+"\n")
 
         for bsi in range(1,len(self.beamsets)):
             bs=self.beamsets[bsi]
@@ -370,7 +370,7 @@ class building:
                 printed.append(round(v.coordsX[0]*meter2inches,precision))
                 printed.append(round(v.coordsX[1]*meter2inches,precision))
                 printed.append(round(v.coordsX[2]*meter2inches,precision))
-                self.file.write("node"+"\t"+str(v.id)+"\t"+str(printed[0])+"\t"+str(printed[1])+"\t"+str(printed[2])+"\n")
+                self.file.write("node"+"\t"+str(v.femid)+"\t"+str(printed[0])+"\t"+str(printed[1])+"\t"+str(printed[2])+"\n")
         self.file.write("#MASTERNODES"+"\n")
         for bsi in range(1,len(self.beamsets)):
             bs=self.beamsets[bsi]
@@ -386,7 +386,7 @@ class building:
             bs=self.beamsets[bsi]
             for b in bs.beams:
                 if b._type=="beam":
-                    self.file.write("beam"+"\t"+str(b.femid)+"\t"+str(b.vertices[0].id)+"\t"+str(b.vertices[1].id)+"\n")
+                    self.file.write("beam"+"\t"+str(b.femid)+"\t"+str(b.vertices[0].femid)+"\t"+str(b.vertices[1].femid)+"\n")
                     beamlengths[b.femid]=b.length*meter2inches
         self.file.write("#BEAMLENGTH"+"\n")
         for b in beamlengths.keys():
@@ -399,7 +399,7 @@ class building:
             bs=self.beamsets[bsi]
             for b in bs.beams:
                 if b._type=="girder":
-                    self.file.write("girder"+"\t"+str(b.femid)+"\t"+str(b.vertices[0].id)+"\t"+str(b.vertices[1].id)+"\n")
+                    self.file.write("girder"+"\t"+str(b.femid)+"\t"+str(b.vertices[0].femid)+"\t"+str(b.vertices[1].femid)+"\n")
                     beamlengths[b.femid]=b.length*meter2inches
         self.file.write("#GIRDERLENGTH"+"\n")
         for b in beamlengths.keys():
@@ -409,7 +409,7 @@ class building:
         self.file.write("#COLUMN"+"\n")
         columnlengths={}
         for c in self.columns:
-            self.file.write("column"+"\t"+str(c.femid)+"\t"+str(c.truss.vertices[0].id)+"\t"+str(c.truss.vertices[1].id)+"\n")
+            self.file.write("column"+"\t"+str(c.femid)+"\t"+str(c.truss.vertices[0].femid)+"\t"+str(c.truss.vertices[1].femid)+"\n")
             columnlengths[c.femid]=c.truss.length*meter2inches
         self.file.write("#COLUMNLENGTH"+"\n")
         for b in columnlengths.keys():
@@ -420,7 +420,6 @@ class building:
 
 
         self.file.close()
-
     '''    
     
     def building2opensees(self):

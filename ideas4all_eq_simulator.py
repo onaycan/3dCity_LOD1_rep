@@ -9,7 +9,7 @@ from PyQt5 import Qt, QtCore, QtGui
 from PyQt5.QtCore import Qt as qut
 from PyQt5.QtCore import QTimer
 import sys
-import city
+import cities
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 import vtk
 import vtk_interaction
@@ -436,16 +436,43 @@ if __name__=='__main__':
 
     frame = window.tabWidget
 
-
-
-
     
     vl=window.vtkLayout
     vtkWidget = QVTKRenderWindowInteractor(frame)
     vl.addWidget(vtkWidget)
 
+
+    pre_eq_city=cities.city("caferaga","pre-eq",vtkWidget,"map_kadiköy_caferaga.osm","map_kadiköy_caferaga.json")
+    pre_eq_city.build_city()
+    
+    #city_vtk, buildings, ground_triangles, vertices, building_blocks, beams, beamsets=city.define_city(vtkWidget)
     
 
+    #self.vtk_interactor, self.buildings, self.ground_triangles, self.vertices, self.buildingblocks, self.beams, self.beamsets
+    
+    window.show_tree_widget(pre_eq_city.buildings, pre_eq_city.ground_triangles, pre_eq_city.vtk_interactor, pre_eq_city.vertices, pre_eq_city.buildingblocks, pre_eq_city.beams, pre_eq_city.beamsets)
+    
+    window.EnableSelection_checkBox.stateChanged.connect(window.manage_selection_enablebox)
+    window.buildings_pushbutton.clicked.connect(window.manage_selection_box_b)
+    window.buildingBlocks_pushbutton.clicked.connect(window.manage_selection_box_bb)
+    window.append_pushbutton.clicked.connect(window.fill_table_widget)
+    window.configure_simulation_pushbutton.clicked.connect(window.configure_simulation)
+
+    pre_eq_city.vtk_interactor.style = vtk_interaction.MouseInteractorHighLightActor(pre_eq_city.vtk_interactor, window)
+    pre_eq_city.vtk_interactor.style.SetDefaultRenderer(pre_eq_city.vtk_interactor.ren)
+    pre_eq_city.vtk_interactor.iren.SetInteractorStyle(pre_eq_city.vtk_interactor.style)
+    pre_eq_city.vtk_interactor.visualize(_initial=True)
+    pre_eq_city.vtk_interactor.renWin.Render()
+    print("render window is rendered")
+    pre_eq_city.vtk_interactor.iren.Initialize()
+    pre_eq_city.vtk_interactor.iren.Start()
+    edit=window.textEdit_Log
+    sys.stdout = OutLog( edit, sys.stdout)
+
+
+
+    
+    '''
     city_vtk, buildings, ground_triangles, vertices, building_blocks, beams, beamsets=city.define_city(vtkWidget)
     window.show_tree_widget(buildings, ground_triangles, city_vtk, vertices, building_blocks, beams, beamsets)
     
@@ -465,7 +492,7 @@ if __name__=='__main__':
     city_vtk.iren.Start()
     edit=window.textEdit_Log
     sys.stdout = OutLog( edit, sys.stdout)
-    
+    '''
 
 
     app.exec_()

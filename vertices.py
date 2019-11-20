@@ -15,6 +15,9 @@ class vertex:
     def append_facetid(self,_id):
         self.facetids.append(_id)
 
+    def set_fem_id(self,_femid):
+        self.femid=_femid
+
     def convert_lat_long2m(self, _origin):
 
         x_origin=(self.coords_lat_long[0],_origin[1])

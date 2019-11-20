@@ -1,5 +1,5 @@
 #Input folder path:
-C:/PZI_16292/CAN/PersDev/EQ/05_QuickPipeline/00_AdressLevels_Master/3dCity_LOD1_rep/FEM_MiddleWare/inputs/b_707657700
+C:/PZI_16292/CAN/PersDev/EQ/05_QuickPipeline/00_AdressLevels_Master/3dCity_LOD1_rep/FEM_MiddleWare/inputs/b_694263834
 #Acceleration recording in lateral direction:
 C:/PZI_16292/CAN/PersDev/EQ/05_QuickPipeline/00_AdressLevels_Master/3dCity_LOD1_rep/FEM_MiddleWare/GMfiles/H-E12140.at2
 #Acceleration recording in perpendicular direction:
