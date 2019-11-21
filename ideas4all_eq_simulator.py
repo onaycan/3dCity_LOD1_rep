@@ -386,7 +386,7 @@ class Ui(QtWidgets.QMainWindow):
             configfile=open(root+"/Paramaters_Input.txt",'w')
             
             configfile.write("#Input folder path:\n")
-            configfile.write(os.path.abspath(".\\3dCity_LOD1_rep\\FEM_MiddleWare\\inputs").replace("\\","/")+"\n")
+            configfile.write(os.path.abspath(inputpath).replace("\\","/")+"\n")
             
             
             configfile.write("#Acceleration recording in lateral direction:\n")
