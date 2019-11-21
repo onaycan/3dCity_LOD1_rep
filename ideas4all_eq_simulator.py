@@ -251,23 +251,26 @@ class Ui(QtWidgets.QMainWindow):
             self.tableWidget.setCellWidget(i, 3, self.checkboxes[j])
             i += 1
 
-    def show_tree_widget(self, buildings, ground_triangles, city_vtk, vertices, building_blocks, beams, beamsets):
-        self.city_vtk=city_vtk
-        self.buildings=buildings
-        self.building_blocks=building_blocks
-        self.vertices=vertices
-        self.ground_triangles=ground_triangles
+    def show_tree_widget(self, _pre_eq_city):
+        self.pre_eq_city=_pre_eq_city
+        self.city_vtk=self.pre_eq_city.vtk_interactor
+        self.buildings=self.pre_eq_city.buildings
+        self.building_blocks=self.pre_eq_city.buildingblocks
+        self.vertices=self.pre_eq_city.vertices
+        self.beamsets=self.pre_eq_city.beamsets
+        self.beams=self.pre_eq_city.beams
+        self.ground_triangles=self.pre_eq_city.ground_triangles
         tw    = self.treeWidget
         tw.setHeaderLabels(['City Item', 'Quantity [-]', 'Remark', 'Color'])
         tw.setAlternatingRowColors(True)
 
-        bb = QtWidgets.QTreeWidgetItem(tw, ['Building Blocks', str(len(building_blocks.keys())), '# of Building Blocks'])
+        bb = QtWidgets.QTreeWidgetItem(tw, ['Building Blocks', str(len(self.building_blocks.keys())), '# of Building Blocks'])
         bb.setFlags(bb.flags() |QtCore.Qt.ItemIsTristate | QtCore.Qt.ItemIsUserCheckable)
 
-        b = QtWidgets.QTreeWidgetItem(bb, ['Buildings', str(len(buildings.keys())), '# of Buildings'])
+        b = QtWidgets.QTreeWidgetItem(bb, ['Buildings', str(len(self.buildings.keys())), '# of Buildings'])
         b.setFlags(b.flags() |QtCore.Qt.ItemIsTristate | QtCore.Qt.ItemIsUserCheckable)
 
-        self.gt = QtWidgets.QTreeWidgetItem(tw, ['Terrain', str(len(ground_triangles.keys())), '# of triangles of geoterrain'])
+        self.gt = QtWidgets.QTreeWidgetItem(tw, ['Terrain', str(len(self.ground_triangles.keys())), '# of triangles of geoterrain'])
         self.gt.setCheckState(0, QtCore.Qt.Checked)
         
         
@@ -276,7 +279,7 @@ class Ui(QtWidgets.QMainWindow):
         panltriangles=0
         walltriangles=0
 
-        for bui in buildings.values():
+        for bui in self.buildings.values():
             for bs in bui.basesets:
                 panltriangles+=len(bs.triangles)
             
@@ -285,7 +288,7 @@ class Ui(QtWidgets.QMainWindow):
             columns+=len(bui.columns)
 
 
-        b1=QtWidgets.QTreeWidgetItem(b, ['Panels', str(len(beamsets.keys())), '# of Panels'])
+        b1=QtWidgets.QTreeWidgetItem(b, ['Panels', str(len(self.beamsets.keys())), '# of Panels'])
         b1.setFlags(b1.flags() | QtCore.Qt.ItemIsTristate | QtCore.Qt.ItemIsUserCheckable)
         #b1.setCheckState(0, QtCore.Qt.Checked)
         b11=QtWidgets.QTreeWidgetItem(b1, ['Panel Facets', str(panltriangles), '# of triangles on Panels'])
@@ -296,7 +299,7 @@ class Ui(QtWidgets.QMainWindow):
         b11.setFlags(b1.flags() | QtCore.Qt.ItemIsUserCheckable)
         b11.setCheckState(0, QtCore.Qt.Checked)
 
-        bms=[b for b in beams.values() if b._type=="beam"]
+        bms=[b for b in self.beams.values() if b._type=="beam"]
         b12=QtWidgets.QTreeWidgetItem(b1, ['Panel Beams', str(len(bms)), '# of Beams around Panels'])
         self.PanelBeamPushbutton=ColorButton(self.city_vtk,'Panel Beams', self.buildings, self.checked_items)
         self.PanelBeamPushbutton.setStyleSheet("background:rgb(0,0,150)")
@@ -305,7 +308,7 @@ class Ui(QtWidgets.QMainWindow):
         b12.setFlags(b1.flags() | QtCore.Qt.ItemIsUserCheckable)
         b12.setCheckState(0, QtCore.Qt.Checked)
 
-        grds=[b for b in beams.values() if b._type=="girder"]
+        grds=[b for b in self.beams.values() if b._type=="girder"]
         b13=QtWidgets.QTreeWidgetItem(b1, ['Panel Girders', str(len(grds)), '# of Girders around Panels'])
         self.PanelGirderPushbutton=ColorButton(self.city_vtk,'Panel Girders', self.buildings, self.checked_items)
         self.PanelGirderPushbutton.setStyleSheet("background:rgb(150,0,150)")
@@ -502,9 +505,6 @@ if __name__=='__main__':
 
     frame = window.tabWidget
 
-    
-
-    
     vl=window.vtkLayout
     vtkWidget = QVTKRenderWindowInteractor(frame)
     vl.addWidget(vtkWidget)
@@ -514,8 +514,9 @@ if __name__=='__main__':
     
     pre_eq_city=cities.city("caferaga","pre-eq",vtkWidget,"map_kadiköy_caferaga.osm","map_kadiköy_caferaga.json")
     pre_eq_city.build_city()
+    pre_eq_city.set_interactor()
     
-    window.show_tree_widget(pre_eq_city.buildings, pre_eq_city.ground_triangles, pre_eq_city.vtk_interactor, pre_eq_city.vertices, pre_eq_city.buildingblocks, pre_eq_city.beams, pre_eq_city.beamsets)
+    window.show_tree_widget(pre_eq_city)
     
     window.EnableSelection_checkBox.stateChanged.connect(window.manage_selection_enablebox)
     window.buildings_pushbutton.clicked.connect(window.manage_selection_box_b)
@@ -531,6 +532,27 @@ if __name__=='__main__':
     print("render window is rendered")
     pre_eq_city.vtk_interactor.iren.Initialize()
     pre_eq_city.vtk_interactor.iren.Start()
+
+
+
+    # start postwindow
+    post_frame = window.Postprocessing_tabwidget
+    vpl=window.vtkPostLayout
+    postvtkWidget = QVTKRenderWindowInteractor(post_frame)
+    vpl.addWidget(postvtkWidget)
+    post_eq_city=cities.city("caferaga","post-eq",postvtkWidget,"map_kadiköy_caferaga.osm","map_kadiköy_caferaga.json")
+    post_eq_city.copy_city(pre_eq_city)
+    post_eq_city.set_interactor()
+    post_eq_city.vtk_interactor.iren.SetInteractorStyle(vtk.vtkInteractorStyleTrackballCamera())
+    post_eq_city.vtk_interactor.visualize(_initial=True)
+    post_eq_city.vtk_interactor.renWin.Render()
+    print("render window is rendered")
+    post_eq_city.vtk_interactor.iren.Initialize()
+    post_eq_city.vtk_interactor.iren.Start()
+
+
+
+
     edit=window.textEdit_Log
     sys.stdout = OutLog( edit, sys.stdout)
     
