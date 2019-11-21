@@ -1,5 +1,6 @@
 # ------------   Eigenvalue analysis  -------------------------------------------------------
 set lambda [eigen $numModes];
+#set lambda [eigen -fullGenLapack $numModes]
 
 # calculate frequencies and periods of the structure ---------------------------------------------------
 set omega {}
@@ -21,14 +22,17 @@ foreach lam $lambda {
 #DisplayModel3D ModeShape ;	 # options: DeformedShape NodeNumbers ModeShape
 
 # -------------------------------------------------------------
-
 for {set numInFile 0} {$numInFile <= [expr $Buildingnum-1]} {incr numInFile 1} {
 	set SupportNodeFirst [lindex $iSupportNode $numInFile 0];						# ID: first support node
 	set aBID [lindex $BID $numInFile]; # assign Building number
 	set _aBID "_Bid$aBID"
 
+	# set up name of data directory and create the folder
+	set modedir $dataDir/Building_$aBID/ModalAnalysis
+	file mkdir "$modedir"
+	
 	for { set k 1 } { $k <= $numModes } { incr k } {
-		recorder Node -file [format "$dataDir/mode%i$_aBID.out" $k] -node [lindex $FreeNodeID $numInFile] -dof 1 2 3  "eigen $k"
+		recorder Node -file [format "$modedir/mode%i$_aBID.out" $k] -node [lindex $FreeNodeID $numInFile] -dof 1 2 3  "eigen $k"
 	}
 	puts "eigenfrequencies of the Building $aBID are $f"
 	puts "periods of the Building $aBID are $T"

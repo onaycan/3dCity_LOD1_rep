@@ -1,6 +1,29 @@
 #
-#		Model of each buildings
+#		CREATE THE BUILDING MODELs
+#	Element, Nodes and many other definitions:
+#	Properties of the building (height, BiD, number of Storeys, elt's-nodes @each floor
 #
+# ------------------------  Building ID's  ------------------------------------------------------
+	if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {
+		puts stderr "Cannot open input file for reading number of storeys"
+	} else {
+		foreach line [split [read $inFileID] \n] {
+			if {[llength $line] == 0} {
+				# Blank line --> do nothing
+				continue
+			} else {
+				foreach word [split $line] {
+					if {[string match $word "#BUILDING"] == 1} {
+						set bidtmp [regexp -all -inline -- {[-+]?[0-9]*\.?[0-9]+} $line]
+						lappend BID $bidtmp
+						break
+					}
+				}
+			break
+			}
+		}
+	close $inFileID
+	}
 # ------------------------  Number of Storeys ------------------------------------------------------
 set NStorytmp 0
 	if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {

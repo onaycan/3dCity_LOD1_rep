@@ -174,7 +174,11 @@ if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {
 						}
 						set WeightNode $WeightNodetmp;   #actual weight for the Node
 						set MassNode [expr $WeightNode/$g];
-						mass $word $MassNode 0. $MassNode 0. 0. 0.;	 # define mass
+						if {[lindex $NStory $numInFile]==1} {
+							mass $word $MassNode 1e-9 $MassNode 0. 0. 0.;	 # define mass
+						} else {
+							mass $word $MassNode 0. $MassNode 0. 0. 0.;	 # define mass
+						}
 						lset aFloorWeight $numInFile [expr $floorcounter-1] [expr [lindex $aFloorWeight $numInFile [expr $floorcounter-1]] + $WeightNode];    
 						break
 					}

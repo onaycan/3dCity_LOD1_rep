@@ -22,7 +22,7 @@ set exteriorGirdernodesID ""
 set exteriorBeamnodesID ""	
 set aNBayZ ""
 set aNFrame ""
-for {set k 0} {$k <= [expr [lindex $NStory $numInFile]-1]} {incr k 1} {;	#first find the seed for exterior search
+for {set k 0} {$k <= [expr [lindex $NStory $numInFile]-1]} {incr k 1} {;	#first find the seed for exterior search !!! [lindex $ifloornodes $numInFile $i $j 1]
 	set maxX 0.0
 	set maxZ 0.0
 	set exteriornodestmp2 ""

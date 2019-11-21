@@ -31,7 +31,28 @@ if [catch {open $filename r} inFileID] {
 			} elseif {[string match $line "#Number of modes in Modal Analysis:"] == 1} {
 				set flag "modes"
 				continue 
-			} 
+			} elseif {[string match $line "#RC Section"] == 1} {
+				set flag "RCSection"
+				continue 
+			} elseif {[string match $line "#Square-Column section width in inches:"] == 1} {
+				set flag "HCol"
+				continue 
+			} elseif {[string match $line "#Beam depth -- perpendicular to bending axis in inches:"] == 1} {
+				set flag "HBeam"
+				continue 
+			} elseif {[string match $line "#Beam width -- parallel to bending axis in inches:"] == 1} {
+				set flag "BBeam"
+				continue 
+			} elseif {[string match $line "#Girder depth -- perpendicular to bending axis in inches:"] == 1} {
+				set flag "HGird"
+				continue 
+			} elseif {[string match $line "#Girder width -- parallel to bending axis in inches:"] == 1} {
+				set flag "BGird"
+				continue 
+			} elseif {[string match $line "#W Section"] == 1} {
+				set flag "WSection"
+				continue 
+			}
 			if {[string match $flag "inputfolderpath"] == 1} {
 				set inputFoldername [lrange [file split $line] end end]
 				set inputFilepath $line
@@ -53,7 +74,21 @@ if [catch {open $filename r} inFileID] {
 				set TmaxAnalysis $line;	# maximum duration of ground-motion analysis 
 			} elseif {$flag == "modes"} {
 				set numModes $line; # decide the number of Modes in total for Modal Analysis
-			}			
+			} elseif {$flag == "RCSection"} {
+				set RCSection $line; # decide the number of Modes in total for Modal Analysis
+			} elseif {$flag == "HCol"} {
+				set HCol $line
+			} elseif {$flag == "HBeam"} {
+				set HBeam $line
+			} elseif {$flag == "BBeam"} {
+				set BBeam $line
+			} elseif {$flag == "HGird"} {
+				set HGird $line
+			} elseif {$flag == "BGird"} {
+				set BGird $line
+			} elseif {$flag == "WSection"} {
+				set WSection $line
+			}		
 		}
 	}
 close $inFileID

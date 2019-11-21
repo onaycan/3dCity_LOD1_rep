@@ -78,9 +78,8 @@ if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {
 		}
 	close $inFileID
 	}
-	lappend iSupportNode $iSupportNodetmp
+	lappend iSupportNode $iSupportNodetmp; # SUPPORT NODE IDS
 	
-
 # ----------------------MASTERNODES IDS ------------------------------------------------------
 
     if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {

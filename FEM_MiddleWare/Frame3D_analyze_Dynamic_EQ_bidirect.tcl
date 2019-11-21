@@ -12,8 +12,15 @@ source ReadSMDfile.tcl;		# procedure for reading GM file and converting it to pr
 source LibUnits.tcl;			# define units (kip-in-sec)
 source DisplayPlane.tcl;		# procedure for displaying a plane in model
 source DisplayModel3D.tcl;		# procedure for displaying 3D perspectives of model
-source BuildRCrectSection.tcl;		# procedure for definining RC fiber section
 source AreaPolygon.tcl
+# Define SECTIONS -------------------------------------------------------------
+set SectionType FiberSection;		# options: Elastic FiberSection
+if {$RCSection=="True"} {
+	source BuildRCrectSection.tcl;		# procedure for definining RC fiber section
+}
+if {$WSection=="True"} {
+	source Wsection.tcl; # procedure for definining steel W section
+}
 #
 # Bidirectional Uniform Earthquake ground motion (uniform acceleration input at all support nodes)
 set iGMdirection "1 3";			# ground-motion direction
@@ -31,9 +38,6 @@ set outputFilename $inputFoldername
 set dataDir outputs/$outputFilename;			# set up name of data directory
 file mkdir "$dataDir"; 			# create data directory
 #
-# Define SECTIONS -------------------------------------------------------------
-set SectionType FiberSection;		# options: Elastic FiberSection
-#
 set RigidDiaphragm ON ;		# options: ON, OFF. specify this before the analysis parameters are set the constraints are handled differently.
 set perpDirn 2;				# perpendicular to plane of rigid diaphragm
 set numIntgrPts 5;
@@ -46,8 +50,12 @@ set BeamSecTagFiber 5
 set GirdSecTagFiber 6
 set SecTagTorsion 70
 # ---------------------- Define SECTIONs --------------------------------
-source SectionProperties.tcl
-#
+if {$RCSection=="True"} {
+	source RCrectSectionProperties.tcl
+}
+if {$WSection=="True"} {
+	source WSectionProperties.tcl
+}
 # ---------------------   Input File Names List  -----------------------------------------------------
 set Buildingnum 0; # initialize the total number of buildings
 set ainputFilename ""
@@ -100,9 +108,6 @@ analyze $NstepGravity;		# apply gravity
 # ------------------------------------------------- maintain constant gravity loads and reset time to zero
 loadConst -time 0.0
 
-# Plot displacements -------------------------------------------------------------
-recorder plot $dataDir/Disp_FreeNodes$_aBID.out DisplDOF[lindex $iGMdirection 0] 1100 10 400 400 -columns  1 [expr 1+[lindex $iGMdirection 0]] ; # a window to plot the nodal displacements versus time
-recorder plot $dataDir/Disp_FreeNodes$_aBID.out DisplDOF[lindex $iGMdirection 1] 1100 410 400 400 -columns 1 [expr 1+[lindex $iGMdirection 1]] ; # a window to plot the nodal displacements versus time
 
 # set up ground-motion-analysis parameters
 set DtAnalysis	[expr 0.01*$sec];	# time-step Dt for lateral analysis

@@ -423,7 +423,8 @@ if __name__=='__main__':
     palette.setColor(QtGui.QPalette.Button, QtGui.QColor(53,53,53))
     palette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.white)
     palette.setColor(QtGui.QPalette.BrightText, QtCore.Qt.red)
-         
+    #palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.Button, QtCore.Qt.gray)
+    
     palette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(142,45,197).lighter())
     palette.setColor(QtGui.QPalette.HighlightedText, QtCore.Qt.black)   
     app.setPalette(palette)
@@ -441,14 +442,9 @@ if __name__=='__main__':
     vtkWidget = QVTKRenderWindowInteractor(frame)
     vl.addWidget(vtkWidget)
 
-
+    
     pre_eq_city=cities.city("caferaga","pre-eq",vtkWidget,"map_kadiköy_caferaga.osm","map_kadiköy_caferaga.json")
     pre_eq_city.build_city()
-    
-    #city_vtk, buildings, ground_triangles, vertices, building_blocks, beams, beamsets=city.define_city(vtkWidget)
-    
-
-    #self.vtk_interactor, self.buildings, self.ground_triangles, self.vertices, self.buildingblocks, self.beams, self.beamsets
     
     window.show_tree_widget(pre_eq_city.buildings, pre_eq_city.ground_triangles, pre_eq_city.vtk_interactor, pre_eq_city.vertices, pre_eq_city.buildingblocks, pre_eq_city.beams, pre_eq_city.beamsets)
     
@@ -468,31 +464,9 @@ if __name__=='__main__':
     pre_eq_city.vtk_interactor.iren.Start()
     edit=window.textEdit_Log
     sys.stdout = OutLog( edit, sys.stdout)
-
-
-
     
-    '''
-    city_vtk, buildings, ground_triangles, vertices, building_blocks, beams, beamsets=city.define_city(vtkWidget)
-    window.show_tree_widget(buildings, ground_triangles, city_vtk, vertices, building_blocks, beams, beamsets)
-    
-    window.EnableSelection_checkBox.stateChanged.connect(window.manage_selection_enablebox)
-    window.buildings_pushbutton.clicked.connect(window.manage_selection_box_b)
-    window.buildingBlocks_pushbutton.clicked.connect(window.manage_selection_box_bb)
-    window.append_pushbutton.clicked.connect(window.fill_table_widget)
-    window.configure_simulation_pushbutton.clicked.connect(window.configure_simulation)
 
-    city_vtk.style = vtk_interaction.MouseInteractorHighLightActor(city_vtk, window)
-    city_vtk.style.SetDefaultRenderer(city_vtk.ren)
-    city_vtk.iren.SetInteractorStyle(city_vtk.style)
-    city_vtk.visualize(_initial=True)
-    city_vtk.renWin.Render()
-    print("render window is rendered")
-    city_vtk.iren.Initialize()
-    city_vtk.iren.Start()
-    edit=window.textEdit_Log
-    sys.stdout = OutLog( edit, sys.stdout)
-    '''
+
 
 
     app.exec_()

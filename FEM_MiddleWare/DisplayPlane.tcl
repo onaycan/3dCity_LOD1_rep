@@ -27,7 +27,6 @@ proc DisplayPlane {ShapeType dAmp viewPlane {nEigen 0}  {quadrant 0}} {
 	set uLocal [string index $viewPlane 0];	# viewPlane local-x axis in global coordinates
 	set vLocal [string index $viewPlane 1];	# viewPlane local-y axis in global coordinates
 
-
 	if  {$viewPlane =="3D" } {
 		set uMin $Zmin+$Xmin
 		set uMax $Zmax+$Xmax
@@ -73,7 +72,7 @@ proc DisplayPlane {ShapeType dAmp viewPlane {nEigen 0}  {quadrant 0}} {
 	set vWide [expr $vMax - $vMin+$epsilon];
 	set uMid [expr ($uMin+$uMax)/2];
 	set vMid [expr ($vMin+$vMax)/2];
-
+	
 	# keep the following general, as change the X and Y and Z for each view plane
 	# next three commmands define viewing system, all values in global coords
 	vrp $Xo $Yo $Zo;    # point on the view plane in global coord, center of local viewing system
