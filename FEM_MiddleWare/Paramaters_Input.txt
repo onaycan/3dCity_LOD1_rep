@@ -1,9 +1,9 @@
 #Input folder path:
-c:/Users/gw00161333/SEISMICITY/Bidirectional_Earthquake_GroundMotion/inputs/3Story_1Bay_1Bayz
+c:/PZI_16292/CAN/PersDev/EQ/05_QuickPipeline/00_AdressLevels_Master/3dCity_LOD1_rep/3dCity_LOD1_rep/FEM_MiddleWare/inputs/b_694706284
 #Acceleration recording in lateral direction:
-c:/Users/gw00161333/SEISMICITY/Bidirectional_Earthquake_GroundMotion/GMfiles/H-E12140.at2
+c:/PZI_16292/CAN/PersDev/EQ/05_QuickPipeline/00_AdressLevels_Master/3dCity_LOD1_rep/FEM_MiddleWare/GMfiles/H-E12140.at2
 #Acceleration recording in perpendicular direction:
-c:/Users/gw00161333/SEISMICITY/Bidirectional_Earthquake_GroundMotion/GMfiles/H-E01140.at2
+c:/PZI_16292/CAN/PersDev/EQ/05_QuickPipeline/00_AdressLevels_Master/3dCity_LOD1_rep/FEM_MiddleWare/GMfiles/H-E01140.at2
 #Simulation type: Dynamic or Static Pushover:
 Dynamic
 #Maximum duration for simulation in seconds:

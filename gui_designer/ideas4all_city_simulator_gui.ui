@@ -317,7 +317,7 @@
                         </widget>
                        </item>
                        <item row="1" column="1">
-                        <widget class="QComboBox" name="comboBox">
+                        <widget class="QComboBox" name="simtype_comboBox">
                          <item>
                           <property name="text">
                            <string>Dynamic</string>
@@ -354,14 +354,14 @@
                         </widget>
                        </item>
                        <item row="3" column="1">
-                        <widget class="QSpinBox" name="spinBox">
+                        <widget class="QSpinBox" name="mode_spinBox">
                          <property name="value">
                           <number>3</number>
                          </property>
                         </widget>
                        </item>
                        <item row="2" column="1">
-                        <widget class="QDoubleSpinBox" name="doubleSpinBox">
+                        <widget class="QDoubleSpinBox" name="duration_doubleSpinBox">
                          <property name="value">
                           <double>10.000000000000000</double>
                          </property>
@@ -454,7 +454,7 @@
                         </widget>
                        </item>
                        <item row="0" column="1">
-                        <widget class="QCheckBox" name="checkBox">
+                        <widget class="QCheckBox" name="rc_checkBox">
                          <property name="text">
                           <string>True</string>
                          </property>
@@ -464,14 +464,14 @@
                         </widget>
                        </item>
                        <item row="1" column="1">
-                        <widget class="QCheckBox" name="checkBox_2">
+                        <widget class="QCheckBox" name="ws_checkBox">
                          <property name="text">
                           <string>True</string>
                          </property>
                         </widget>
                        </item>
                        <item row="2" column="1">
-                        <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+                        <widget class="QDoubleSpinBox" name="cw_doubleSpinBox">
                          <property name="minimum">
                           <double>10.000000000000000</double>
                          </property>
@@ -484,7 +484,7 @@
                         </widget>
                        </item>
                        <item row="3" column="1">
-                        <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+                        <widget class="QDoubleSpinBox" name="bd_doubleSpinBox">
                          <property name="minimum">
                           <double>10.000000000000000</double>
                          </property>
@@ -497,7 +497,7 @@
                         </widget>
                        </item>
                        <item row="4" column="1">
-                        <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
+                        <widget class="QDoubleSpinBox" name="bw_doubleSpinBox">
                          <property name="minimum">
                           <double>10.000000000000000</double>
                          </property>
@@ -510,7 +510,7 @@
                         </widget>
                        </item>
                        <item row="5" column="1">
-                        <widget class="QDoubleSpinBox" name="doubleSpinBox_5">
+                        <widget class="QDoubleSpinBox" name="gd_doubleSpinBox">
                          <property name="minimum">
                           <double>10.000000000000000</double>
                          </property>
@@ -523,7 +523,7 @@
                         </widget>
                        </item>
                        <item row="6" column="1">
-                        <widget class="QDoubleSpinBox" name="doubleSpinBox_6">
+                        <widget class="QDoubleSpinBox" name="gw_doubleSpinBox">
                          <property name="minimum">
                           <double>10.000000000000000</double>
                          </property>
@@ -547,45 +547,55 @@
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_9">
                      <item>
+                      <widget class="QCheckBox" name="acc_checkbutton">
+                       <property name="text">
+                        <string>Apply Uniform Acceleration</string>
+                       </property>
+                       <property name="checked">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
                       <layout class="QGridLayout" name="gridLayout_5">
                        <item row="1" column="0">
-                        <widget class="QPushButton" name="pushButton_2">
+                        <widget class="QPushButton" name="lon_pushButton">
                          <property name="text">
                           <string>LoadLonAccFile</string>
                          </property>
                         </widget>
                        </item>
                        <item row="0" column="0">
-                        <widget class="QPushButton" name="pushButton">
+                        <widget class="QPushButton" name="lat_pushButton">
                          <property name="text">
                           <string>LoadLatAccFile</string>
                          </property>
                         </widget>
                        </item>
                        <item row="0" column="1">
-                        <widget class="QLabel" name="label_13">
+                        <widget class="QLabel" name="latfile_label">
                          <property name="frameShape">
                           <enum>QFrame::StyledPanel</enum>
                          </property>
                          <property name="text">
-                          <string>TextLabel</string>
+                          <string>*at2</string>
                          </property>
                         </widget>
                        </item>
                        <item row="1" column="1">
-                        <widget class="QLabel" name="label_14">
+                        <widget class="QLabel" name="lonfile_label">
                          <property name="frameShape">
                           <enum>QFrame::StyledPanel</enum>
                          </property>
                          <property name="text">
-                          <string>TextLabel</string>
+                          <string>*at2</string>
                          </property>
                         </widget>
                        </item>
                       </layout>
                      </item>
                      <item>
-                      <widget class="QPushButton" name="pushButton_3">
+                      <widget class="QPushButton" name="loadsscenario_pushButton">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -606,7 +616,7 @@
                      <item>
                       <layout class="QVBoxLayout" name="verticalLayout_11">
                        <item>
-                        <widget class="QPushButton" name="pushButton_4">
+                        <widget class="QPushButton" name="runanalysis_pushButton">
                          <property name="text">
                           <string>RunAnalysis</string>
                          </property>
@@ -616,6 +626,19 @@
                         <widget class="QPushButton" name="pushButton_5">
                          <property name="text">
                           <string>LoadAnalysis</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="showresults_pushButton">
+                         <property name="enabled">
+                          <bool>false</bool>
+                         </property>
+                         <property name="text">
+                          <string>ShowResults</string>
+                         </property>
+                         <property name="flat">
+                          <bool>false</bool>
                          </property>
                         </widget>
                        </item>

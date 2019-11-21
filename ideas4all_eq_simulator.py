@@ -4,7 +4,7 @@ import sys
 import pprint
 import time
 from PyQt5 import QtWidgets, uic
-from PyQt5.QtWidgets import QTreeWidgetItem, QColorDialog
+from PyQt5.QtWidgets import QTreeWidgetItem, QColorDialog, QFileDialog
 from PyQt5 import Qt, QtCore, QtGui
 from PyQt5.QtCore import Qt as qut
 from PyQt5.QtCore import QTimer
@@ -14,6 +14,8 @@ from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 import vtk
 import vtk_interaction
 
+
+    
 
 class CheckableComboBox(QtWidgets.QComboBox):
     def __init__(self):    
@@ -343,15 +345,34 @@ class Ui(QtWidgets.QMainWindow):
         tw.header().setStretchLastSection(False)
         tw.show()
 
-    def configure_simulation(self):
-        #bbs=[]
+
+    def manage_acc_buttons(self):
+        if self.acc_checkbutton.isChecked():
+            self.lat_pushButton.setEnabled(True)
+            self.lon_pushButton.setEnabled(True)
+            self.loadsscenario_pushButton.setEnabled(False)
+        else:
+            self.lat_pushButton.setEnabled(False)
+            self.lon_pushButton.setEnabled(False)
+            self.loadsscenario_pushButton.setEnabled(True)
+
+    def openFileNameDialoglat(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;at2 files (*.at2)", options=options)
+        self.latfile=fileName
+        self.latfile_label.setText(os.path.basename(fileName))
+
+    def openFileNameDialoglon(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;at2 files (*.at2)", options=options)
+        self.lonfile=fileName
+        self.lonfile_label.setText(os.path.basename(fileName))
+
+
+    def runsimulation(self):
         bs=set()
-        #for i in range(self.comboboxes['Building Blocks'].count()):
-        #    bbs.append(self.comboboxes['Building Blocks'].ItemText(i))
-        #
-        #for bb in bbs:
-        #    for b in self.building_blocks[bb].buildings:
-        #        bs.add(b.id)      
 
         for i in range(self.comboboxes['Buildings'].count()):
             current_building_id=self.comboboxes['Buildings'].itemText(i)
@@ -365,25 +386,68 @@ class Ui(QtWidgets.QMainWindow):
             configfile=open(root+"/Paramaters_Input.txt",'w')
             
             configfile.write("#Input folder path:\n")
-            configfile.write(os.path.abspath(inputpath).replace("\\","/")+"\n")
-            lateral_path=os.path.abspath(root+"/GMfiles/H-E12140.at2").replace("\\","/")
-            perp_path=os.path.abspath(root+"/GMfiles/H-E01140.at2").replace("\\","/")
+            configfile.write(os.path.abspath(".\\3dCity_LOD1_rep\\FEM_MiddleWare\\inputs").replace("\\","/")+"\n")
+            
             
             configfile.write("#Acceleration recording in lateral direction:\n")
-            configfile.write(lateral_path+"\n")
+            configfile.write(self.latfile.replace("\\","/")+"\n")
             configfile.write("#Acceleration recording in perpendicular direction:\n")
-            configfile.write(perp_path+"\n")
+            configfile.write(self.lonfile.replace("\\","/")+"\n")
             configfile.write("#Simulation type: Dynamic or Static Pushover:\n")
-            configfile.write("Dynamic\n")
+            configfile.write(str(self.simtype_comboBox.currentText())+"\n")
             configfile.write("#Maximum duration for simulation in seconds:\n")
-            configfile.write("10.\n")
+            configfile.write(str(self.duration_doubleSpinBox.value())+"\n")
             configfile.write("#Number of modes in Modal Analysis:\n")
-            configfile.write("3\n")
+            configfile.write(str(self.mode_spinBox.value())+"\n")
+
+            configfile.write("#RC Section\n")
+            if self.rc_checkBox.isChecked():
+                configfile.write("True\n")
+            else:
+                configfile.write("False\n")
+
+            configfile.write("#Square-Column section width in inches:\n")
+            configfile.write(str(self.cw_doubleSpinBox.value())+"\n")
+            configfile.write("#Beam depth -- perpendicular to bending axis in inches:\n")
+            configfile.write(str(self.bd_doubleSpinBox.value())+"\n")
+            configfile.write("#Beam width -- parallel to bending axis in inches:\n")
+            configfile.write(str(self.bw_doubleSpinBox.value())+"\n")
+            configfile.write("#Girder depth -- perpendicular to bending axis in inches:\n")
+            configfile.write(str(self.gd_doubleSpinBox.value())+"\n")
+            configfile.write("#Girder width -- parallel to bending axis in inches:\n")
+            configfile.write(str(self.gw_doubleSpinBox.value())+"\n")
+
+            configfile.write("#W Section\n")
+            if self.ws_checkBox.isChecked():
+                configfile.write("True\n")
+            else:
+                configfile.write("False\n")
+
+
+
+
+
             configfile.close()
 
             os.chdir(root)
             os.system("OpenSees.exe ./StartSimulation.tcl "+"b_"+str(b))
             os.chdir("..")
+        self.showresults_pushButton.setEnabled(True)
+    def manage_simparams(self):
+        self.acc_checkbutton.stateChanged.connect(window.manage_acc_buttons)
+        self.lat_pushButton.clicked.connect(window.openFileNameDialoglat)
+        self.lon_pushButton.clicked.connect(window.openFileNameDialoglon)
+        self.lonfile_label.setText(os.path.basename(".\\FEM_MiddleWare\\GMfiles\\H-E12140.at2"))
+        self.latfile_label.setText(os.path.basename(".\\FEM_MiddleWare\\GMfiles\\H-E01140.at2"))
+        self.latfile=os.path.abspath(".\\FEM_MiddleWare\\GMfiles\\H-E12140.at2")
+        self.lonfile=os.path.abspath(".\\FEM_MiddleWare\\GMfiles\\H-E01140.at2")
+        self.runanalysis_pushButton.clicked.connect(window.runsimulation)
+
+
+    def configure_simulation(self):
+        self.preeq_post_tabwidget.setCurrentWidget(self.posttab)
+        
+        
 
 
 
@@ -423,7 +487,8 @@ if __name__=='__main__':
     palette.setColor(QtGui.QPalette.Button, QtGui.QColor(53,53,53))
     palette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.white)
     palette.setColor(QtGui.QPalette.BrightText, QtCore.Qt.red)
-    #palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.Button, QtCore.Qt.gray)
+    palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.Button, QtCore.Qt.gray)
+    palette.setColor(QtGui.QPalette.Normal, QtGui.QPalette.Button, QtGui.QColor(53,53,53))
     
     palette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(142,45,197).lighter())
     palette.setColor(QtGui.QPalette.HighlightedText, QtCore.Qt.black)   
@@ -438,9 +503,13 @@ if __name__=='__main__':
     frame = window.tabWidget
 
     
+
+    
     vl=window.vtkLayout
     vtkWidget = QVTKRenderWindowInteractor(frame)
     vl.addWidget(vtkWidget)
+
+    window.manage_simparams()
 
     
     pre_eq_city=cities.city("caferaga","pre-eq",vtkWidget,"map_kadiköy_caferaga.osm","map_kadiköy_caferaga.json")
@@ -468,7 +537,7 @@ if __name__=='__main__':
 
 
 
-
+    
     app.exec_()
     
     
