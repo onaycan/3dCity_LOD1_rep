@@ -244,6 +244,26 @@ class vtk_interactor:
         self.BuildingColorLabels['Panel Facets']=[0,100,150]
         self.BuildingColorLabels['Wall Facets']=[0,150,100]
         
+
+    def shutDownVTK(self):
+        """ What has to be done to shut down VTK """
+        # vtkRenderer
+        if(self.ren != None):
+          # Remove all actors from the renderer
+          self.ren.RemoveAllViewProps()
+          # Get the renderwindow to release all system resources (including # opengl context)
+          self.ren.GetRenderWindow().Finalize()
+          # Remove the reference
+          del self.ren
+    
+        # wxVTKRenderWindow
+        if(self.renWin != None):
+          del self.renWin
+
+        # wxVTKRenderWindowInteractor
+        if(self.iren != None):
+          del self.iren
+
         
 
     def insert_building_vertices(self,_vertices, _colormap=None):

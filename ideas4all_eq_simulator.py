@@ -81,6 +81,19 @@ class Ui(QtWidgets.QMainWindow):
         self.show()
         self.checked_items={'Building Blocks': 2, 'Buildings': 2, 'Panels': 2, 'Panel Facets': 2, 'Panel Beams': 2, 'Panel Girders': 2, 'Walls': 2, 'Wall Facets': 2, "Wall Columns" : 2, "Terrain" :2}
 
+    def closeEvent(self, event):
+        print("event")
+        reply = QtWidgets.QMessageBox.question(self, 'Message',
+            "Are you sure to quit?", QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
+
+        if reply == QtWidgets.QMessageBox.Yes:
+            self.pre_eq_city.vtk_interactor.shutDownVTK()
+            self.post_eq_city.vtk_interactor.shutDownVTK()
+
+            event.accept()
+        else:
+            event.ignore()
+
     def handleItemChanged(self, item, column):
         checked_items={'Building Blocks': 0, 'Buildings': 0, 'Panels': 0, 'Panel Facets': 0, 'Panel Beams': 0, 'Panel Girders': 0, 'Walls': 0, 'Wall Facets': 0, "Wall Columns" : 0, "Terrain" : 0}
         if item.checkState(column) == QtCore.Qt.Checked:
@@ -474,11 +487,8 @@ class OutLog:
 
         if self.out:
             self.out.write(m)
-
-if __name__=='__main__':
-    app = QtWidgets.QApplication(sys.argv)
-    # start application of dark theme
-    app.setStyle("Fusion")
+def set_app_style(_app):
+    _app.setStyle("Fusion")
     palette = QtGui.QPalette()
     palette.setColor(QtGui.QPalette.Window, QtGui.QColor(53,53,53))
     palette.setColor(QtGui.QPalette.WindowText, QtCore.Qt.white)
@@ -495,7 +505,13 @@ if __name__=='__main__':
     
     palette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(142,45,197).lighter())
     palette.setColor(QtGui.QPalette.HighlightedText, QtCore.Qt.black)   
-    app.setPalette(palette)
+    _app.setPalette(palette)
+
+
+if __name__=='__main__':
+    app = QtWidgets.QApplication(sys.argv)
+    # start application of dark theme
+    set_app_style(app)
     # end application of dark theme
     
     window = Ui()
@@ -543,12 +559,26 @@ if __name__=='__main__':
     post_eq_city=cities.city("caferaga","post-eq",postvtkWidget,"map_kadiköy_caferaga.osm","map_kadiköy_caferaga.json")
     post_eq_city.copy_city(pre_eq_city)
     post_eq_city.set_interactor()
+    window.post_eq_city=post_eq_city
     post_eq_city.vtk_interactor.iren.SetInteractorStyle(vtk.vtkInteractorStyleTrackballCamera())
     post_eq_city.vtk_interactor.visualize(_initial=True)
     post_eq_city.vtk_interactor.renWin.Render()
     print("render window is rendered")
     post_eq_city.vtk_interactor.iren.Initialize()
     post_eq_city.vtk_interactor.iren.Start()
+
+    pre_eq_city.vtk_interactor.renWin.Finalize()
+    post_eq_city.vtk_interactor.renWin.Finalize()
+    
+
+    errOut = vtk.vtkFileOutputWindow()
+    errOut.SetFileName("VTK Error Out.txt")
+    vtkStdErrOut = vtk.vtkOutputWindow()
+    vtkStdErrOut.SetInstance(errOut)
+
+
+
+
 
 
 
@@ -558,9 +588,7 @@ if __name__=='__main__':
     
 
 
-
-    
-    app.exec_()
+    sys.exit(app.exec_())
     
     
     
