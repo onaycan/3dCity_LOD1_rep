@@ -10,6 +10,7 @@ import ground
 import numpy as np
 import misc
 import vertices as _vertices
+import numpy
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -92,6 +93,20 @@ class city:
         for bk in self.buildings.keys():
             if bk in self.buildings_dic[self.label].keys():
                 self.buildings[bk].levels=self.buildings_dic[self.label][bk]["numberoflevels"]
+
+        for b in self.buildings.values():
+            b.calc_floor_mid()
+        
+        for b in self.buildings.values():
+            maxdist=100000000.0
+            if b.levels=="0" or b.levels=="NotFound" or not b.levels.isdigit():
+                for b2 in self.buildings.values():
+                    if b2.levels!="0" and b2.levels!="NotFound" and b2.levels.isdigit():
+                        currentdist = numpy.linalg.norm(b.floormid-b2.floormid)
+                        if currentdist<maxdist:
+                            b.levels=b2.levels
+                            maxdist=currentdist
+
 
         start_time = time.time()
         last_vertex_id=max([int(v) for v in self.vertices.keys() if "#" not in v])

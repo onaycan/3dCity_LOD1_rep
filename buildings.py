@@ -62,6 +62,10 @@ class building:
                 self.osm_feasible=True
                 #self.print_building(intersection)
     
+    def calc_floor_mid(self):
+        self.floormid=self.beamsets[0].calc_floor_mid()
+        
+
     def set_floor_mid(self, _floorvertices):
         self.mid=self.beamsets[0].set_floor_mid(_floorvertices)
         for bs in range(1,len(self.beamsets)):

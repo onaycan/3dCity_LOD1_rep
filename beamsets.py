@@ -12,6 +12,13 @@ class beamset:
         self.vertices.append(_vertex)
     def append_beam(self,_beam):
         self.beams.append(_beam)
+    def calc_floor_mid(self):
+        all_coords=np.array([]).reshape(0,3)
+        for v in range(len(self.vertices)-1):
+            ver=self.vertices[v]
+            all_coords=np.vstack([all_coords,[ver.coordsX[0],ver.coordsX[1],ver.coordsX[2]]])
+        mid=np.mean(all_coords,axis=0)
+        return mid
     def set_floor_mid(self, _floorvertices):
         all_coords=np.array([]).reshape(0,3)
         for v in range(len(self.vertices)-1):

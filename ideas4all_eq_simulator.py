@@ -537,17 +537,27 @@ class Ui(QtWidgets.QMainWindow):
     
     def animatewindow(self):
         print("animation started:")
-        print(self.numberoftimeintervals)
-        #self.post_eq_city.vtk_interactor.animate_displacement(self.post_eq_city.vertices.values(),500,self.modified_vertices,10.0)
-        #self.post_eq_city.vtk_interactor.renWin.Render()
-        for t in range(int(self.numberoftimeintervals)):
-            #QtCore.QTimer.singleShot(1000, lambda: self.dial.setValue(t*0.1))
-            self.dial.setValue(t)
-            self.post_eq_city.vtk_interactor.animate_displacement(self.post_eq_city.vertices.values(),t,self.modified_vertices,10.0)
-            QtTest.QTest.qWait(0)
-            
+        start=datetime.datetime.now()
+        f=0
+        #for f in range(int(self.numberoftimeintervals)):
+        while f<int(self.numberoftimeintervals):
+            startf=datetime.datetime.now()
+            self.dial.setValue(f)
+            self.post_eq_city.vtk_interactor.animate_displacement(self.post_eq_city.vertices.values(),f,self.modified_vertices,10.0)
+            QtTest.QTest.qWait(0.0)
+            endf=datetime.datetime.now()
+            deltaf=(endf-startf).total_seconds()
+            #f+=int(self.numberofframes_ina_second/self.renders_ina_second)
+            f+=int(deltaf/self.dT)
+        
+        self.dial.setValue(self.numberoftimeintervals-1)
+        self.post_eq_city.vtk_interactor.animate_displacement(self.post_eq_city.vertices.values(),self.numberoftimeintervals-1,self.modified_vertices,10.0)
+        QtTest.QTest.qWait(0.01)    
             #print(t)
-
+        end=datetime.datetime.now()
+        delta=end-start
+        print("end animation")
+        print("took "+str(delta.total_seconds()))
     def show_results(self):
 
         self.param_tabWidget.setCurrentWidget(self.postprocessing_tab)
@@ -576,10 +586,10 @@ class Ui(QtWidgets.QMainWindow):
             dispfile=open(dispfilename,'r')
             ids=list(csv.reader(idfile))
             disps=list(csv.reader(dispfile,delimiter=" "))
-            #disps=list(map(tuple,readed))
             ndisps = numpy.array(disps, dtype=numpy.float)
+            print(b)
+            deltaT=ndisps.item((12,0))-ndisps.item((11,0))
             counter=0
-            #print(ids)
             for _id in ids:
                 last_v=_id[0]
                 self.results[b]["Displacements"][_id[0]]=ndisps[10:,counter*3+1:counter*3+3+1]
@@ -590,8 +600,13 @@ class Ui(QtWidgets.QMainWindow):
         delta=end-start
         print("end searching result files")
         print("took "+str(delta.total_seconds()))
-        #print(self.results["707657710"]["Displacements"]["1213"].shape)    
         self.numberoftimeintervals=self.results[last_b]["Displacements"][last_v].shape[0]
+        self.dT=deltaT
+        self.numberofframes_ina_second=1.0/self.dT
+        self.totaltime=self.dT*self.numberoftimeintervals
+        
+        print("delta t, the total time and number of frames in a second:")
+        print(self.dT,self.totaltime,self.numberofframes_ina_second)
 
         print("setting np coords as reference")
         start=datetime.datetime.now()
@@ -612,12 +627,6 @@ class Ui(QtWidgets.QMainWindow):
             for vid in self.results[b]["Displacements"].keys():
                 current_vertex_id=self.post_eq_city.femid2vertexid[vid]
                 self.modified_vertices.append(current_vertex_id)
-                #for i in range(self.numberoftimeintervals):
-                    #firstshape=self.post_eq_city.vertices[current_vertex_id].coordsx[i].shape
-                    #secondshape=numpy.array(self.post_eq_city.vertices[current_vertex_id].coordsX).shape
-                    #thirdshape=self.results[b]["Displacements"][vid][i].shape
-                    #print(firstshape,secondshape,thirdshape)
-                    #print(b,vid)
                 self.post_eq_city.vertices[current_vertex_id].coordsx=numpy.add(self.post_eq_city.vertices[current_vertex_id].coordsXT,self.results[b]["Displacements"][vid])
                     
         end=datetime.datetime.now()
@@ -626,104 +635,28 @@ class Ui(QtWidgets.QMainWindow):
         print("took "+str(delta.total_seconds()))
 
 
-        
+        #print("dummy animation start")
+        #f=0
+        #start=datetime.datetime.now()
+        #self.dial.setValue(f)
+        #self.post_eq_city.vtk_interactor.animate_displacement(self.post_eq_city.vertices.values(),f,self.modified_vertices,10.0)
+        #QtTest.QTest.qWait(0.01)
+        #f+=int(self.numberofframes_ina_second/10.0)
+        #end=datetime.datetime.now()
+        #delta=end-start
+        #print("took "+str(delta.total_seconds()))
+        #print("summy animation ends")
+        #self.renders_ina_second=float(1.0/delta.total_seconds())
+        #print("renderer is capable of rendering "+str(self.renders_ina_second)+" frames in a second")
+
+
         print(self.numberoftimeintervals)
         self.dial.setMaximum(self.numberoftimeintervals)
-        self.dial.setSingleStep(0.01)
+        self.dial.setSingleStep(self.dT)
         self.dial.valueChanged.connect(self.set_timelabel)
         self.Start_Animation_Push_Button.clicked.connect(self.animatewindow)
         print("result reading finished")
-        
 
-        '''
-        self.param_tabWidget.setCurrentWidget(self.postprocessing_tab)
-        self.Postprocessing_tabwidget.setCurrentWidget(self.tab_postcity)
-        self.Start_Animation_Push_Button.setEnabled(True)
-
-
-        print("start searching result files")
-        start=datetime.datetime.now()
-        self.results={}
-        self.result_path=self.load_folder_name
-        disp_files={}
-        delim="##"
-        for root, dirs, files in os.walk(self.result_path, topdown=False):
-            for name in dirs:
-                if name.startswith("Building"):
-                    #the opened dictionary is for resulttype
-                    self.results[name.split("_")[1]]={}
-            for f in files:
-                if f.startswith("Disp_Nodes"):
-                    current_building_id=f.split("Bid")[1].split(".out")[0]
-                    current_item_id=f.split("_")[2]
-                    disp_files[current_building_id+delim+current_item_id]=open(os.path.abspath(root+"\\"+f))
-        for ri in self.results.keys():
-            "opening result for the item id"
-            self.results[ri]["Displacements"]={}
-        end=datetime.datetime.now()
-        delta=end-start
-        print("en searching result files")
-        print("took "+str(delta.total_seconds()))
-
-
-
-
-        print("reading result files")
-        start=datetime.datetime.now()
-        current_building_id=0
-        current_item_id=0
-        for name, ofile in disp_files.items():
-            current_building_id=name.split(delim)[0]
-            current_item_id =name.split(delim)[1]
-            self.results[current_building_id]["Displacements"][current_item_id]=csv.reader(ofile, delimiter=' ')
-            #self.results[current_building_id]["Displacements"][current_item_id] =numpy.genfromtxt(ofile,delimiter=' ',skip_header=1, usecols=(-3,-2,-1))
-        self.numberoftimeintervals=len(list(self.results[current_building_id]["Displacements"][current_item_id]))
-        print(self.numberoftimeintervals)
-        end=datetime.datetime.now()
-        delta=end-start
-        print("end reading result files")
-        print("took "+str(delta.total_seconds()))
-
-        
-        print("setting np coords")
-        start=datetime.datetime.now()
-        for v in self.post_eq_city.vertices.values():
-            x = numpy.array([[v.coordsX[0],v.coordsX[1],v.coordsX[2]]])
-            v.coordsx=numpy.repeat(x, repeats=self.numberoftimeintervals, axis=0)
-        end=datetime.datetime.now()
-        delta=end-start
-        print("np coords set")
-        print("took "+str(delta.total_seconds()))
-
-        print("updating np coords")
-        start=datetime.datetime.now()
-        self.modified_vertices=[]
-        for b in self.results.keys():
-            for vid in self.results[b]["Displacements"].keys():
-                row_counter=0
-                current_vertex_id=self.post_eq_city.femid2vertexid[vid]
-                self.modified_vertices.append(current_vertex_id)
-                for row in self.results[b]["Displacements"][vid]:
-                    for i in range(3):
-                        self.post_eq_city.vertices[current_vertex_id].coordsx[row_counter][i]=self.post_eq_city.vertices[current_vertex_id].coordsX[i]+float(row[i+1])
-                    row_counter+=1
-        end=datetime.datetime.now()
-        delta=end-start
-        print("np coords updated")
-        print("took "+str(delta.total_seconds()))
-
-
-        
-        print(self.numberoftimeintervals)
-        self.dial.setMaximum(self.numberoftimeintervals)
-        self.dial.setSingleStep(0.01)
-        self.dial.valueChanged.connect(self.set_timelabel)
-        self.Start_Animation_Push_Button.clicked.connect(self.animatewindow)
-        print("result reading finished")
-        
-        #pprint.pprint(self.results)
-        
-        '''
 
 
 class OutLog:
