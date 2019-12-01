@@ -264,6 +264,18 @@ class vtk_interactor:
         if(self.iren != None):
           del self.iren
 
+    def animate_displacement(self,_vertices, _timecounter, _vertexids,_scale):
+        self.building_points = vtk.vtkPoints()
+        for v in _vertices:
+            self.building_points.InsertNextPoint(v.coordsx[_timecounter][0],v.coordsx[_timecounter][1],v.coordsx[_timecounter][2])
+
+        self.PolyData_Lines = vtk.vtkPolyData()
+        self.PolyData_BuildingCells = vtk.vtkPolyData()
+        self.visualize()
+        self.renWin.Render()
+
+
+
         
 
     def insert_building_vertices(self,_vertices, _colormap=None):
@@ -487,7 +499,7 @@ class vtk_interactor:
         if not _wireframe:
             self.actor_BuildingCells.GetProperty().SetRepresentationToWireframe()
         # START TRIANGLES OF BUILDINGS
-        print("actor of building triangles are finished")
+        #print("actor of building triangles are finished")
 
 
         # START TRIANGLES OF GROUND
@@ -501,7 +513,7 @@ class vtk_interactor:
         if not _wireframe:
             self.actor_GroundCells.GetProperty().SetRepresentationToWireframe()
         # START TRIANGLES OF GROUND
-        print("actor of ground triangles are finished")
+        #print("actor of ground triangles are finished")
 
 
 
@@ -510,13 +522,14 @@ class vtk_interactor:
         self.PolyData_Lines.SetLines(self.trusses)
         self.PolyData_Lines.GetCellData().SetScalars(self.LineColors)
         self.mapper_Lines.SetInputData(self.PolyData_Lines)
+        self.mapper_Lines.ScalarVisibilityOn()
         self.mapper_Lines.Update()
         self.actor_Lines = vtk.vtkActor()
         self.actor_Lines.SetMapper(self.mapper_Lines)
         if not _wireframe:
             self.actor_Lines.GetProperty().SetRepresentationToWireframe()
         #END BUILDING LINES
-        print("actor of building lines are finished")
+        #print("actor of building lines are finished")
 
 
         # assign actor to the renderer
@@ -548,4 +561,4 @@ class vtk_interactor:
             transform.Translate(self.origin[0],0.0, -1*self.origin[1])
             self.axes.SetUserTransform(transform)
             self.ren.AddActor(self.axes)
-        print("all actors are added to renderer")
+        #print("all actors are added to renderer")

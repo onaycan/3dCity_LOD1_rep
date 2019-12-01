@@ -3,9 +3,6 @@
 # calculate dead load of frame, assume this to be an internal frame (do LL in a similar manner)
 # calculate distributed weight along the beam length
 #set GammaConcrete [expr 150*$pcf];   		# Reinforced-Concrete floor slabs, defined above
-set Tslab [expr 6*$in];			# 6-inch slab
-set DLfactor 1.0;				# scale dead load up a little
-set QdlGird $QGird; 			# dead load distributed along girder
 #
 #
 # ---------- Column Weights -----------------------
@@ -34,22 +31,49 @@ set QdlGird $QGird; 			# dead load distributed along girder
 	lappend Lslabtmp 0
 	lappend Qslabtmp 0
 	lappend Qslabtmp 0
-	
-	for {set i 0} {$i <= [expr [llength [lindex $LGird $numInFile]]-1]} {incr i 1} {
+	set QdlGirdtmp2 ""
+	set QdlGirdtmp ""
+	lappend QdlGirdtmp 0
+	lappend QdlGirdtmp 0
+
+	for {set i 0} {$i <= [expr [llength [lindex $iGirderConnect $numInFile]]-1]} {incr i 1} {
 		lappend WeightGirdtmp2 $WeightGirdtmp
 		lappend Lslabtmp2 $Lslabtmp
+		lappend QdlGirdtmp2 $QdlGirdtmp
 	}
 	lappend WeightGird $WeightGirdtmp2
 	lappend Lslab $Lslabtmp2
+	lappend QdlGird $QdlGirdtmp2
 
-	for {set i 0} {$i <= [expr [llength [lindex $LGird $numInFile]]-1]} {incr i 1} {
-		 lset WeightGird $numInFile  $i 1 [expr $QdlGird*[lindex $LGird $numInFile $i 1]];    # total Gird weight
-		 lset Lslab $numInFile  $i 1 [expr [lindex $LGird $numInFile $i 1]/2]; 			# slab extends a distance of $LGird/2 in/out of plane
-		 set Qslab [expr $GammaConcrete*$Tslab*[lindex $Lslab $numInFile  $i 1]*$DLfactor]; # ??????????????????????????????
-		 lset WeightGird $numInFile  $i 0 [lindex $LGird $numInFile $i 0]
-		 lset Lslab $numInFile  $i 0 [lindex $LGird $numInFile $i 0]
+#	set DLfactor 2.0;				# scale dead load up a little	
+#	for {set i 0} {$i <= [expr [llength [lindex $iGirderConnect $numInFile]]-1]} {incr i 1} {
+#		 lset WeightGird $numInFile  $i 1 [expr $QdlGird*[lindex $LGird $numInFile $i 1]];    # total Gird weight
+#		 lset Lslab $numInFile  $i 1 [expr [lindex $iGirderConnect $numInFile $i 1]/2]; 	# slab extends a distance of $LGird/2 in/out of plane RCrect Section
+#		 lset Lslab $numInFile  $i 1 [expr [lindex $iGirderConnect $numInFile $i 1]]; 		# slab extends a distance of $LGird in/out of plane W Section
+#		 set Qslab [expr $GammaConcrete*$Tslab*[lindex $Lslab $numInFile  $i 1]*$DLfactor]; # ??????????????????????????????
+#		 lset WeightGird $numInFile  $i 0 [lindex $iGirderConnect $numInFile $i 0]
+#		 lset Lslab $numInFile  $i 0 [lindex $iGirderConnect $numInFile $i 0]
+#	}
+
+	proc setQslabforGirders {elemID NStory iGirders_Floor iQGirderSlab numInFile}  {
+		for {set i 0} {$i <= [expr [lindex $NStory $numInFile]-1]} {incr i 1} {
+			for {set j 0} {$j <= [expr [llength [lindex $iGirders_Floor $numInFile $i]]-1]} {incr j 1} {
+				set QslabGirder [lindex $iQGirderSlab $numInFile $i $j]
+			}
+		}
+		return $QslabGirder
+	}	
+	for {set i 0} {$i <= [expr [llength [lindex $iGirderConnect $numInFile]]-1]} {incr i 1} {
+		set elemID [lindex $iGirderConnect $numInFile $i 0]
+		set Qslab [setQslabforGirders $elemID $NStory $iGirders_Floor $iQGirderSlab $numInFile]
+		set aGirderLength [ElementLengths $elemID $iNodeList $iElementConnect $numInFile]
+		set QDLoadGirder [expr $Qslab + $QGird]; 	# dead load distributed along beam
+		lset QdlGird $numInFile $i 1 $QDLoadGirder;	# put it in the list for further purposes 
+		lset WeightGird $numInFile  $i 1 [expr $QDLoadGirder*$aGirderLength];    # total Gird weight
+		lset QdlGird $numInFile $i 0 $elemID
+		lset WeightGird $numInFile  $i 0 $elemID
 	}
-	
+
 # ---------- Beam Weights -----------------------
 	set WeightBeamtmp ""
 	set WeightBeamtmp2 ""
@@ -59,19 +83,41 @@ set QdlGird $QGird; 			# dead load distributed along girder
 	lappend QdlBeamtmp 0
 	lappend WeightBeamtmp 0
 	lappend WeightBeamtmp 0
-	for {set i 0} {$i <= [expr [llength [lindex $LBeam $numInFile]]-1]} {incr i 1} {
+	for {set i 0} {$i <= [expr [llength [lindex $iBeamConnect $numInFile]]-1]} {incr i 1} {
 		lappend WeightBeamtmp2 $WeightBeamtmp
 		lappend QdlBeamtmp2 $QdlBeamtmp
 	}
 	lappend QdlBeam $QdlBeamtmp2
 	lappend WeightBeam $WeightBeamtmp2
-	for {set i 0} {$i <= [expr [llength [lindex $LBeam $numInFile]]-1]} {incr i 1} {
-		 lset QdlBeam $numInFile  $i 1 [expr $Qslab + $QBeam]; 	# dead load distributed along beam (one-way slab)
-		 lset QdlBeam $numInFile  $i 0 [lindex $LBeam $numInFile $i 0]
-		 lset WeightBeam $numInFile $i 1 [expr [lindex $QdlBeam $numInFile $i 1]*[lindex $LBeam $numInFile $i 1]];    # total Beam weight
-		 lset WeightBeam $numInFile $i 0 [lindex $LBeam $numInFile $i 0]
-	}
+	
+#	for {set i 0} {$i <= [expr [llength [lindex $iBeamConnect $numInFile]]-1]} {incr i 1} {
+#		lset QdlBeam $numInFile  $i 1 [expr $Qslab + $QBeam]; 	# dead load distributed along beam (one-way slab)
+#		set elementid [lindex $iBeamConnect $numInFile $i 0]
+#		set aBeamLength [ElementLengths $elementid $iNodeList $iElementConnect $numInFile]
+#		lset QdlBeam $numInFile  $i 0 $elementid
+#		lset WeightBeam $numInFile $i 1 [expr [lindex $QdlBeam $numInFile $i 1]*$aBeamLength];    # total Beam weight
+#		lset WeightBeam $numInFile $i 0 $elementid
+#	}
 
+	proc setQslabforBeams {elemID NStory iBeams_Floor iQBeamSlab numInFile}  {
+		for {set i 0} {$i <= [expr [lindex $NStory $numInFile]-1]} {incr i 1} {
+			for {set j 0} {$j <= [expr [llength [lindex $iBeams_Floor $numInFile $i]]-1]} {incr j 1} {
+				set QslabBeam [lindex $iQBeamSlab $numInFile $i $j]
+			}
+		}
+		return $QslabBeam
+	}
+	for {set i 0} {$i <= [expr [llength [lindex $iBeamConnect $numInFile]]-1]} {incr i 1} {
+		set elemID [lindex $iBeamConnect $numInFile $i 0]
+		set Qslab [setQslabforBeams $elemID $NStory $iBeams_Floor $iQBeamSlab $numInFile]
+		set aBeamLength [ElementLengths $elemID $iNodeList $iElementConnect $numInFile]
+		set QDLoadBeam [expr $Qslab + $QBeam]; 	# dead load distributed along beam
+		lset QdlBeam $numInFile  $i 1 $QDLoadBeam;	# put it in the list for further purposes 
+		lset WeightBeam $numInFile $i 1 [expr $QDLoadBeam*$aBeamLength];    # total Beam weight
+		lset QdlBeam $numInFile  $i 0 $elemID
+		lset WeightBeam $numInFile $i 0 $elemID
+	}	
+	
 # 
 # assign masses to the nodes that the columns are connected to 
 # each connection takes the mass of 1/2 of each element framing into it (mass=weight/$g)
@@ -135,10 +181,10 @@ if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {
 							}
 						}
 						# Beam Weights contribution to nodal mass
-						for {set i 0} {$i <= [expr [llength [lindex $LBeam $numInFile]]-1]} {incr i 1} {
+						for {set i 0} {$i <= [expr [llength [lindex $iBeamConnect $numInFile]]-1]} {incr i 1} {
 							if {[lindex $iBeamConnect $numInFile $i 1] == $word} {
 								set a [lindex $iBeamConnect $numInFile $i 0]; #Element ID of connected elements for this node
-								for {set j 0} {$j <= [expr [llength [lindex $LBeam $numInFile]]-1]} {incr j 1} {
+								for {set j 0} {$j <= [expr [llength [lindex $iBeamConnect $numInFile]]-1]} {incr j 1} {
 									if {[lindex $WeightBeam $numInFile $j 0] == $a} {
 										set WeightNodetmp [expr $WeightNodetmp + [expr [lindex $WeightBeam $numInFile $j 1]/2]]
 									}
@@ -146,7 +192,7 @@ if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {
 							}
 							if {[lindex $iBeamConnect $numInFile $i 2] == $word} {
 								set b [lindex $iBeamConnect $numInFile $i 0]; #Element ID of connected elements for this node
-								for {set j 0} {$j <= [expr [llength [lindex $LBeam $numInFile]]-1]} {incr j 1} {
+								for {set j 0} {$j <= [expr [llength [lindex $iBeamConnect $numInFile]]-1]} {incr j 1} {
 									if {[lindex $WeightBeam $numInFile $j 0] == $b} {
 										set WeightNodetmp [expr $WeightNodetmp + [expr [lindex $WeightBeam $numInFile $j 1]/2]]
 									}
@@ -154,10 +200,10 @@ if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {
 							}
 						}
 						# Girder Weights contribution to nodal mass
-						for {set i 0} {$i <= [expr [llength [lindex $LGird $numInFile]]-1]} {incr i 1} {
+						for {set i 0} {$i <= [expr [llength [lindex $iGirderConnect $numInFile]]-1]} {incr i 1} {
 							if {[lindex $iGirderConnect $numInFile $i 1] == $word} {
 								set a [lindex $iGirderConnect $numInFile $i 0]; #Element ID of connected elements for this node
-								for {set j 0} {$j <= [expr [llength [lindex $LGird $numInFile]]-1]} {incr j 1} {
+								for {set j 0} {$j <= [expr [llength [lindex $iGirderConnect $numInFile]]-1]} {incr j 1} {
 									if {[lindex $WeightGird $numInFile $j 0] == $a} {
 										set WeightNodetmp [expr $WeightNodetmp + [expr [lindex $WeightGird $numInFile $j 1]/2]]
 									}
@@ -165,7 +211,7 @@ if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {
 							}
 							if {[lindex $iGirderConnect $numInFile $i 2] == $word} {
 								set b [lindex $iGirderConnect $numInFile $i 0]; #Element ID of connected elements for this node
-								for {set j 0} {$j <= [expr [llength [lindex $LGird $numInFile]]-1]} {incr j 1} {
+								for {set j 0} {$j <= [expr [llength [lindex $iGirderConnect $numInFile]]-1]} {incr j 1} {
 									if {[lindex $WeightGird $numInFile $j 0] == $b} {
 										set WeightNodetmp [expr $WeightNodetmp + [expr [lindex $WeightGird $numInFile $j 1]/2]]
 									}
@@ -193,19 +239,20 @@ if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {
 
 set iFloorWeighttmp2 ""
 set maxFrame 0
-for {set j 1} {$j <= [lindex $NStory $numInFile]} {incr j 1} {
-	if {$maxFrame<[lindex $NFrame $numInFile 1]} {
-		set maxFrame [lindex $NFrame $numInFile 1]	
+for {set j 0} {$j <= [expr [lindex $NStory $numInFile]-1]} {incr j 1} {;	## For Different Frame numbers in different floors maybe another approach!!!! (Pushover)
+	if {$maxFrame<[lindex $NFrame $numInFile $j]} {
+		set maxFrame [lindex $NFrame $numInFile $j]	
 	}
 }
-for {set i 1} {$i <= $maxFrame} {incr i 1} {
+for {set i 0} {$i <= [expr $maxFrame-1]} {incr i 1} {
 	set iFloorWeighttmp ""
-	for {set j 1} {$j <= [lindex $NStory $numInFile]} {incr j 1} {
+	for {set j 0} {$j <= [expr [lindex $NStory $numInFile]-1]} {incr j 1} {
 		lappend iFloorWeighttmp 0
 	}
 	lappend iFloorWeighttmp2 $iFloorWeighttmp
 }
 	lappend iFloorWeight $iFloorWeighttmp2;   # Weight of each floor Frames for each building
+
 for {set i 0} {$i <= [expr $maxFrame-1]} {incr i 1} {
 	for {set j 0} {$j <=[expr [lindex $NStory $numInFile]-1]} {incr j 1} {
 		lset iFloorWeight $numInFile $i $j [expr  [lindex $aFloorWeight $numInFile $j]/[lindex $NFrame $numInFile $j]]
@@ -227,11 +274,11 @@ lset MassTotal $numInFile 1 [expr $WeightTotaltmp/$g]; # total mass for each bui
 
 
 set sumWiHitmp 0.0;		
-#for {set i 1} {$i <= [lindex $NStory $numInFile]} {incr i 1} {
+for {set i 1} {$i <= [lindex $NStory $numInFile]} {incr i 1} {
 	# sum of storey weight times height, for lateral-load distribution
-#	set sumWiHitmp [expr $sumWiHitmp + [lindex $aFloorWeight $numInFile [expr $i-1]]*[lindex $FloorHeight $numInFile [expr $i-1]]]
-#}
-#lset sumWiHi $numInFile 1 $sumWiHitmp; 	# sum of storey weight times height, for lateral-load distribution
+	set sumWiHitmp [expr $sumWiHitmp + [lindex $aFloorWeight $numInFile [expr $i-1]]*[lindex $FloorHeight $numInFile [expr $i-1]]]
+}
+lset sumWiHi $numInFile 1 $sumWiHitmp; 	# sum of storey weight times height, for lateral-load distribution
 
 # --------------------------------------------------------------------------------------------------------------------------------
 # LATERAL-LOAD distribution for static pushover analysis
@@ -241,19 +288,19 @@ set sumWiHitmp 0.0;
 set iFPush "";			#lateral load for pushover
 set iNodePush "";		# nodes for pushover/cyclic, vectorized
 set iFjtmp ""
-#for {set i 1} {$i <= [lindex $NStory $numInFile]} {incr i 1} {
-#	lappend iFjtmp 0
-#}
-#	lappend iFj $iFjtmp;   # per floor per building
+for {set i 1} {$i <= [lindex $NStory $numInFile]} {incr i 1} {
+	lappend iFjtmp 0
+}
+	lappend iFj $iFjtmp;   # per floor per building
 
-#for {set j 0} {$j <=[expr [lindex $NStory $numInFile]-1]} {incr j 1} {	
-#	set FloorWeight [lindex $iFloorWeight $numInFile 0 $j];
-#	lset iFj $numInFile $j [expr $FloorWeight*[lindex $FloorHeight $numInFile $j]/[lindex $sumWiHi $numInFile 1]*[lindex $WeightTotal $numInFile 1]];		
-#}
+for {set j 0} {$j <=[expr [lindex $NStory $numInFile]-1]} {incr j 1} {	
+	set FloorWeight [lindex $iFloorWeight $numInFile 0 $j];
+	lset iFj $numInFile $j [expr $FloorWeight*[lindex $FloorHeight $numInFile $j]/[lindex $sumWiHi $numInFile 1]*[lindex $WeightTotal $numInFile 1]];		
+}
 
 
-#lappend iNodePush [lindex $iMasterNode $numInFile] ;		# nodes for pushover/cyclic, vectorized
-#set iFPush $iFj;				# lateral load for pushover, vectorized for each building (list)
+lappend iNodePush [lindex $iMasterNode $numInFile] ;		# nodes for pushover/cyclic, vectorized
+set iFPush $iFj;				# lateral load for pushover, vectorized for each building (list)
 
 #puts WeightTotal:$WeightTotal
 #puts MassTotal:$MassTotal

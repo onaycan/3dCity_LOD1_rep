@@ -1,11 +1,7 @@
 
 # Section Properties:
-set HCol [expr 18*$in];		# square-Column width
+
 set BCol $HCol
-set HBeam [expr 24*$in];		# Beam depth -- perpendicular to bending axis
-set BBeam [expr 18*$in];		# Beam width -- parallel to bending axis
-set HGird [expr 24*$in];		# Girder depth -- perpendicular to bending axis
-set BGird [expr 18*$in];		# Girder width -- parallel to bending axis
 
 set GammaConcrete [expr 150*$pcf];
 set QdlCol [expr $GammaConcrete*$HCol*$BCol];	# self weight of Column, weight per length

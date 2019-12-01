@@ -16,17 +16,23 @@ if [catch {open $filename r} inFileID] {
 			if {[string match $line "#Input folder path:"] == 1} {
 				set flag "inputfolderpath"
 				continue
+			} elseif {[string match $line "#Output folder path:"] == 1} {
+				set flag "outputfolderpath"
+				continue
 			} elseif {[string match $line "#Acceleration recording in lateral direction:"] == 1} {
 				set flag "acceleration"
 				continue
 			} elseif {[string match $line "#Acceleration recording in perpendicular direction:"] == 1} {
 				set flag "accelerationper"
 				continue
-			} elseif {[string match $line "#Simulation type: Dynamic or Static Pushover:"] == 1} {
+			} elseif {[string match $line "#Simulation type: <Dynamic> or <Static> Pushover:"] == 1} {
 				set flag "typesim"
 				continue 
-			} elseif {[string match $line "#Maximum duration for simulation in seconds:"] == 1} {
+			} elseif {[string match $line "#Maximum duration for <Dynamic> simulation in seconds:"] == 1} {
 				set flag "duration"
+				continue 
+			} elseif {[string match $line "#Time step dt in seconds:"] == 1} {
+				set flag "timestep"
 				continue 
 			} elseif {[string match $line "#Number of modes in Modal Analysis:"] == 1} {
 				set flag "modes"
@@ -52,10 +58,14 @@ if [catch {open $filename r} inFileID] {
 			} elseif {[string match $line "#W Section"] == 1} {
 				set flag "WSection"
 				continue 
+			} elseif {[string match $line "#Live Loads (uniformly distributed) on each floor (furniture, etc.) in psf (pounds per square foot):"] == 1} {
+				set flag "LiveLoad"
+				continue 
 			}
 			if {[string match $flag "inputfolderpath"] == 1} {
-				set inputFoldername [lrange [file split $line] end end]
 				set inputFilepath $line
+			} elseif {[string match $flag "outputfolderpath"] == 1} {
+				set outputFilepath $line
 			} elseif {$flag == "acceleration"} {
 				set accfolder [lrange [file split $line] end-1 end-1]
 				set GMdir $accfolder;		# ground-motion file directory
@@ -72,6 +82,8 @@ if [catch {open $filename r} inFileID] {
 				set typesim $line; 		# Dynamic/Pushover etc.
 			} elseif {$flag == "duration"} {
 				set TmaxAnalysis $line;	# maximum duration of ground-motion analysis 
+			} elseif {$flag == "timestep"} {
+				set DtAnalysis $line;	# time-step Dt for lateral analysis
 			} elseif {$flag == "modes"} {
 				set numModes $line; # decide the number of Modes in total for Modal Analysis
 			} elseif {$flag == "RCSection"} {
@@ -88,7 +100,9 @@ if [catch {open $filename r} inFileID] {
 				set BGird $line
 			} elseif {$flag == "WSection"} {
 				set WSection $line
-			}		
+			} elseif {$flag == "LiveLoad"} {
+				set LiveLoad $line
+			}	
 		}
 	}
 close $inFileID

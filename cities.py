@@ -86,9 +86,12 @@ class city:
         print("json load needs: "+str(elapsed_time))
 
 
-        for bk in self.buildings_dic[self.label].keys():
-            self.buildings[bk].levels=self.buildings_dic[self.label][bk]["numberoflevels"]
+        #for bk in self.buildings_dic[self.label].keys():
+        #    self.buildings[bk].levels=self.buildings_dic[self.label][bk]["numberoflevels"]
 
+        for bk in self.buildings.keys():
+            if bk in self.buildings_dic[self.label].keys():
+                self.buildings[bk].levels=self.buildings_dic[self.label][bk]["numberoflevels"]
 
         start_time = time.time()
         last_vertex_id=max([int(v) for v in self.vertices.keys() if "#" not in v])
@@ -117,8 +120,10 @@ class city:
 
         #set femids for the vertices:
         _femid=1
+        self.femid2vertexid={}
         for v in self.vertices.values():
             v.set_fem_id(_femid)
+            self.femid2vertexid[str(_femid)]=v.id
             _femid+=1
 
         last_vertex_femid=max([int(v.femid) for v in self.vertices.values()])
@@ -168,4 +173,7 @@ class city:
         self.origin=_origincity.origin
         self.ground_vertices=_origincity.ground_vertices
         self.ground_triangles=_origincity.ground_triangles
-        
+        self.femid2vertexid=_origincity.femid2vertexid
+    
+    def copy_city_interactor_properties(self,_origincity):
+        self.vtk_interactor.b_vertexId2VtkPointId=_origincity.vtk_interactor.b_vertexId2VtkPointId

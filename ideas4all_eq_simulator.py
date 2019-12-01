@@ -3,17 +3,25 @@ import os
 import sys
 import pprint
 import time
+import pandas
+import shutil
+import datetime
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QTreeWidgetItem, QColorDialog, QFileDialog
 from PyQt5 import Qt, QtCore, QtGui
 from PyQt5.QtCore import Qt as qut
 from PyQt5.QtCore import QTimer
+from PyQt5 import QtTest
 import sys
 import cities
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 import vtk
 import vtk_interaction
-
+import numpy
+import csv
+from petl import fromcsv, look, cut, tocsv, fromtext
+import petl
+from astropy.io import ascii
 
     
 
@@ -80,6 +88,7 @@ class Ui(QtWidgets.QMainWindow):
         uic.loadUi('./gui_designer/ideas4all_city_simulator_gui.ui', self)
         self.show()
         self.checked_items={'Building Blocks': 2, 'Buildings': 2, 'Panels': 2, 'Panel Facets': 2, 'Panel Beams': 2, 'Panel Girders': 2, 'Walls': 2, 'Wall Facets': 2, "Wall Columns" : 2, "Terrain" :2}
+        self.numberoftimeintervals=0
 
     def closeEvent(self, event):
         print("event")
@@ -372,6 +381,22 @@ class Ui(QtWidgets.QMainWindow):
             self.lon_pushButton.setEnabled(False)
             self.loadsscenario_pushButton.setEnabled(True)
 
+    def selectDirDialogrun(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        dirname = QFileDialog.getExistingDirectory(self,"Select Directory", options=options)
+        self.load_folder_name=dirname
+        self.runfilename_label.setText(os.path.basename(self.load_folder_name))
+        
+
+    def selectDirDialogload(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        dirname = QFileDialog.getExistingDirectory(self,"Select Directory", options=options)
+        self.load_folder_name=dirname
+        self.loadfilename_label.setText(os.path.basename(self.load_folder_name))
+        self.showresults_pushButton.setEnabled(True)
+
     def openFileNameDialoglat(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
@@ -388,31 +413,40 @@ class Ui(QtWidgets.QMainWindow):
 
 
     def runsimulation(self):
-        bs=set()
 
+        self.showresults_pushButton.setEnabled(False)
+        bs=set()
+        #root="./FEM_MiddleWare"
+        middlewaredir=".\\FEM_MiddleWare"
+        root=self.load_folder_name
         for i in range(self.comboboxes['Buildings'].count()):
             current_building_id=self.comboboxes['Buildings'].itemText(i)
             if current_building_id!="None":
                 bs.add(current_building_id)
         for b in bs:
-            root="./FEM_MiddleWare"
             inputpath=root+"/inputs/b_"+str(b)
+            outputpath=root+"/outputs/b_"+str(b)
             os.makedirs(inputpath, exist_ok=True)
             self.buildings[b].print_simulation_file(inputpath+"/"+"INPUT_1.tcl")
-            configfile=open(root+"/Paramaters_Input.txt",'w')
+            configfile=open(middlewaredir+"/Paramaters_Input.txt",'w')
             
             configfile.write("#Input folder path:\n")
             configfile.write(os.path.abspath(inputpath).replace("\\","/")+"\n")
-            
+
+            configfile.write("#Output folder path:\n")
+            configfile.write(os.path.abspath(outputpath).replace("\\","/")+"\n")
+
             
             configfile.write("#Acceleration recording in lateral direction:\n")
             configfile.write(self.latfile.replace("\\","/")+"\n")
             configfile.write("#Acceleration recording in perpendicular direction:\n")
             configfile.write(self.lonfile.replace("\\","/")+"\n")
-            configfile.write("#Simulation type: Dynamic or Static Pushover:\n")
+            configfile.write("#Simulation type: <Dynamic> or <Static> Pushover:\n")
             configfile.write(str(self.simtype_comboBox.currentText())+"\n")
-            configfile.write("#Maximum duration for simulation in seconds:\n")
+            configfile.write("#Maximum duration for <Dynamic> simulation in seconds:\n")
             configfile.write(str(self.duration_doubleSpinBox.value())+"\n")
+            configfile.write("#Time step dt in seconds:\n")
+            configfile.write(str(self.dt_doubleSpinBox.value())+"\n")
             configfile.write("#Number of modes in Modal Analysis:\n")
             configfile.write(str(self.mode_spinBox.value())+"\n")
 
@@ -438,6 +472,10 @@ class Ui(QtWidgets.QMainWindow):
                 configfile.write("True\n")
             else:
                 configfile.write("False\n")
+            
+            configfile.write("#Live Loads (uniformly distributed) on each floor (furniture, etc.) in psf (pounds per square foot):\n")
+            configfile.write(str(self.ll_doubleSpinBox.value())+"\n")
+
 
 
 
@@ -445,26 +483,247 @@ class Ui(QtWidgets.QMainWindow):
 
             configfile.close()
 
-            os.chdir(root)
+            os.chdir(middlewaredir)
             os.system("OpenSees.exe ./StartSimulation.tcl "+"b_"+str(b))
             os.chdir("..")
+        
+        outputpath=root+"/outputs/"
+        #if os.path.abspath(outputpath)!=self.load_folder_name:
+        #    shutil.copytree(os.path.abspath(outputpath),os.path.join(self.load_folder_name,"outputs"))
         self.showresults_pushButton.setEnabled(True)
     def manage_simparams(self):
-        self.acc_checkbutton.stateChanged.connect(window.manage_acc_buttons)
-        self.lat_pushButton.clicked.connect(window.openFileNameDialoglat)
-        self.lon_pushButton.clicked.connect(window.openFileNameDialoglon)
+        self.load_folder_name=os.path.abspath(".\\FEM_MiddleWare\\outputs")
+        self.runfilename_label.setText(os.path.basename(self.load_folder_name))
+        self.loadfilename_label.setText(os.path.basename(self.load_folder_name))
+        self.acc_checkbutton.stateChanged.connect(self.manage_acc_buttons)
+        self.lat_pushButton.clicked.connect(self.openFileNameDialoglat)
+        self.lon_pushButton.clicked.connect(self.openFileNameDialoglon)
         self.lonfile_label.setText(os.path.basename(".\\FEM_MiddleWare\\GMfiles\\H-E12140.at2"))
         self.latfile_label.setText(os.path.basename(".\\FEM_MiddleWare\\GMfiles\\H-E01140.at2"))
         self.latfile=os.path.abspath(".\\FEM_MiddleWare\\GMfiles\\H-E12140.at2")
         self.lonfile=os.path.abspath(".\\FEM_MiddleWare\\GMfiles\\H-E01140.at2")
-        self.runanalysis_pushButton.clicked.connect(window.runsimulation)
+        self.runsimulation_pushButton.clicked.connect(self.selectDirDialogrun)
+        self.loadsimulation_pushButton.clicked.connect(self.selectDirDialogload)
 
 
     def configure_simulation(self):
         self.preeq_post_tabwidget.setCurrentWidget(self.posttab)
+
+    def manage_runorload(self):
+
+
+
+        if self.runorloadcheckBox.isChecked():
+            self.groupBox_7.setEnabled(True)
+            self.groupBox_8.setEnabled(True)
+            self.groupBox_9.setEnabled(True)
+            self.run_pushButton.setEnabled(True)
+            self.loadsimulation_pushButton.setEnabled(False)
+            self.runfilename_label.setEnabled(True)
+            self.loadfilename_label.setEnabled(False)
+            self.runsimulation_pushButton.setEnabled(True)
+        else:
+            self.groupBox_7.setEnabled(False)
+            self.groupBox_8.setEnabled(False)
+            self.groupBox_9.setEnabled(False)
+            self.runsimulation_pushButton.setEnabled(False)
+            self.loadsimulation_pushButton.setEnabled(True)
+            self.run_pushButton.setEnabled(False)
+            self.runfilename_label.setEnabled(False)
+            self.loadfilename_label.setEnabled(True)
+
+    def set_timelabel(self):
+        self.time_label.setText("Time: "+str(self.dial.value()*0.01)+" sc.")
+    
+    def animatewindow(self):
+        print("animation started:")
+        print(self.numberoftimeintervals)
+        #self.post_eq_city.vtk_interactor.animate_displacement(self.post_eq_city.vertices.values(),500,self.modified_vertices,10.0)
+        #self.post_eq_city.vtk_interactor.renWin.Render()
+        for t in range(int(self.numberoftimeintervals)):
+            #QtCore.QTimer.singleShot(1000, lambda: self.dial.setValue(t*0.1))
+            self.dial.setValue(t)
+            self.post_eq_city.vtk_interactor.animate_displacement(self.post_eq_city.vertices.values(),t,self.modified_vertices,10.0)
+            QtTest.QTest.qWait(0)
+            
+            #print(t)
+
+    def show_results(self):
+
+        self.param_tabWidget.setCurrentWidget(self.postprocessing_tab)
+        self.Postprocessing_tabwidget.setCurrentWidget(self.tab_postcity)
+        self.Start_Animation_Push_Button.setEnabled(True)
+        self.result_path=self.load_folder_name
+        bulding_paths={}
+        self.results={}
+
+        print("start searching result files")
+        start=datetime.datetime.now()
+        for root, dirs, files in os.walk(self.result_path, topdown=False):
+            for name in dirs:
+                if name.startswith("b_"):
+                    bulding_paths[name.split("_")[1]]=os.path.abspath(root+"\\"+name)
+                    self.results[name.split("_")[1]]={}
+                    self.results[name.split("_")[1]]["Displacements"]={}
+
+        #pprint.pprint(bulding_paths)
+        last_b=0
+        last_v=0
+        for b,bp in bulding_paths.items():
+            idfilename=bp+"\\"+"NodeIDs.out"
+            idfile=open(idfilename,'r')
+            dispfilename=bp+"\\"+"Displacement_AllNodes.out"
+            dispfile=open(dispfilename,'r')
+            ids=list(csv.reader(idfile))
+            disps=list(csv.reader(dispfile,delimiter=" "))
+            #disps=list(map(tuple,readed))
+            ndisps = numpy.array(disps, dtype=numpy.float)
+            counter=0
+            #print(ids)
+            for _id in ids:
+                last_v=_id[0]
+                self.results[b]["Displacements"][_id[0]]=ndisps[10:,counter*3+1:counter*3+3+1]
+                counter+=1
+            last_b=b
+            
+        end=datetime.datetime.now()
+        delta=end-start
+        print("end searching result files")
+        print("took "+str(delta.total_seconds()))
+        #print(self.results["707657710"]["Displacements"]["1213"].shape)    
+        self.numberoftimeintervals=self.results[last_b]["Displacements"][last_v].shape[0]
+
+        print("setting np coords as reference")
+        start=datetime.datetime.now()
+        for v in self.post_eq_city.vertices.values():
+            x = numpy.array([[v.coordsX[0],v.coordsX[1],v.coordsX[2]]])
+            v.coordsx=numpy.repeat(x, repeats=self.numberoftimeintervals, axis=0)
+            v.coordsXT=numpy.repeat(x, repeats=self.numberoftimeintervals, axis=0)
+        end=datetime.datetime.now()
+        delta=end-start
+        print("np coords set as reference")
+        print("took "+str(delta.total_seconds()))
+
         
+        print("updating np coords")
+        start=datetime.datetime.now()
+        self.modified_vertices=[]
+        for b in self.results.keys():
+            for vid in self.results[b]["Displacements"].keys():
+                current_vertex_id=self.post_eq_city.femid2vertexid[vid]
+                self.modified_vertices.append(current_vertex_id)
+                #for i in range(self.numberoftimeintervals):
+                    #firstshape=self.post_eq_city.vertices[current_vertex_id].coordsx[i].shape
+                    #secondshape=numpy.array(self.post_eq_city.vertices[current_vertex_id].coordsX).shape
+                    #thirdshape=self.results[b]["Displacements"][vid][i].shape
+                    #print(firstshape,secondshape,thirdshape)
+                    #print(b,vid)
+                self.post_eq_city.vertices[current_vertex_id].coordsx=numpy.add(self.post_eq_city.vertices[current_vertex_id].coordsXT,self.results[b]["Displacements"][vid])
+                    
+        end=datetime.datetime.now()
+        delta=end-start
+        print("np coords updated")
+        print("took "+str(delta.total_seconds()))
+
+
+        
+        print(self.numberoftimeintervals)
+        self.dial.setMaximum(self.numberoftimeintervals)
+        self.dial.setSingleStep(0.01)
+        self.dial.valueChanged.connect(self.set_timelabel)
+        self.Start_Animation_Push_Button.clicked.connect(self.animatewindow)
+        print("result reading finished")
         
 
+        '''
+        self.param_tabWidget.setCurrentWidget(self.postprocessing_tab)
+        self.Postprocessing_tabwidget.setCurrentWidget(self.tab_postcity)
+        self.Start_Animation_Push_Button.setEnabled(True)
+
+
+        print("start searching result files")
+        start=datetime.datetime.now()
+        self.results={}
+        self.result_path=self.load_folder_name
+        disp_files={}
+        delim="##"
+        for root, dirs, files in os.walk(self.result_path, topdown=False):
+            for name in dirs:
+                if name.startswith("Building"):
+                    #the opened dictionary is for resulttype
+                    self.results[name.split("_")[1]]={}
+            for f in files:
+                if f.startswith("Disp_Nodes"):
+                    current_building_id=f.split("Bid")[1].split(".out")[0]
+                    current_item_id=f.split("_")[2]
+                    disp_files[current_building_id+delim+current_item_id]=open(os.path.abspath(root+"\\"+f))
+        for ri in self.results.keys():
+            "opening result for the item id"
+            self.results[ri]["Displacements"]={}
+        end=datetime.datetime.now()
+        delta=end-start
+        print("en searching result files")
+        print("took "+str(delta.total_seconds()))
+
+
+
+
+        print("reading result files")
+        start=datetime.datetime.now()
+        current_building_id=0
+        current_item_id=0
+        for name, ofile in disp_files.items():
+            current_building_id=name.split(delim)[0]
+            current_item_id =name.split(delim)[1]
+            self.results[current_building_id]["Displacements"][current_item_id]=csv.reader(ofile, delimiter=' ')
+            #self.results[current_building_id]["Displacements"][current_item_id] =numpy.genfromtxt(ofile,delimiter=' ',skip_header=1, usecols=(-3,-2,-1))
+        self.numberoftimeintervals=len(list(self.results[current_building_id]["Displacements"][current_item_id]))
+        print(self.numberoftimeintervals)
+        end=datetime.datetime.now()
+        delta=end-start
+        print("end reading result files")
+        print("took "+str(delta.total_seconds()))
+
+        
+        print("setting np coords")
+        start=datetime.datetime.now()
+        for v in self.post_eq_city.vertices.values():
+            x = numpy.array([[v.coordsX[0],v.coordsX[1],v.coordsX[2]]])
+            v.coordsx=numpy.repeat(x, repeats=self.numberoftimeintervals, axis=0)
+        end=datetime.datetime.now()
+        delta=end-start
+        print("np coords set")
+        print("took "+str(delta.total_seconds()))
+
+        print("updating np coords")
+        start=datetime.datetime.now()
+        self.modified_vertices=[]
+        for b in self.results.keys():
+            for vid in self.results[b]["Displacements"].keys():
+                row_counter=0
+                current_vertex_id=self.post_eq_city.femid2vertexid[vid]
+                self.modified_vertices.append(current_vertex_id)
+                for row in self.results[b]["Displacements"][vid]:
+                    for i in range(3):
+                        self.post_eq_city.vertices[current_vertex_id].coordsx[row_counter][i]=self.post_eq_city.vertices[current_vertex_id].coordsX[i]+float(row[i+1])
+                    row_counter+=1
+        end=datetime.datetime.now()
+        delta=end-start
+        print("np coords updated")
+        print("took "+str(delta.total_seconds()))
+
+
+        
+        print(self.numberoftimeintervals)
+        self.dial.setMaximum(self.numberoftimeintervals)
+        self.dial.setSingleStep(0.01)
+        self.dial.valueChanged.connect(self.set_timelabel)
+        self.Start_Animation_Push_Button.clicked.connect(self.animatewindow)
+        print("result reading finished")
+        
+        #pprint.pprint(self.results)
+        
+        '''
 
 
 class OutLog:
@@ -500,7 +759,21 @@ def set_app_style(_app):
     palette.setColor(QtGui.QPalette.Button, QtGui.QColor(53,53,53))
     palette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.white)
     palette.setColor(QtGui.QPalette.BrightText, QtCore.Qt.red)
+
+
+
+    palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.Window, QtCore.Qt.gray)
+    palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, QtCore.Qt.gray)
+    palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.Base, QtCore.Qt.gray)
+    palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.AlternateBase, QtCore.Qt.gray)
+    palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipBase, QtCore.Qt.gray)
+    palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipText, QtCore.Qt.gray)
+    palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.Text, QtCore.Qt.gray)
     palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.Button, QtCore.Qt.gray)
+    palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, QtCore.Qt.gray)
+    palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.BrightText, QtCore.Qt.gray)
+
+
     palette.setColor(QtGui.QPalette.Normal, QtGui.QPalette.Button, QtGui.QColor(53,53,53))
     
     palette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(142,45,197).lighter())
@@ -528,7 +801,7 @@ if __name__=='__main__':
     window.manage_simparams()
 
     
-    pre_eq_city=cities.city("caferaga","pre-eq",vtkWidget,"map_kadiköy_caferaga.osm","map_kadiköy_caferaga.json")
+    pre_eq_city=cities.city("caferaga","pre-eq",vtkWidget,"map_kadiköy_caferaga_small.osm","map_kadiköy_caferaga.json")
     pre_eq_city.build_city()
     pre_eq_city.set_interactor()
     
@@ -556,9 +829,10 @@ if __name__=='__main__':
     vpl=window.vtkPostLayout
     postvtkWidget = QVTKRenderWindowInteractor(post_frame)
     vpl.addWidget(postvtkWidget)
-    post_eq_city=cities.city("caferaga","post-eq",postvtkWidget,"map_kadiköy_caferaga.osm","map_kadiköy_caferaga.json")
+    post_eq_city=cities.city("caferaga","post-eq",postvtkWidget,"map_kadiköy_caferaga_small.osm","map_kadiköy_caferaga.json")
     post_eq_city.copy_city(pre_eq_city)
     post_eq_city.set_interactor()
+    #post_eq_city.copy_city_interactor_properties(pre_eq_city)
     window.post_eq_city=post_eq_city
     post_eq_city.vtk_interactor.iren.SetInteractorStyle(vtk.vtkInteractorStyleTrackballCamera())
     post_eq_city.vtk_interactor.visualize(_initial=True)
@@ -567,14 +841,20 @@ if __name__=='__main__':
     post_eq_city.vtk_interactor.iren.Initialize()
     post_eq_city.vtk_interactor.iren.Start()
 
-    pre_eq_city.vtk_interactor.renWin.Finalize()
-    post_eq_city.vtk_interactor.renWin.Finalize()
-    
 
     errOut = vtk.vtkFileOutputWindow()
     errOut.SetFileName("VTK Error Out.txt")
-    vtkStdErrOut = vtk.vtkOutputWindow()
-    vtkStdErrOut.SetInstance(errOut)
+    #vtkStdErrOut = vtk.vtkOutputWindow()
+    #vtkStdErrOut.SetInstance(errOut)
+
+    
+
+
+    window.runorloadcheckBox.stateChanged.connect(window.manage_runorload)
+    #window.showresults_pushButton.setEnabled(True)
+    window.showresults_pushButton.clicked.connect(window.show_results)
+    window.run_pushButton.clicked.connect(window.runsimulation)
+    
 
 
 
@@ -582,9 +862,8 @@ if __name__=='__main__':
 
 
 
-
-    edit=window.textEdit_Log
-    sys.stdout = OutLog( edit, sys.stdout)
+    #edit=window.textEdit_Log
+    #sys.stdout = OutLog( edit, sys.stdout)
     
 
 

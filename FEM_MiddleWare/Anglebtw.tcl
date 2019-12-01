@@ -3,9 +3,7 @@
 # 
 # Returns the angle in radians between beams, input: BEAM ID's
 # Additionally, returns the angle in radians between vectors 'v1' and 'v2'
-#	by: Serhat Adilak, 2019
 #
-
 proc angle_btw_vec_from_EID {EID1 EID2 iBeamConnect iGirderConnect ifloornodes numInFile} {; # angle between beams/girders
 	set v1 [EID_to_Vector $EID1 $iBeamConnect $iGirderConnect $ifloornodes $numInFile]
 	set v2 [EID_to_Vector $EID2 $iBeamConnect $iGirderConnect $ifloornodes $numInFile]

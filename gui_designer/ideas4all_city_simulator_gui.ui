@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>917</width>
-    <height>845</height>
+    <width>1482</width>
+    <height>936</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -26,8 +26,8 @@
      <verstretch>8</verstretch>
     </sizepolicy>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout_8">
-    <item>
+   <layout class="QGridLayout" name="gridLayout_7">
+    <item row="0" column="0">
      <widget class="QWidget" name="widget_mainframe" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -42,7 +42,7 @@
           <enum>QTabWidget::West</enum>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="pretab">
           <attribute name="title">
@@ -283,7 +283,10 @@
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_6">
               <item>
-               <widget class="QTabWidget" name="tabWidget_2">
+               <widget class="QTabWidget" name="param_tabWidget">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
                 <property name="currentIndex">
                  <number>0</number>
                 </property>
@@ -293,315 +296,411 @@
                  </attribute>
                  <layout class="QVBoxLayout" name="verticalLayout_10">
                   <item>
-                   <widget class="QGroupBox" name="groupBox_7">
-                    <property name="title">
-                     <string>SolverParams</string>
-                    </property>
-                    <property name="flat">
+                   <widget class="QGroupBox" name="groupBox_11">
+                    <property name="enabled">
                      <bool>true</bool>
                     </property>
-                    <layout class="QGridLayout" name="gridLayout_2">
-                     <item row="0" column="0">
-                      <layout class="QGridLayout" name="gridLayout">
-                       <item row="1" column="0">
-                        <widget class="QLabel" name="label_3">
-                         <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
-                         </property>
-                         <property name="frameShadow">
-                          <enum>QFrame::Raised</enum>
-                         </property>
-                         <property name="text">
-                          <string>Sim. Type</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="1" column="1">
-                        <widget class="QComboBox" name="simtype_comboBox">
-                         <item>
-                          <property name="text">
-                           <string>Dynamic</string>
-                          </property>
-                         </item>
-                         <item>
-                          <property name="text">
-                           <string>Static Pushover</string>
-                          </property>
-                         </item>
-                        </widget>
-                       </item>
-                       <item row="2" column="0">
-                        <widget class="QLabel" name="label_4">
-                         <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
-                         </property>
-                         <property name="frameShadow">
-                          <enum>QFrame::Sunken</enum>
-                         </property>
-                         <property name="text">
-                          <string>Duration [s]</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="3" column="0">
-                        <widget class="QLabel" name="label_5">
-                         <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
-                         </property>
-                         <property name="text">
-                          <string># of Modes [-]</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="3" column="1">
-                        <widget class="QSpinBox" name="mode_spinBox">
-                         <property name="value">
-                          <number>3</number>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="2" column="1">
-                        <widget class="QDoubleSpinBox" name="duration_doubleSpinBox">
-                         <property name="value">
-                          <double>10.000000000000000</double>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QGroupBox" name="groupBox_8">
                     <property name="title">
-                     <string>TopoParams</string>
+                     <string>RunParams</string>
                     </property>
-                    <property name="flat">
-                     <bool>true</bool>
-                    </property>
-                    <layout class="QGridLayout" name="gridLayout_4">
-                     <item row="0" column="0">
-                      <layout class="QGridLayout" name="gridLayout_3">
-                       <item row="1" column="0">
-                        <widget class="QLabel" name="label_7">
-                         <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
-                         </property>
-                         <property name="text">
-                          <string>W Section</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="6" column="0">
-                        <widget class="QLabel" name="label_10">
-                         <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
-                         </property>
-                         <property name="text">
-                          <string>Girder Width [inch]</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="3" column="0">
-                        <widget class="QLabel" name="label_9">
-                         <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
-                         </property>
-                         <property name="text">
-                          <string>Beam Depth [inch]</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="4" column="0">
-                        <widget class="QLabel" name="label_11">
-                         <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
-                         </property>
-                         <property name="text">
-                          <string>Beam Width [inch]</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="2" column="0">
-                        <widget class="QLabel" name="label_8">
-                         <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
-                         </property>
-                         <property name="text">
-                          <string>Column Width/Depth [inch]</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="5" column="0">
-                        <widget class="QLabel" name="label_12">
-                         <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
-                         </property>
-                         <property name="text">
-                          <string>Girder Depth [inch]</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="0" column="0">
-                        <widget class="QLabel" name="label_6">
-                         <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
-                         </property>
-                         <property name="text">
-                          <string>RC Section</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="0" column="1">
-                        <widget class="QCheckBox" name="rc_checkBox">
-                         <property name="text">
-                          <string>True</string>
-                         </property>
-                         <property name="checked">
-                          <bool>true</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="1" column="1">
-                        <widget class="QCheckBox" name="ws_checkBox">
-                         <property name="text">
-                          <string>True</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="2" column="1">
-                        <widget class="QDoubleSpinBox" name="cw_doubleSpinBox">
-                         <property name="minimum">
-                          <double>10.000000000000000</double>
-                         </property>
-                         <property name="maximum">
-                          <double>30.000000000000000</double>
-                         </property>
-                         <property name="value">
-                          <double>18.000000000000000</double>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="3" column="1">
-                        <widget class="QDoubleSpinBox" name="bd_doubleSpinBox">
-                         <property name="minimum">
-                          <double>10.000000000000000</double>
-                         </property>
-                         <property name="maximum">
-                          <double>30.000000000000000</double>
-                         </property>
-                         <property name="value">
-                          <double>24.000000000000000</double>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="4" column="1">
-                        <widget class="QDoubleSpinBox" name="bw_doubleSpinBox">
-                         <property name="minimum">
-                          <double>10.000000000000000</double>
-                         </property>
-                         <property name="maximum">
-                          <double>30.000000000000000</double>
-                         </property>
-                         <property name="value">
-                          <double>18.000000000000000</double>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="5" column="1">
-                        <widget class="QDoubleSpinBox" name="gd_doubleSpinBox">
-                         <property name="minimum">
-                          <double>10.000000000000000</double>
-                         </property>
-                         <property name="maximum">
-                          <double>30.000000000000000</double>
-                         </property>
-                         <property name="value">
-                          <double>24.000000000000000</double>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="6" column="1">
-                        <widget class="QDoubleSpinBox" name="gw_doubleSpinBox">
-                         <property name="minimum">
-                          <double>10.000000000000000</double>
-                         </property>
-                         <property name="maximum">
-                          <double>30.000000000000000</double>
-                         </property>
-                         <property name="value">
-                          <double>18.000000000000000</double>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QGroupBox" name="groupBox_9">
-                    <property name="title">
-                     <string>Excitation</string>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_9">
+                    <layout class="QVBoxLayout" name="verticalLayout_14">
                      <item>
-                      <widget class="QCheckBox" name="acc_checkbutton">
+                      <widget class="QCheckBox" name="runorloadcheckBox">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
                        <property name="text">
-                        <string>Apply Uniform Acceleration</string>
+                        <string>Set Parameter for Run</string>
                        </property>
                        <property name="checked">
-                        <bool>true</bool>
+                        <bool>false</bool>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <layout class="QGridLayout" name="gridLayout_5">
-                       <item row="1" column="0">
-                        <widget class="QPushButton" name="lon_pushButton">
-                         <property name="text">
-                          <string>LoadLonAccFile</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="0" column="0">
-                        <widget class="QPushButton" name="lat_pushButton">
-                         <property name="text">
-                          <string>LoadLatAccFile</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="0" column="1">
-                        <widget class="QLabel" name="latfile_label">
-                         <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
-                         </property>
-                         <property name="text">
-                          <string>*at2</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="1" column="1">
-                        <widget class="QLabel" name="lonfile_label">
-                         <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
-                         </property>
-                         <property name="text">
-                          <string>*at2</string>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="loadsscenario_pushButton">
+                      <widget class="QGroupBox" name="groupBox_7">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
-                       <property name="text">
-                        <string>LoadScenarioFromMap</string>
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                         <horstretch>0</horstretch>
+                         <verstretch>1</verstretch>
+                        </sizepolicy>
                        </property>
+                       <property name="title">
+                        <string>SolverParams</string>
+                       </property>
+                       <property name="flat">
+                        <bool>true</bool>
+                       </property>
+                       <layout class="QGridLayout" name="gridLayout_2">
+                        <item row="0" column="0">
+                         <layout class="QGridLayout" name="gridLayout">
+                          <item row="2" column="1">
+                           <widget class="QDoubleSpinBox" name="duration_doubleSpinBox">
+                            <property name="value">
+                             <double>10.000000000000000</double>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="1" column="1">
+                           <widget class="QComboBox" name="simtype_comboBox">
+                            <item>
+                             <property name="text">
+                              <string>Dynamic</string>
+                             </property>
+                            </item>
+                            <item>
+                             <property name="text">
+                              <string>Static Pushover</string>
+                             </property>
+                            </item>
+                           </widget>
+                          </item>
+                          <item row="4" column="0">
+                           <widget class="QLabel" name="label_5">
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="text">
+                             <string># of Modes [-]</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="4" column="1">
+                           <widget class="QSpinBox" name="mode_spinBox">
+                            <property name="value">
+                             <number>3</number>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="1" column="0">
+                           <widget class="QLabel" name="label_3">
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="frameShadow">
+                             <enum>QFrame::Raised</enum>
+                            </property>
+                            <property name="text">
+                             <string>Sim. Type</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="2" column="0">
+                           <widget class="QLabel" name="label_4">
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="frameShadow">
+                             <enum>QFrame::Sunken</enum>
+                            </property>
+                            <property name="text">
+                             <string>Duration [s]</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="3" column="0">
+                           <widget class="QLabel" name="label_dt">
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="text">
+                             <string>Time Step [s]</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="3" column="1">
+                           <widget class="QDoubleSpinBox" name="dt_doubleSpinBox">
+                            <property name="maximum">
+                             <double>1.000000000000000</double>
+                            </property>
+                            <property name="singleStep">
+                             <double>0.010000000000000</double>
+                            </property>
+                            <property name="value">
+                             <double>0.010000000000000</double>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QGroupBox" name="groupBox_8">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                         <horstretch>0</horstretch>
+                         <verstretch>2</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="title">
+                        <string>TopoParams</string>
+                       </property>
+                       <property name="flat">
+                        <bool>true</bool>
+                       </property>
+                       <layout class="QGridLayout" name="gridLayout_4">
+                        <item row="0" column="0">
+                         <layout class="QGridLayout" name="gridLayout_3">
+                          <item row="1" column="0">
+                           <widget class="QLabel" name="label_7">
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="text">
+                             <string>W Section</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="6" column="0">
+                           <widget class="QLabel" name="label_10">
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="text">
+                             <string>Girder Width [inch]</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="3" column="0">
+                           <widget class="QLabel" name="label_9">
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="text">
+                             <string>Beam Depth [inch]</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="4" column="0">
+                           <widget class="QLabel" name="label_11">
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="text">
+                             <string>Beam Width [inch]</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="2" column="0">
+                           <widget class="QLabel" name="label_8">
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="text">
+                             <string>Column Width/Depth [inch]</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="5" column="0">
+                           <widget class="QLabel" name="label_12">
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="text">
+                             <string>Girder Depth [inch]</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="0">
+                           <widget class="QLabel" name="label_6">
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="text">
+                             <string>RC Section</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="1">
+                           <widget class="QCheckBox" name="rc_checkBox">
+                            <property name="text">
+                             <string>True</string>
+                            </property>
+                            <property name="checked">
+                             <bool>true</bool>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="1" column="1">
+                           <widget class="QCheckBox" name="ws_checkBox">
+                            <property name="text">
+                             <string>True</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="2" column="1">
+                           <widget class="QDoubleSpinBox" name="cw_doubleSpinBox">
+                            <property name="minimum">
+                             <double>10.000000000000000</double>
+                            </property>
+                            <property name="maximum">
+                             <double>30.000000000000000</double>
+                            </property>
+                            <property name="value">
+                             <double>18.000000000000000</double>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="3" column="1">
+                           <widget class="QDoubleSpinBox" name="bd_doubleSpinBox">
+                            <property name="minimum">
+                             <double>10.000000000000000</double>
+                            </property>
+                            <property name="maximum">
+                             <double>30.000000000000000</double>
+                            </property>
+                            <property name="value">
+                             <double>24.000000000000000</double>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="4" column="1">
+                           <widget class="QDoubleSpinBox" name="bw_doubleSpinBox">
+                            <property name="minimum">
+                             <double>10.000000000000000</double>
+                            </property>
+                            <property name="maximum">
+                             <double>30.000000000000000</double>
+                            </property>
+                            <property name="value">
+                             <double>18.000000000000000</double>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="5" column="1">
+                           <widget class="QDoubleSpinBox" name="gd_doubleSpinBox">
+                            <property name="minimum">
+                             <double>10.000000000000000</double>
+                            </property>
+                            <property name="maximum">
+                             <double>30.000000000000000</double>
+                            </property>
+                            <property name="value">
+                             <double>24.000000000000000</double>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="6" column="1">
+                           <widget class="QDoubleSpinBox" name="gw_doubleSpinBox">
+                            <property name="minimum">
+                             <double>10.000000000000000</double>
+                            </property>
+                            <property name="maximum">
+                             <double>30.000000000000000</double>
+                            </property>
+                            <property name="value">
+                             <double>18.000000000000000</double>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QGroupBox" name="groupBox_9">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                         <horstretch>0</horstretch>
+                         <verstretch>1</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="title">
+                        <string>Excitation</string>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_9">
+                        <item>
+                         <widget class="QCheckBox" name="acc_checkbutton">
+                          <property name="text">
+                           <string>Apply Uniform Acceleration</string>
+                          </property>
+                          <property name="checked">
+                           <bool>true</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <layout class="QGridLayout" name="gridLayout_5">
+                          <item row="1" column="0">
+                           <widget class="QPushButton" name="lon_pushButton">
+                            <property name="text">
+                             <string>LoadLonAccFile</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="0">
+                           <widget class="QPushButton" name="lat_pushButton">
+                            <property name="text">
+                             <string>LoadLatAccFile</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="1">
+                           <widget class="QLabel" name="latfile_label">
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="text">
+                             <string>*at2</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="1" column="1">
+                           <widget class="QLabel" name="lonfile_label">
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="text">
+                             <string>*at2</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
+                         <widget class="QPushButton" name="loadsscenario_pushButton">
+                          <property name="enabled">
+                           <bool>false</bool>
+                          </property>
+                          <property name="text">
+                           <string>LoadScenarioFromMap</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_17">
+                          <item>
+                           <widget class="QLabel" name="label_liveloads">
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="text">
+                             <string>Live Loads [psf]</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QDoubleSpinBox" name="ll_doubleSpinBox">
+                            <property name="value">
+                             <double>40.000000000000000</double>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
                       </widget>
                      </item>
                     </layout>
@@ -609,25 +708,78 @@
                   </item>
                   <item>
                    <widget class="QGroupBox" name="groupBox_10">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
                     <property name="title">
-                     <string>Analysis</string>
+                     <string>Simulation</string>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_12">
                      <item>
                       <layout class="QVBoxLayout" name="verticalLayout_11">
                        <item>
-                        <widget class="QPushButton" name="runanalysis_pushButton">
+                        <layout class="QHBoxLayout" name="horizontalLayout_16">
+                         <item>
+                          <widget class="QPushButton" name="runsimulation_pushButton">
+                           <property name="enabled">
+                            <bool>false</bool>
+                           </property>
+                           <property name="text">
+                            <string>RunSimulation to:</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QLabel" name="runfilename_label">
+                           <property name="enabled">
+                            <bool>false</bool>
+                           </property>
+                           <property name="frameShape">
+                            <enum>QFrame::StyledPanel</enum>
+                           </property>
+                           <property name="text">
+                            <string>TextLabel</string>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="run_pushButton">
+                         <property name="enabled">
+                          <bool>false</bool>
+                         </property>
                          <property name="text">
-                          <string>RunAnalysis</string>
+                          <string>RUN</string>
                          </property>
                         </widget>
                        </item>
                        <item>
-                        <widget class="QPushButton" name="pushButton_5">
-                         <property name="text">
-                          <string>LoadAnalysis</string>
-                         </property>
-                        </widget>
+                        <layout class="QHBoxLayout" name="horizontalLayout_15">
+                         <item>
+                          <widget class="QPushButton" name="loadsimulation_pushButton">
+                           <property name="enabled">
+                            <bool>true</bool>
+                           </property>
+                           <property name="text">
+                            <string> LoadSimulation from:</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QLabel" name="loadfilename_label">
+                           <property name="enabled">
+                            <bool>true</bool>
+                           </property>
+                           <property name="frameShape">
+                            <enum>QFrame::StyledPanel</enum>
+                           </property>
+                           <property name="text">
+                            <string>TextLabel</string>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
                        </item>
                        <item>
                         <widget class="QPushButton" name="showresults_pushButton">
@@ -653,6 +805,114 @@
                  <attribute name="title">
                   <string>PostParam</string>
                  </attribute>
+                 <layout class="QVBoxLayout" name="verticalLayout_15">
+                  <item>
+                   <widget class="QGroupBox" name="animate_groupBox">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>2</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="title">
+                     <string>AnimationGroup</string>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_13">
+                     <item>
+                      <layout class="QVBoxLayout" name="verticalLayout_8">
+                       <item>
+                        <widget class="QPushButton" name="Start_Animation_Push_Button">
+                         <property name="enabled">
+                          <bool>false</bool>
+                         </property>
+                         <property name="text">
+                          <string>StartAnimation</string>
+                         </property>
+                         <property name="checkable">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_14">
+                         <item>
+                          <widget class="QLabel" name="label_13">
+                           <property name="frameShape">
+                            <enum>QFrame::StyledPanel</enum>
+                           </property>
+                           <property name="text">
+                            <string>Scale Factor [-]</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QDoubleSpinBox" name="scalefact_doubleSpinBox">
+                           <property name="value">
+                            <double>1.000000000000000</double>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="time_label">
+                         <property name="frameShape">
+                          <enum>QFrame::StyledPanel</enum>
+                         </property>
+                         <property name="text">
+                          <string>Time: 0.0 sc.</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QDial" name="dial">
+                         <property name="layoutDirection">
+                          <enum>Qt::LeftToRight</enum>
+                         </property>
+                         <property name="singleStep">
+                          <number>3</number>
+                         </property>
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="invertedControls">
+                          <bool>false</bool>
+                         </property>
+                         <property name="wrapping">
+                          <bool>true</bool>
+                         </property>
+                         <property name="notchTarget">
+                          <double>1.000000000000000</double>
+                         </property>
+                         <property name="notchesVisible">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_12">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>6</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="title">
+                     <string>ColorPlotGroup</string>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_12">
+                     <item>
+                      <layout class="QHBoxLayout" name="horizontalLayout_10"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
                 </widget>
                </widget>
               </item>
@@ -668,7 +928,7 @@
               </sizepolicy>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <property name="tabsClosable">
               <bool>true</bool>
@@ -723,7 +983,7 @@
       </layout>
      </widget>
     </item>
-    <item>
+    <item row="1" column="0">
      <widget class="QGroupBox" name="groupBox_Log">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
@@ -751,7 +1011,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>917</width>
+     <width>1482</width>
      <height>21</height>
     </rect>
    </property>

@@ -11,7 +11,7 @@ while 1 {
 		puts ""
 		source Frame3D_analyze_Dynamic_EQ_bidirect.tcl
         break
-    } elseif {[string match $typesim "Static Pushover"] == 1} {
+    } elseif {[string match $typesim "Static"] == 1} {
 		puts "Static Pushover Analysis has been selected..."
 		puts ""
 		source Frame3D_analyze_Static_Pushover.tcl

@@ -14,7 +14,7 @@
 #	by: Serhat Adilak, 2019
 #
 
-# --------- Take all Element ID's with their nodes from INPUT FILE ---------
+# --------- Take all Element ID's with their NODE ID's from INPUT FILE ---------
    if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {
       puts stderr "Cannot open input file"
    } else {
@@ -22,6 +22,8 @@
 	  set BeamConnect ""
 	  set GirderConnect ""
 	  set ColumnConnect ""
+	  set ElementConnect ""
+	  set ElementwColumns ""
       foreach line [split [read $inFileID] \n] {
          if {[llength $line] == 0} {
             # Blank line --> do nothing
@@ -39,6 +41,8 @@
 							lappend BeamConnecttmp $BeamConnecttmp2
 						}
 						lappend BeamConnect $BeamConnecttmp
+						lappend ElementConnect $BeamConnecttmp
+						lappend ElementwColumns $BeamConnecttmp
 					}
 					if {[string match $word "girder"] == 1} {
 						set list [regexp -all -inline -- {[-+]?[0-9]*\.?[0-9]+} $line]
@@ -47,6 +51,8 @@
 							lappend GirderConnecttmp $GirderConnecttmp2
 						}
 						lappend GirderConnect $GirderConnecttmp
+						lappend ElementConnect $GirderConnecttmp
+						lappend ElementwColumns $GirderConnecttmp
 					}
 					if {[string match $word "column"] == 1} {
 						set list [regexp -all -inline -- {[-+]?[0-9]*\.?[0-9]+} $line]
@@ -55,6 +61,7 @@
 							lappend ColumnConnecttmp $ColumnConnecttmp2
 						}
 						lappend ColumnConnect $ColumnConnecttmp
+						lappend ElementwColumns $ColumnConnecttmp
 					}
 				}
 			}
@@ -72,46 +79,110 @@
 lappend iBeamConnect $BeamConnect
 lappend iGirderConnect $GirderConnect
 lappend iColumnConnect $ColumnConnect
-
-
-# --------- Take all Node ID's with their coordinates from INPUT FILE ---------						
-   if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {
-      puts stderr "Cannot open input file"
-   } else {
-      set flag 0
-	  set NodeList ""
-      foreach line [split [read $inFileID] \n] {
-         if {[llength $line] == 0} {
-            # Blank line --> do nothing
-            continue
-         } elseif {$flag == 1} {
-		    foreach word [split $line] {
-			   if {[string match $word "#MASTERNODES"] == 1} {set flag 0}
-            }
-			if {$flag == 1} {
-				foreach word [split $line] {
-					if {[string match $word "node"] == 1} {
-						set list [regexp -all -inline -- {[-+]?[0-9]*\.?[0-9]+} $line]
-						set NodeListtmp ""
-						foreach NodeListtmp2 [split $list] {
-							lappend NodeListtmp $NodeListtmp2
-						}
-						lappend NodeList $NodeListtmp
-					}
+lappend iElementConnect $ElementConnect; 	# Beam+Girder (required for "Polygon Area" purposes)
+lappend iElementwColumns $ElementwColumns; 	# Beam+Girder+Column (required for output purposes)
+#
+# ------------------- BEAM IDs at each floor ------------------------------------------------
+# Beams are seperated by which floor
+set Beams_Floor ""
+for {set i 0} {$i <= [expr [lindex $NStory $numInFile]-1]} {incr i 1} {
+	set Beams_Floortmp ""
+	set Beams_Floortmp2 ""
+	set aBeams_Floor ""
+	for {set j 0} {$j <= [expr [lindex $nodecount $i]-1]} {incr j 1} {
+		for {set k 0} {$k <= [expr [llength [lindex $iBeamConnect $numInFile]]-1]} {incr k 1} {; 	# Take the Beam Elements at each floor
+			if {[lindex $iBeamConnect $numInFile $k 1]==[lindex $ifloornodes $numInFile $i $j 0]} {
+				set Beams_Floortmp [lindex $iBeamConnect $numInFile $k 0]
+	  			if {[lsearch -all $aBeams_Floor $Beams_Floortmp]==""} {
+					lappend aBeams_Floor $Beams_Floortmp
 				}
 			}
-         } else {
-            foreach word [split $line] {
-               if {$flag == 1} {
-                  break
-               }
-               if {[string match $word "#GROUND"] == 1} {set flag 1}
-            }
-         }
-	  }
-      close $inFileID
-   }
-lappend iNodeList $NodeList
+			if {[lindex $iBeamConnect $numInFile $k 2]==[lindex $ifloornodes $numInFile $i $j 0]} {
+				set Beams_Floortmp2 [lindex $iBeamConnect $numInFile $k 0]
+	  			if {[lsearch -all $aBeams_Floor $Beams_Floortmp2]==""} {
+					lappend aBeams_Floor $Beams_Floortmp2
+				}
+			}
+		}
+	}
+	lappend Beams_Floor $aBeams_Floor
+}
+lappend iBeams_Floor $Beams_Floor; # at each building
+#
+# ------------------- GIRDER IDs at each floor ------------------------------------------------
+# Girder are seperated by which floor
+set Girders_Floor ""
+for {set i 0} {$i <= [expr [lindex $NStory $numInFile]-1]} {incr i 1} {
+	set Girders_Floortmp ""
+	set Girders_Floortmp2 ""
+	set aGirders_Floor ""
+	for {set j 0} {$j <= [expr [lindex $nodecount $i]-1]} {incr j 1} {
+		for {set k 0} {$k <= [expr [llength [lindex $iGirderConnect $numInFile]]-1]} {incr k 1} {; 		# Take the Girder Elements at each floor
+			if {[lindex $iGirderConnect $numInFile $k 1]==[lindex $ifloornodes $numInFile $i $j 0]} {
+				set Girders_Floortmp [lindex $iGirderConnect $numInFile $k 0]
+				if {[lsearch -all $aGirders_Floor $Girders_Floortmp]==""} {
+					lappend aGirders_Floor $Girders_Floortmp
+				}
+			}
+			if {[lindex $iGirderConnect $numInFile $k 2]==[lindex $ifloornodes $numInFile $i $j 0]} {
+				set Girders_Floortmp2 [lindex $iGirderConnect $numInFile $k 0]
+	  			if {[lsearch -all $aGirders_Floor $Girders_Floortmp2]==""} {
+					lappend aGirders_Floor $Girders_Floortmp2
+				}
+			}
+		}
+	}
+	lappend Girders_Floor $aGirders_Floor
+}
+lappend iGirders_Floor $Girders_Floor; # at each building
+#
+# ------------------- BEAM/GIRDER IDs at each floor ------------------------------------------------
+# Beam+Girder (Elements) are seperated by which floor
+set Elements_Floor ""
+for {set i 0} {$i <= [expr [lindex $NStory $numInFile]-1]} {incr i 1} {
+	set Elements_Floortmp ""
+	set Elements_Floortmp2 ""
+	set aElements_Floor ""
+	for {set j 0} {$j <= [expr [lindex $nodecount $i]-1]} {incr j 1} {
+		for {set k 0} {$k <= [expr [llength [lindex $iElementConnect $numInFile]]-1]} {incr k 1} {; # Take the (Beam+Girder) Elements at each floor
+			if {[lindex $iElementConnect $numInFile $k 1]==[lindex $ifloornodes $numInFile $i $j 0]} {
+				set Elements_Floortmp [lindex $iElementConnect $numInFile $k 0]
+				if {[lsearch -all $aElements_Floor $Elements_Floortmp]==""} {; #if not exists in the list before, then take it
+					lappend aElements_Floor $Elements_Floortmp
+				}
+			}
+			if {[lindex $iElementConnect $numInFile $k 2]==[lindex $ifloornodes $numInFile $i $j 0]} {
+				set Elements_Floortmp2 [lindex $iElementConnect $numInFile $k 0]
+				if {[lsearch -all $aElements_Floor $Elements_Floortmp2]==""} {; #if not exists in the list before, then take it
+					lappend aElements_Floor $Elements_Floortmp2
+				}
+			}
+		}
+	}
+	lappend Elements_Floor $aElements_Floor
+}
+lappend iElements_Floor $Elements_Floor; # at each building
+#
+# ------------------- BEAM/GIRDER IDs and their connectivity NODE ID'S at each floor ------------------------------------------------
+# 
+set Elements_Nodes_Floor ""
+for {set i 0} {$i <= [expr [lindex $NStory $numInFile]-1]} {incr i 1} {
+	set tmpEltFloorList [lindex $iElements_Floor $numInFile $i]
+	set Elements_Nodes_Floortmp2 ""
+	for {set j 0} {$j <= [expr [llength $tmpEltFloorList]-1]} {incr j 1} {
+		set Elements_Nodes_Floortmp ""
+		for {set k 0} {$k <= [expr [llength [lindex $iElementConnect $numInFile]]-1]} {incr k 1} {
+			if {[lindex $tmpEltFloorList $j]==[lindex $iElementConnect $numInFile $k 0]} {
+				lappend Elements_Nodes_Floortmp [lindex $tmpEltFloorList $j]
+				lappend Elements_Nodes_Floortmp [lindex $iElementConnect $numInFile $k 1]
+				lappend Elements_Nodes_Floortmp [lindex $iElementConnect $numInFile $k 2]
+			}
+		}
+		lappend Elements_Nodes_Floortmp2 $Elements_Nodes_Floortmp
+	}
+	lappend Elements_Nodes_Floor $Elements_Nodes_Floortmp2
+}
+lappend iElements_Nodes_Floor $Elements_Nodes_Floor
 #
 # -----------------     PERPENDICULAR VECTORS TO EACH ELEMENT AXIS  ------------
 # 
@@ -119,10 +190,8 @@ lappend iNodeList $NodeList
 set Beamvecxz ""
 set Girdervecxz ""
 set Columnvecxz ""
-set LBeamtmp ""
 for {set k 0} {$k <= [expr [llength [lindex $iBeamConnect $numInFile]]-1]} {incr k 1} {;	# For Beams
 	set vecxztmp ""
-	set LBeamtmp2 ""
 	for {set m 0} {$m <= [expr [llength [lindex $iNodeList $numInFile]]-1]} {incr m 1} {
 		if {[lindex $iBeamConnect $numInFile $k 1]==[lindex $iNodeList $numInFile $m 0]} {; # search element's first node in Nodelist
 			set nodeI [lindex $iNodeList $numInFile $m 0]; # Node ID
@@ -137,14 +206,6 @@ for {set k 0} {$k <= [expr [llength [lindex $iBeamConnect $numInFile]]-1]} {incr
 			set vecxztmp2z [lindex $iNodeList $numInFile $m 3]
 		}
 	}
-	# Length of each Beam element
-	set elementid [lindex $iBeamConnect $numInFile $k 0]
-	set tmpelementlength [expr pow(($vecxztmp2x-$vecxztmp1x),2)+pow(($vecxztmp2y-$vecxztmp1y),2)+pow(($vecxztmp2z-$vecxztmp1z),2)]
-	set elementlength [expr sqrt($tmpelementlength)]
-	lappend LBeamtmp2 $elementid
-	lappend LBeamtmp2 $elementlength
-	lappend LBeamtmp $LBeamtmp2
-
 # Set element axis direction to default directions first
 	if {$vecxztmp1x>$vecxztmp2x} {
 		set changetmp $vecxztmp1z
@@ -194,15 +255,11 @@ for {set k 0} {$k <= [expr [llength [lindex $iBeamConnect $numInFile]]-1]} {incr
 	lset iBeamConnect $numInFile $k 1 $nodeI
 	lset iBeamConnect $numInFile $k 2 $nodeJ
 }
-lappend LBeam $LBeamtmp; # {Beam ID,lengths}
-
 #
 # ----------------   FOR GIRDERs  ---------------------
 #
-set LGirdtmp ""
 for {set k 0} {$k <= [expr [llength [lindex $iGirderConnect $numInFile]]-1]} {incr k 1} {;	# For Girder
 	set vecxztmp ""
-	set LGirdtmp2 ""
 	for {set m 0} {$m <= [expr [llength [lindex $iNodeList $numInFile]]-1]} {incr m 1} {
 		if {[lindex $iGirderConnect $numInFile $k 1]==[lindex $iNodeList $numInFile $m 0]} {; # search element's first node in Nodelist
 			set nodeI [lindex $iNodeList $numInFile $m 0]; # Node ID
@@ -217,14 +274,6 @@ for {set k 0} {$k <= [expr [llength [lindex $iGirderConnect $numInFile]]-1]} {in
 			set vecxztmp2z [lindex $iNodeList $numInFile $m 3]
 		}
 	}
-	# Length of each girder element
-	set elementid [lindex $iGirderConnect $numInFile $k 0]
-	set tmpelementlength [expr pow(($vecxztmp2x-$vecxztmp1x),2)+pow(($vecxztmp2y-$vecxztmp1y),2)+pow(($vecxztmp2z-$vecxztmp1z),2)]
-	set elementlength [expr sqrt($tmpelementlength)]
-	lappend LGirdtmp2 $elementid
-	lappend LGirdtmp2 $elementlength
-	lappend LGirdtmp $LGirdtmp2
-
 # Set element axis direction to default directions first	
 	if {$vecxztmp1x<$vecxztmp2x} {
 		if {$vecxztmp1z<$vecxztmp2z} {
@@ -289,7 +338,6 @@ for {set k 0} {$k <= [expr [llength [lindex $iGirderConnect $numInFile]]-1]} {in
 	lset iGirderConnect $numInFile $k 1 $nodeI
 	lset iGirderConnect $numInFile $k 2 $nodeJ
 }
-lappend LGird $LGirdtmp; # {Girder ID,lengths}
 #
 #
 #
@@ -398,9 +446,9 @@ for {set k 0} {$k <= [expr [llength [lindex $iColumnConnect $numInFile]]-1]} {in
 #set IDGirdTransf 3; # all girds
 set ColTransfType Linear ;		# options for columns: Linear PDelta  Corotational
 #
-puts IDBeamTransf$IDBeamTransf
-puts IDGirdTransf$IDGirdTransf
-puts IDColTransf$IDColTransf
+#puts IDBeamTransf$IDBeamTransf
+#puts IDGirdTransf$IDGirdTransf
+#puts IDColTransf$IDColTransf
 #
 # ----------------  DEFINE TRANSFORMATIONS  ---------------
 for {set k 0} {$k <= [expr [llength [lindex $iBeamConnect $numInFile]]-1]} {incr k 1} {

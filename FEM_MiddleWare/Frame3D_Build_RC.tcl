@@ -57,8 +57,8 @@ set NStorytmp 0
 
 
 # --------- CREATE MODEL from input files -----------------------------------------------------
-	source AssemblefromElements.tcl;				# Beam/Girder tags, Transformation, vector definitions, etc.
 	source AssemblefromNodes.tcl;					# Identify special lists from Nodal input, define output node lists, etc.
+	source AssemblefromElements.tcl;				# Beam/Girder tags, Transformation, vector definitions, etc.
 	source CreateNodes.tcl;							# Creates nodes
 	source CreateElements.tcl;						# Creates elements
 #
@@ -130,6 +130,7 @@ set NStorytmp 0
 		lset FloorHeight $numInFile [expr $i-1] $FloorHeighttmp
 	}
 	
+
 #
 #
 #

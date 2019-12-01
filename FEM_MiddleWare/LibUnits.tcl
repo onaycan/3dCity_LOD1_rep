@@ -15,7 +15,7 @@ set ksi [expr $kip/pow($in,2)];
 set psi [expr $ksi/1000.];
 set lbf [expr $psi*$in*$in];		# pounds force
 set pcf [expr $lbf/pow($ft,3)];		# pounds per cubic foot
-set psf [expr $lbf/pow($ft,3)];		# pounds per square foot
+set psf [expr $lbf/pow($ft,2)];		# pounds per square foot
 set in2 [expr $in*$in]; 		# inch^2
 set in4 [expr $in*$in*$in*$in]; 		# inch^4
 set cm [expr $in/2.54];		# centimeter, needed for displacement input in MultipleSupport excitation

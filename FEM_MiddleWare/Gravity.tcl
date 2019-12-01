@@ -7,11 +7,11 @@ for {set numInFile 0} {$numInFile <= [expr $Buildingnum-1]} {incr numInFile 1} {
 	for {set i 0} {$i <= [expr [llength [lindex $LCol $numInFile]]-1]} {incr i 1} {
 		eleLoad -ele [lindex $LCol $numInFile $i 0] -type -beamUniform 0. 0. -$QdlCol; 	# COLUMNS
 	}
-	for {set i 0} {$i <= [expr [llength [lindex $LBeam $numInFile]]-1]} {incr i 1} {
-		eleLoad -ele [lindex $LBeam $numInFile $i 0]  -type -beamUniform -[lindex $QdlBeam $numInFile $i 1] 0.; 	# BEAMS
+	for {set i 0} {$i <= [expr [llength [lindex $iBeamConnect $numInFile]]-1]} {incr i 1} {
+		eleLoad -ele [lindex $iBeamConnect $numInFile $i 0]  -type -beamUniform -[lindex $QdlBeam $numInFile $i 1] 0.; 	# BEAMS
 	}
-	for {set i 0} {$i <= [expr [llength [lindex $LGird $numInFile]]-1]} {incr i 1} {
-		eleLoad -ele [lindex $LGird $numInFile $i 0]  -type -beamUniform -$QdlGird 0.;	# GIRDS
+	for {set i 0} {$i <= [expr [llength [lindex $iGirderConnect $numInFile]]-1]} {incr i 1} {
+		eleLoad -ele [lindex $iGirderConnect $numInFile $i 0]  -type -beamUniform -[lindex $QdlGird $numInFile $i 1] 0.;	# GIRDS
 	}
 }
 }; # Pattern plain 101 linear close 

@@ -1,13 +1,17 @@
 #Input folder path:
-C:/PZI_16292/CAN/PersDev/EQ/05_QuickPipeline/00_AdressLevels_Master/3dCity_LOD1_rep/FEM_MiddleWare/inputs/b_694698606
+C:/PZI_16292/CAN/PersDev/EQ/05_QuickPipeline/00_AdressLevels_Master/3dCity_LOD1_rep/working_dir/inputs/b_699387858
+#Output folder path:
+C:/PZI_16292/CAN/PersDev/EQ/05_QuickPipeline/00_AdressLevels_Master/3dCity_LOD1_rep/working_dir/outputs/b_699387858
 #Acceleration recording in lateral direction:
 C:/PZI_16292/CAN/PersDev/EQ/05_QuickPipeline/00_AdressLevels_Master/3dCity_LOD1_rep/FEM_MiddleWare/GMfiles/H-E12140.at2
 #Acceleration recording in perpendicular direction:
 C:/PZI_16292/CAN/PersDev/EQ/05_QuickPipeline/00_AdressLevels_Master/3dCity_LOD1_rep/FEM_MiddleWare/GMfiles/H-E01140.at2
-#Simulation type: Dynamic or Static Pushover:
+#Simulation type: <Dynamic> or <Static> Pushover:
 Dynamic
-#Maximum duration for simulation in seconds:
+#Maximum duration for <Dynamic> simulation in seconds:
 10.0
+#Time step dt in seconds:
+0.01
 #Number of modes in Modal Analysis:
 3
 #RC Section
@@ -24,3 +28,5 @@ True
 18.0
 #W Section
 False
+#Live Loads (uniformly distributed) on each floor (furniture, etc.) in psf (pounds per square foot):
+40.0

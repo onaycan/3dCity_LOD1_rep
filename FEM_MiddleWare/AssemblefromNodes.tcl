@@ -97,4 +97,43 @@ if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {
 	}
 	lappend ifloornodes $floornodes
 #
+# --------- Take all Node ID's with their coordinates from INPUT FILE ---------						
+   if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {
+      puts stderr "Cannot open input file"
+   } else {
+      set flag 0
+	  set NodeList ""
+      foreach line [split [read $inFileID] \n] {
+         if {[llength $line] == 0} {
+            # Blank line --> do nothing
+            continue
+         } elseif {$flag == 1} {
+		    foreach word [split $line] {
+			   if {[string match $word "#MASTERNODES"] == 1} {set flag 0}
+            }
+			if {$flag == 1} {
+				foreach word [split $line] {
+					if {[string match $word "node"] == 1} {
+						set list [regexp -all -inline -- {[-+]?[0-9]*\.?[0-9]+} $line]
+						set NodeListtmp ""
+						foreach NodeListtmp2 [split $list] {
+							lappend NodeListtmp $NodeListtmp2
+						}
+						lappend NodeList $NodeListtmp
+					}
+				}
+			}
+         } else {
+            foreach word [split $line] {
+               if {$flag == 1} {
+                  break
+               }
+               if {[string match $word "#GROUND"] == 1} {set flag 1}
+            }
+         }
+	  }
+      close $inFileID
+   }
+lappend iNodeList $NodeList
+#
 #
