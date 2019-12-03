@@ -4,6 +4,7 @@ import vertices
 import columns
 import matplotlib
 import math
+import numpy
 
 
 def mkVtkIdList(it):
@@ -267,8 +268,8 @@ class vtk_interactor:
     def animate_displacement(self,_vertices, _timecounter, _vertexids,_scale):
         self.building_points = vtk.vtkPoints()
         for v in _vertices:
-            self.building_points.InsertNextPoint(v.coordsx[_timecounter][0],v.coordsx[_timecounter][1],v.coordsx[_timecounter][2])
-
+            #self.building_points.InsertNextPoint(v.coordsx[_timecounter])
+            self.building_points.InsertNextPoint(numpy.add(v.coordsXT[_timecounter],numpy.multiply(_scale,v.dXT[_timecounter])))
         self.PolyData_Lines = vtk.vtkPolyData()
         self.PolyData_BuildingCells = vtk.vtkPolyData()
         self.visualize()

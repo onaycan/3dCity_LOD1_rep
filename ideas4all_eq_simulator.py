@@ -113,10 +113,11 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(Ui, self).__init__(parent)
         self.setupUi(self)
-        self.showMaximized()
+        self.showFullScreen()
+        #self.showMaximized()
         #self.adjustSize()
         #uic.loadUi('./gui_designer/ideas4all_city_simulator_gui.ui', self)
-        self.show()
+        #self.show()
         self.checked_items={'Building Blocks': 2, 'Buildings': 2, 'Panels': 2, 'Panel Facets': 2, 'Panel Beams': 2, 'Panel Girders': 2, 'Walls': 2, 'Wall Facets': 2, "Wall Columns" : 2, "Terrain" :2}
         self.numberoftimeintervals=0
 
@@ -444,6 +445,7 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def runsimulation(self):
 
+        
         self.showresults_pushButton.setEnabled(False)
         bs=set()
         #root="./FEM_MiddleWare"
@@ -564,31 +566,58 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def set_timelabel(self):
         self.time_label.setText("Time: "+str(self.dial.value()*0.01)+" sc.")
+        if not self.Start_Animation_Push_Button.isChecked():
+            self.animatewindow()
     
     def animatewindow(self):
+
+        if self.Start_Animation_Push_Button.isChecked():
+            self.Start_Animation_Push_Button.setText("Stop Animation")
+            self.dial.setEnabled(False)
+            #self.scalefact_doubleSpinBox.setEnabled(False)
+        else:
+            self.Start_Animation_Push_Button.setText("Start Animation")
+            self.dial.setEnabled(True)
+            #self.scalefact_doubleSpinBox.setEnabled(True)
+
         print("animation started:")
         start=datetime.datetime.now()
-        f=0
+        f=self.dial.value()
+        if f==self.numberoftimeintervals-1:
+            f=0
+        broken=False
         #for f in range(int(self.numberoftimeintervals)):
         while f<int(self.numberoftimeintervals):
             startf=datetime.datetime.now()
             self.dial.setValue(f)
-            self.post_eq_city.vtk_interactor.animate_displacement(self.post_eq_city.vertices.values(),f,self.modified_vertices,10.0)
+            self.post_eq_city.vtk_interactor.animate_displacement(self.post_eq_city.vertices.values(),f,self.modified_vertices,self.scalefact_doubleSpinBox.value())
             QtTest.QTest.qWait(0.0)
+            #brak it right here, so that the set_timelabel renders at least once.
+            if not self.Start_Animation_Push_Button.isChecked():
+                broken=True
+                break
             endf=datetime.datetime.now()
             deltaf=(endf-startf).total_seconds()
             #f+=int(self.numberofframes_ina_second/self.renders_ina_second)
             f+=int(deltaf/self.dT)
             
-        self.dial.setValue(self.numberoftimeintervals-1)
-        self.post_eq_city.vtk_interactor.animate_displacement(self.post_eq_city.vertices.values(),self.numberoftimeintervals-1,self.modified_vertices,10.0)
-        QtTest.QTest.qWait(0.01)    
+        if not broken:
+            self.dial.setValue(self.numberoftimeintervals-1)
+            self.post_eq_city.vtk_interactor.animate_displacement(self.post_eq_city.vertices.values(),self.numberoftimeintervals-1,self.modified_vertices,self.scalefact_doubleSpinBox.value())
+            QtTest.QTest.qWait(0.0)    
+            self.Start_Animation_Push_Button.setChecked(False)
+            self.Start_Animation_Push_Button.setText("Start Animation")
+            self.dial.setEnabled(True)
             #print(t)
         end=datetime.datetime.now()
         delta=end-start
         print("end animation")
         print("took "+str(delta.total_seconds()))
+
+
     def show_results(self):
+
+        
 
         self.param_tabWidget.setCurrentWidget(self.postprocessing_tab)
         self.Postprocessing_tabwidget.setCurrentWidget(self.tab_postcity)
@@ -617,7 +646,6 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
             ids=list(csv.reader(idfile))
             disps=list(csv.reader(dispfile,delimiter=" "))
             ndisps = numpy.array(disps, dtype=numpy.float)
-            print(b)
             deltaT=ndisps.item((12,0))-ndisps.item((11,0))
             counter=0
             for _id in ids:
@@ -640,10 +668,12 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
 
         print("setting np coords as reference")
         start=datetime.datetime.now()
+        dx_zero = numpy.array([[0.0,0.0,0.0]])
         for v in self.post_eq_city.vertices.values():
             x = numpy.array([[v.coordsX[0],v.coordsX[1],v.coordsX[2]]])
             v.coordsx=numpy.repeat(x, repeats=self.numberoftimeintervals, axis=0)
             v.coordsXT=numpy.repeat(x, repeats=self.numberoftimeintervals, axis=0)
+            v.dXT=numpy.repeat(dx_zero, repeats=self.numberoftimeintervals, axis=0)
         end=datetime.datetime.now()
         delta=end-start
         print("np coords set as reference")
@@ -657,8 +687,8 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
             for vid in self.results[b]["Displacements"].keys():
                 current_vertex_id=self.post_eq_city.femid2vertexid[vid]
                 self.modified_vertices.append(current_vertex_id)
-                self.post_eq_city.vertices[current_vertex_id].coordsx=numpy.add(self.post_eq_city.vertices[current_vertex_id].coordsXT,self.results[b]["Displacements"][vid])
-                    
+                #self.post_eq_city.vertices[current_vertex_id].coordsx=numpy.add(self.post_eq_city.vertices[current_vertex_id].coordsXT,self.results[b]["Displacements"][vid]*self.scalefact_doubleSpinBox.value())
+                self.post_eq_city.vertices[current_vertex_id].dXT=self.results[b]["Displacements"][vid]
         end=datetime.datetime.now()
         delta=end-start
         print("np coords updated")
