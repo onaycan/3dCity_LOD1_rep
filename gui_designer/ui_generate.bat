@@ -1,0 +1,1 @@
+pyuic5 -o ideas4all_city_simulator_gui.py ideas4all_city_simulator_gui.ui

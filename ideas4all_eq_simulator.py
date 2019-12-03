@@ -7,11 +7,15 @@ import pandas
 import shutil
 import datetime
 from PyQt5 import QtWidgets, uic
-from PyQt5.QtWidgets import QTreeWidgetItem, QColorDialog, QFileDialog
+from PyQt5.QtWidgets import QTreeWidgetItem, QColorDialog, QFileDialog, QTabWidget
 from PyQt5 import Qt, QtCore, QtGui
 from PyQt5.QtCore import Qt as qut
 from PyQt5.QtCore import QTimer
 from PyQt5 import QtTest
+from PyQt5.QtWebEngineWidgets import QWebEngineView as QWebView
+from PyQt5.QtCore import QUrl, QObject, pyqtSlot
+from PyQt5.QtWebChannel import QWebChannel
+
 import sys
 import cities
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
@@ -23,6 +27,30 @@ from petl import fromcsv, look, cut, tocsv, fromtext
 import petl
 from astropy.io import ascii
 
+from gui_designer.ideas4all_city_simulator_gui import Ui_MainWindow
+
+
+
+class CallHandler(QObject):
+
+    def setmainWidget(self, mainWidget):
+        self.mainWidget = mainWidget
+
+
+class WebView(QWebView):
+
+    def config(self, mainWidget, filename):
+        self.channel = QWebChannel()
+        self.handler = CallHandler()
+        self.handler.setmainWidget(mainWidget)
+        self.channel.registerObject('handler', self.handler)
+        self.page().setWebChannel(self.channel)
+        local_url = QUrl.fromLocalFile(filename)
+        #local_url=QUrl(filename)
+        self.load(local_url)
+        self.show()
+
+        print("Configuration done")
     
 
 class CheckableComboBox(QtWidgets.QComboBox):
@@ -81,11 +109,13 @@ class ColorButton(QtWidgets.QPushButton):
 
 
 
-class Ui(QtWidgets.QMainWindow):
-    def __init__(self):
-        super(Ui, self).__init__()
-        self.adjustSize()
-        uic.loadUi('./gui_designer/ideas4all_city_simulator_gui.ui', self)
+class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
+    def __init__(self, parent=None):
+        super(Ui, self).__init__(parent)
+        self.setupUi(self)
+        self.showMaximized()
+        #self.adjustSize()
+        #uic.loadUi('./gui_designer/ideas4all_city_simulator_gui.ui', self)
         self.show()
         self.checked_items={'Building Blocks': 2, 'Buildings': 2, 'Panels': 2, 'Panel Facets': 2, 'Panel Beams': 2, 'Panel Girders': 2, 'Walls': 2, 'Wall Facets': 2, "Wall Columns" : 2, "Terrain" :2}
         self.numberoftimeintervals=0
@@ -549,7 +579,7 @@ class Ui(QtWidgets.QMainWindow):
             deltaf=(endf-startf).total_seconds()
             #f+=int(self.numberofframes_ina_second/self.renders_ina_second)
             f+=int(deltaf/self.dT)
-        
+            
         self.dial.setValue(self.numberoftimeintervals-1)
         self.post_eq_city.vtk_interactor.animate_displacement(self.post_eq_city.vertices.values(),self.numberoftimeintervals-1,self.modified_vertices,10.0)
         QtTest.QTest.qWait(0.01)    
@@ -635,19 +665,6 @@ class Ui(QtWidgets.QMainWindow):
         print("took "+str(delta.total_seconds()))
 
 
-        #print("dummy animation start")
-        #f=0
-        #start=datetime.datetime.now()
-        #self.dial.setValue(f)
-        #self.post_eq_city.vtk_interactor.animate_displacement(self.post_eq_city.vertices.values(),f,self.modified_vertices,10.0)
-        #QtTest.QTest.qWait(0.01)
-        #f+=int(self.numberofframes_ina_second/10.0)
-        #end=datetime.datetime.now()
-        #delta=end-start
-        #print("took "+str(delta.total_seconds()))
-        #print("summy animation ends")
-        #self.renders_ina_second=float(1.0/delta.total_seconds())
-        #print("renderer is capable of rendering "+str(self.renders_ina_second)+" frames in a second")
 
 
         print(self.numberoftimeintervals)
@@ -724,6 +741,7 @@ if __name__=='__main__':
     window.showMaximized()
     window.show_table_widget()
 
+    
 
     frame = window.tabWidget
 
@@ -787,6 +805,25 @@ if __name__=='__main__':
     #window.showresults_pushButton.setEnabled(True)
     window.showresults_pushButton.clicked.connect(window.show_results)
     window.run_pushButton.clicked.connect(window.runsimulation)
+
+    
+    #mapwidget.config(window,"https://www.google.com/")
+    #mapwidget = WebView()
+    #mapwidget.config(window, os.path.abspath(".\\LeafLetOffline\\plot_robust.html"))
+    #window.Postprocessing_tabwidget.setTabsClosable(True)
+    #window.Postprocessing_tabwidget.setMovable(True)
+    #window.Postprocessing_tabwidget.setStyleSheet("QTabBar::tab:selected { color: blue; }")
+    #window.Postprocessing_tabwidget.addTab(mapwidget, "yarro")
+    #window.horizontalLayout_2.addWidget(mapwidget)
+
+    
+
+    #window.webTabwidget = QTabWidget()
+    #window.webTabwidget.setTabsClosable(True)
+    #window.webTabwidget.setMovable(True)
+    #window.webTabwidget.addTab(mapwidget, "seismic map")
+    #window.preeq_post_tabwidget.addTab(mapwidget, "yarro")
+    
     
 
 
