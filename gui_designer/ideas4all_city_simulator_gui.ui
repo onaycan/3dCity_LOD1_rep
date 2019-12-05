@@ -288,7 +288,7 @@
                  <bool>true</bool>
                 </property>
                 <property name="currentIndex">
-                 <number>0</number>
+                 <number>1</number>
                 </property>
                 <widget class="QWidget" name="simulation_tab">
                  <attribute name="title">
@@ -866,8 +866,17 @@
                        </item>
                        <item>
                         <widget class="QDial" name="dial">
+                         <property name="enabled">
+                          <bool>true</bool>
+                         </property>
                          <property name="layoutDirection">
                           <enum>Qt::LeftToRight</enum>
+                         </property>
+                         <property name="autoFillBackground">
+                          <bool>false</bool>
+                         </property>
+                         <property name="minimum">
+                          <number>-2</number>
                          </property>
                          <property name="singleStep">
                           <number>3</number>
@@ -905,9 +914,59 @@
                     <property name="title">
                      <string>ColorPlotGroup</string>
                     </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_12">
+                    <layout class="QVBoxLayout" name="verticalLayout_13">
                      <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_10"/>
+                      <widget class="QGroupBox" name="groupBox_13">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="title">
+                        <string/>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_17">
+                        <item>
+                         <widget class="QLabel" name="label_14">
+                          <property name="text">
+                           <string>TensorName</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QComboBox" name="tensorresult_comboBox"/>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="label_15">
+                          <property name="text">
+                           <string>ScalarOrInvariantOfTensor</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QComboBox" name="scalarresult_comboBox"/>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QGroupBox" name="groupBox_14">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                         <horstretch>0</horstretch>
+                         <verstretch>3</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="title">
+                        <string>LegendView</string>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_18">
+                        <item>
+                         <layout class="QVBoxLayout" name="verticalLayout_16"/>
+                        </item>
+                       </layout>
+                      </widget>
                      </item>
                     </layout>
                    </widget>

@@ -267,12 +267,22 @@ class vtk_interactor:
 
     def animate_displacement(self,_vertices, _timecounter, _vertexids,_scale):
         self.building_points = vtk.vtkPoints()
+        #self.BuildingColors = vtk.vtkUnsignedCharArray()
+        #self.BuildingColors.SetNumberOfComponents(3)
+        #self.BuildingColors.SetName("BuildingColors")
         for v in _vertices:
             #self.building_points.InsertNextPoint(v.coordsx[_timecounter])
             self.building_points.InsertNextPoint(numpy.add(v.coordsXT[_timecounter],numpy.multiply(_scale,v.dXT[_timecounter])))
+            #cmap = matplotlib.cm.get_cmap(_colormap)
+            #val=(v.dXT[_timecounter][0]-_minr)/(_maxr-_minr)
+            #r,g,b,a = _cmap(val)
+            #self.BuildingColors.InsertNextTuple3(r*255,g*255,b*255)
+            self.BuildingColors.SetTuple3(self.b_vertexId2VtkPointId[v.id],v.rColorMap_activ[_timecounter][0],v.rColorMap_activ[_timecounter][1],v.rColorMap_activ[_timecounter][2])
+
+
         self.PolyData_Lines = vtk.vtkPolyData()
         self.PolyData_BuildingCells = vtk.vtkPolyData()
-        self.visualize()
+        self.visualize(_nodal=True)
         self.renWin.Render()
 
 
@@ -479,7 +489,7 @@ class vtk_interactor:
             self.insert_building_triangle(b)
             #print(b.name)
     '''
-    def visualize(self,_initial=False):
+    def visualize(self,_nodal=False,_initial=False):
         
         _wireframe=True
         if(self.ground_triangles.GetNumberOfCells()==0 and self.building_triangles.GetNumberOfCells()==0):
@@ -490,7 +500,10 @@ class vtk_interactor:
         self.PolyData_BuildingCells.SetPoints(self.building_points)
         self.PolyData_BuildingCells.SetPolys(self.building_triangles)
         #self.PolyData_BuildingCells.GetPointData().SetScalars(self.BuildingColors)
-        self.PolyData_BuildingCells.GetCellData().SetScalars(self.BuildingCellColors)
+        if not _nodal:
+            self.PolyData_BuildingCells.GetCellData().SetScalars(self.BuildingCellColors)
+        else:
+            self.PolyData_BuildingCells.GetPointData().SetScalars(self.BuildingColors)
         self.mapper_BuildingCells.SetInputData(self.PolyData_BuildingCells)
         self.mapper_BuildingCells.ScalarVisibilityOn()
         self.mapper_BuildingCells.Update()

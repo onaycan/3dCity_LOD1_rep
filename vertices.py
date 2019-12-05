@@ -14,6 +14,7 @@ class vertex:
         #self.coords.append(float(_coords[2]))#dummy
         self.facetids=[]
         self.results={}
+        self.rColorMaps={}
     def append_facetid(self,_id):
         self.facetids.append(_id)
 

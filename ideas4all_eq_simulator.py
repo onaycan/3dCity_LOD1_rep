@@ -15,7 +15,7 @@ from PyQt5 import QtTest
 from PyQt5.QtWebEngineWidgets import QWebEngineView as QWebView
 from PyQt5.QtCore import QUrl, QObject, pyqtSlot
 from PyQt5.QtWebChannel import QWebChannel
-
+import matplotlib
 import sys
 import cities
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
@@ -570,6 +570,8 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
             self.animatewindow()
     
     def animatewindow(self):
+        
+
 
         if self.Start_Animation_Push_Button.isChecked():
             self.Start_Animation_Push_Button.setText("Stop Animation")
@@ -613,6 +615,76 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
         delta=end-start
         print("end animation")
         print("took "+str(delta.total_seconds()))
+
+    def set_combobox_post_legend(self, value):
+        
+        #print("here")
+
+        if value=="Displacement":
+            self.scalarresult_comboBox.clear()
+            self.scalarresult_comboBox.addItem("Displacement X")
+            self.scalarresult_comboBox.addItem("Displacement Y")
+            self.scalarresult_comboBox.addItem("Displacement Z")
+            self.scalarresult_comboBox.addItem("Displacement Mag")
+
+        if value=="Stress":
+            self.scalarresult_comboBox.clear()
+            self.scalarresult_comboBox.addItem("Stress XX")
+            self.scalarresult_comboBox.addItem("Stress YY")
+            self.scalarresult_comboBox.addItem("Stress ZZ")
+            self.scalarresult_comboBox.addItem("Stress XY")
+            self.scalarresult_comboBox.addItem("Stress YZ")
+            self.scalarresult_comboBox.addItem("Stress ZX")
+
+        if value=="Strain":
+            self.scalarresult_comboBox.clear()
+            self.scalarresult_comboBox.addItem("Strain XX")
+            self.scalarresult_comboBox.addItem("Strain YY")
+            self.scalarresult_comboBox.addItem("Strain ZZ")
+            self.scalarresult_comboBox.addItem("Strain XY")
+            self.scalarresult_comboBox.addItem("Strain YZ")
+            self.scalarresult_comboBox.addItem("Strain ZX")
+
+        
+
+    def set_scalar_result(self,value):
+        
+        
+        val2key={"Displacement X":"dX0",
+                 "Displacement Y":"dX1",
+                 "Displacement Z":"dX2",
+                 "Displacement Mag":"dXmag"
+        }
+        
+        if value.startswith("Displacement"):
+            for b in self.results.keys():
+                for vid in self.results[b]["Displacements"].keys():
+                    current_vertex_id=self.post_eq_city.femid2vertexid[vid]
+                    self.post_eq_city.vertices[current_vertex_id].rColorMap_activ=self.post_eq_city.vertices[current_vertex_id].rColorMaps[val2key[value]]
+        
+        #stop animation and show colors
+        self.Start_Animation_Push_Button.setChecked(False)
+        self.set_timelabel()
+        
+
+    def calculate_colormap_values(self, cmap):
+        
+        for i in range(3):
+            self.resultmaxmins["dX"+str(i)].append(numpy.amin([numpy.amin(v.dXT[:,i]) for v in self.post_eq_city.vertices.values()]))
+            self.resultmaxmins["dX"+str(i)].append(numpy.amax([numpy.amax(v.dXT[:,i]) for v in self.post_eq_city.vertices.values()]))
+            for b in self.results.keys():
+                for vid in self.results[b]["Displacements"].keys():
+                    current_vertex_id=self.post_eq_city.femid2vertexid[vid]
+                    vals=numpy.multiply(self.post_eq_city.vertices[current_vertex_id].dXT[:,i]-self.resultmaxmins["dX"+str(i)][0],1.0/(self.resultmaxmins["dX"+str(i)][1]-self.resultmaxmins["dX"+str(i)][0]))
+                    self.post_eq_city.vertices[current_vertex_id].rColorMaps["dX"+str(i)]=numpy.multiply(cmap(vals)[:,0:3],255)
+
+        self.resultmaxmins["dXmag"].append(numpy.amin([numpy.amin(v.dXmag[:,0]) for v in self.post_eq_city.vertices.values()]))
+        self.resultmaxmins["dXmag"].append(numpy.amax([numpy.amax(v.dXmag[:,0]) for v in self.post_eq_city.vertices.values()]))
+        for b in self.results.keys():
+            for vid in self.results[b]["Displacements"].keys():
+                current_vertex_id=self.post_eq_city.femid2vertexid[vid]
+                vals=numpy.multiply(self.post_eq_city.vertices[current_vertex_id].dXmag[:,0]-self.resultmaxmins["dXmag"][0],1.0/(self.resultmaxmins["dXmag"][1]-self.resultmaxmins["dXmag"][0]))
+                self.post_eq_city.vertices[current_vertex_id].rColorMaps["dXmag"]=numpy.multiply(cmap(vals)[:,0:3],255)
 
 
     def show_results(self):
@@ -669,18 +741,35 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
         print("setting np coords as reference")
         start=datetime.datetime.now()
         dx_zero = numpy.array([[0.0,0.0,0.0]])
+        dc_zero = numpy.array([[0.0,0.0,0.0]])
+        dval_zero = numpy.array([[0.0]])
+
+        result_flags=["dX0","dX1","dX2","dXmag"]
+        self.resultmaxmins={}
+        for k in result_flags:
+            self.resultmaxmins[k]=[]
         for v in self.post_eq_city.vertices.values():
+            
             x = numpy.array([[v.coordsX[0],v.coordsX[1],v.coordsX[2]]])
             v.coordsx=numpy.repeat(x, repeats=self.numberoftimeintervals, axis=0)
             v.coordsXT=numpy.repeat(x, repeats=self.numberoftimeintervals, axis=0)
             v.dXT=numpy.repeat(dx_zero, repeats=self.numberoftimeintervals, axis=0)
+            v.dXmag=numpy.repeat(dval_zero, repeats=self.numberoftimeintervals, axis=0)
+            for k in result_flags:
+                v.rColorMaps[k]=numpy.repeat(dc_zero, repeats=self.numberoftimeintervals, axis=0)
+                
+
+            v.rColorMap_activ=numpy.repeat(dc_zero, repeats=self.numberoftimeintervals, axis=0)
         end=datetime.datetime.now()
         delta=end-start
         print("np coords set as reference")
         print("took "+str(delta.total_seconds()))
 
         
-        print("updating np coords")
+
+
+        
+        print("updating np dX coords")
         start=datetime.datetime.now()
         self.modified_vertices=[]
         for b in self.results.keys():
@@ -689,10 +778,32 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.modified_vertices.append(current_vertex_id)
                 #self.post_eq_city.vertices[current_vertex_id].coordsx=numpy.add(self.post_eq_city.vertices[current_vertex_id].coordsXT,self.results[b]["Displacements"][vid]*self.scalefact_doubleSpinBox.value())
                 self.post_eq_city.vertices[current_vertex_id].dXT=self.results[b]["Displacements"][vid]
+                #for i in range(self.numberoftimeintervals):
+                #    self.post_eq_city.vertices[current_vertex_id].dXmag[i][0]=numpy.linalg.norm(self.post_eq_city.vertices[current_vertex_id].dXT[i][0:3])
+                #axis 1 is critical here for efficiency
+                self.post_eq_city.vertices[current_vertex_id].dXmag[:,0]=numpy.linalg.norm(self.post_eq_city.vertices[current_vertex_id].dXT[:,0:3],axis=1)
         end=datetime.datetime.now()
         delta=end-start
-        print("np coords updated")
+        print("np dX coords updated")
         print("took "+str(delta.total_seconds()))
+
+        
+
+
+
+        
+        
+        print("setting initial color map")
+        start=datetime.datetime.now()
+        cmap = matplotlib.cm.get_cmap("rainbow")
+        self.calculate_colormap_values(cmap)
+        self.set_scalar_result("Displacement Mag") # initial result
+        end=datetime.datetime.now()
+        delta=end-start
+        print("initial color values are set")
+        print("took "+str(delta.total_seconds()))
+
+
 
 
 
@@ -832,11 +943,18 @@ if __name__=='__main__':
 
 
     window.runorloadcheckBox.stateChanged.connect(window.manage_runorload)
-    #window.showresults_pushButton.setEnabled(True)
     window.showresults_pushButton.clicked.connect(window.show_results)
     window.run_pushButton.clicked.connect(window.runsimulation)
+    window.tensorresult_comboBox.addItem("Displacement")        
+    window.tensorresult_comboBox.addItem("Stress")
+    window.tensorresult_comboBox.addItem("Strain")
+    window.tensorresult_comboBox.setCurrentText("Displacement")
+    window.set_combobox_post_legend("Displacement")
+    window.scalarresult_comboBox.setCurrentText("Displacement Mag")
+    window.tensorresult_comboBox.currentTextChanged.connect(window.set_combobox_post_legend)
+    window.scalarresult_comboBox.currentTextChanged.connect(window.set_scalar_result)
 
-    
+
     #mapwidget.config(window,"https://www.google.com/")
     #mapwidget = WebView()
     #mapwidget.config(window, os.path.abspath(".\\LeafLetOffline\\plot_robust.html"))
