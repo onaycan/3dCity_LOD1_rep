@@ -661,13 +661,42 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
                 for vid in self.results[b]["Displacements"].keys():
                     current_vertex_id=self.post_eq_city.femid2vertexid[vid]
                     self.post_eq_city.vertices[current_vertex_id].rColorMap_activ=self.post_eq_city.vertices[current_vertex_id].rColorMaps[val2key[value]]
+
+
+        rows = 9
+        columns=2
+        self.legend_table.setColumnCount(columns)
+        self.legend_table.setRowCount(rows)
+        self.legend_table.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("Colour"))
+        self.legend_table.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("Value"))
+
+
+        print(self.resultmaxmins[val2key[value]][0])
+        print(self.resultmaxmins[val2key[value]][1])
         
+
+        for i in range(rows):
+            current_value=i/(rows-1)
+            current_color_button=QtWidgets.QPushButton()
+            if i==0:
+                current_color_button.setText("Min:")
+            if i==rows-1:
+                current_color_button.setText("Max:")
+            color_vals=self.cmap(current_value)
+            current_style="background:rgb("+str(int(color_vals[0]*255))+","+str(int(color_vals[1]*255))+","+str(int(color_vals[2]*255))+")"
+            print(current_style)
+            current_color_button.setStyleSheet(current_style)
+            self.legend_table.setCellWidget(i,0,current_color_button)
+            print_value=current_value*(self.resultmaxmins[val2key[value]][1]-self.resultmaxmins[val2key[value]][0])+self.resultmaxmins[val2key[value]][0]
+            self.legend_table.setItem(i, 1, QtWidgets.QTableWidgetItem(str(round(print_value, 5))))
+            
+
         #stop animation and show colors
         self.Start_Animation_Push_Button.setChecked(False)
         self.set_timelabel()
         
 
-    def calculate_colormap_values(self, cmap):
+    def calculate_colormap_values(self):
         
         for i in range(3):
             self.resultmaxmins["dX"+str(i)].append(numpy.amin([numpy.amin(v.dXT[:,i]) for v in self.post_eq_city.vertices.values()]))
@@ -676,7 +705,7 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
                 for vid in self.results[b]["Displacements"].keys():
                     current_vertex_id=self.post_eq_city.femid2vertexid[vid]
                     vals=numpy.multiply(self.post_eq_city.vertices[current_vertex_id].dXT[:,i]-self.resultmaxmins["dX"+str(i)][0],1.0/(self.resultmaxmins["dX"+str(i)][1]-self.resultmaxmins["dX"+str(i)][0]))
-                    self.post_eq_city.vertices[current_vertex_id].rColorMaps["dX"+str(i)]=numpy.multiply(cmap(vals)[:,0:3],255)
+                    self.post_eq_city.vertices[current_vertex_id].rColorMaps["dX"+str(i)]=numpy.multiply(self.cmap(vals)[:,0:3],255)
 
         self.resultmaxmins["dXmag"].append(numpy.amin([numpy.amin(v.dXmag[:,0]) for v in self.post_eq_city.vertices.values()]))
         self.resultmaxmins["dXmag"].append(numpy.amax([numpy.amax(v.dXmag[:,0]) for v in self.post_eq_city.vertices.values()]))
@@ -684,7 +713,7 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
             for vid in self.results[b]["Displacements"].keys():
                 current_vertex_id=self.post_eq_city.femid2vertexid[vid]
                 vals=numpy.multiply(self.post_eq_city.vertices[current_vertex_id].dXmag[:,0]-self.resultmaxmins["dXmag"][0],1.0/(self.resultmaxmins["dXmag"][1]-self.resultmaxmins["dXmag"][0]))
-                self.post_eq_city.vertices[current_vertex_id].rColorMaps["dXmag"]=numpy.multiply(cmap(vals)[:,0:3],255)
+                self.post_eq_city.vertices[current_vertex_id].rColorMaps["dXmag"]=numpy.multiply(self.cmap(vals)[:,0:3],255)
 
 
     def show_results(self):
@@ -795,8 +824,8 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
         
         print("setting initial color map")
         start=datetime.datetime.now()
-        cmap = matplotlib.cm.get_cmap("rainbow")
-        self.calculate_colormap_values(cmap)
+        self.cmap = matplotlib.cm.get_cmap("rainbow")
+        self.calculate_colormap_values()
         self.set_scalar_result("Displacement Mag") # initial result
         end=datetime.datetime.now()
         delta=end-start
@@ -953,6 +982,9 @@ if __name__=='__main__':
     window.scalarresult_comboBox.setCurrentText("Displacement Mag")
     window.tensorresult_comboBox.currentTextChanged.connect(window.set_combobox_post_legend)
     window.scalarresult_comboBox.currentTextChanged.connect(window.set_scalar_result)
+    window.legend_table=QtWidgets.QTableWidget()
+    window.legend_layout.addWidget(window.legend_table)
+        
 
 
     #mapwidget.config(window,"https://www.google.com/")

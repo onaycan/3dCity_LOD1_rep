@@ -963,7 +963,7 @@
                        </property>
                        <layout class="QVBoxLayout" name="verticalLayout_18">
                         <item>
-                         <layout class="QVBoxLayout" name="verticalLayout_16"/>
+                         <layout class="QVBoxLayout" name="legend_layout"/>
                         </item>
                        </layout>
                       </widget>
