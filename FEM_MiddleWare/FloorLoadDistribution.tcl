@@ -9,7 +9,7 @@
 #	by: Serhat Adilak, 2019
 #
 
-# --------------------------  Exterior Node IDs  ----------------------------------------  IGNORE HERE!!!!!!!! FAULT
+# --------------------------  Exterior Node IDs  --------------------------------------- NOW UNNECESSARY
 set exteriornodesID ""
 for {set k 0} {$k <= [expr [lindex $NStory $numInFile]-1]} {incr k 1} {;	#first exterior search !!! [lindex $ifloornodes $numInFile $i $j 1]
 	set maxX 0.0
@@ -119,7 +119,7 @@ for {set i 0} {$i <= [expr [lindex $NStory $numInFile]-1]} {incr i 1} {
 lappend iTotalAreaFloor $TotalAreaFloor
 
 #	Calculate the individual slab-like weights' lateral load distribution to the elements 
-puts iBeams_Floor$iBeams_Floor
+#puts iBeams_Floor$iBeams_Floor
 set QBeamSlab ""
 set QGirderSlab ""
 for {set i 0} {$i <= [expr [lindex $NStory $numInFile]-1]} {incr i 1} {

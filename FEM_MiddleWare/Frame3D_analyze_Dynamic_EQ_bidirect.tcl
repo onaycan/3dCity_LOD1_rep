@@ -14,6 +14,7 @@ source LibUnits.tcl;			# define units (kip-in-sec)
 source DisplayPlane.tcl;		# procedure for displaying a plane in model
 source DisplayModel3D.tcl;		# procedure for displaying 3D perspectives of model
 source AreaPolygon.tcl
+source subfolderSearch.tcl
 # ------------------  Define SECTIONS ------------------------------------------------------
 set SectionType FiberSection;		# options: Elastic FiberSection
 if {$RCSection=="True"} {
@@ -31,9 +32,11 @@ set dtInput 0.00500 ;		    # DT
 wipe;				# clear memory of all past model definitions
 model BasicBuilder -ndm 3 -ndf 6;	# Define the model builder, ndm=#dimension, ndf=#dofs
 #
-set inputFilename "$inputFilepath/INPUT_"
+# ---------------------   Input File Names List  -----------------------------------------------------
 set InputDir $inputFilepath;			# set up name of input directory
-set FileExt ".tcl"
+set Buildingnum 0; # initialize the total number of buildings
+source split_inputFileNames.tcl; # take file names, define number of buildings and take the building IDs
+#
 set dataDir $outputFilepath;			# set up name of data directory
 file mkdir "$dataDir"; 			# create data directory
 #
@@ -55,10 +58,6 @@ if {$RCSection=="True"} {
 if {$WSection=="True"} {
 	source WSectionProperties.tcl
 }
-# ---------------------   Input File Names List  -----------------------------------------------------
-set Buildingnum 0; # initialize the total number of buildings
-set ainputFilename ""
-source split_inputFileNames.tcl; # take file names, define number of buildings and take the building IDs
 #
 # ---------------------   CREATE THE MODEL  ----------------------------------------------------------
 for {set numInFile 0} {$numInFile <= [expr $Buildingnum-1]} {incr numInFile 1} {
@@ -73,7 +72,8 @@ source CreateIDFile.tcl
 source Recorder_outputs.tcl;	# OUTPUT RESULTS
 # -----------------	POUNDING -----------------
 if {$Buildingnum>1} {
-	source Pounding_buildings.tcl
+	source CreatePoundingNodesElements.tcl
+	source CreatePoundingCommands.tcl; # actually create Pounding Contacts
 }
 #
 # -------------------------  MODAL ANALYSIS  ---------------------------------------------------
@@ -81,7 +81,7 @@ source ModalAnalysis.tcl;	#Modal Analysis and Output here
 
 #
 # Define DISPLAY -------------------------------------------------------------
-#DisplayModel3D DeformedShape ;	 # options: DeformedShape NodeNumbers ModeShape
+DisplayModel3D DeformedShape ;	 # options: DeformedShape NodeNumbers ModeShape
 #
 # ---------------------  GRAVITY LOADS  -----------------------------------------------------
 source Gravity.tcl

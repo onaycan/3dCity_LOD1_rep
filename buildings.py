@@ -263,6 +263,8 @@ class building:
                         truss_id=self.name+delim+str(l-1)+delim+str(l)+delim+str(v)
                         current_column=columns.column(self.name, columns_and_beams_counter)
                         current_truss=trusses.truss(truss_id,[self.beamsets[l-1].vertices[v],self.beamsets[l].vertices[v]])
+                        self.beamsets[l-1].vertices[v].home_columns.add(columns_and_beams_counter)
+                        self.beamsets[l].vertices[v].home_columns.add(columns_and_beams_counter)
                         _trusses[truss_id]=current_truss
                         current_column.define_truss(current_truss)
                         _columns_and_beams[columns_and_beams_counter]=current_column

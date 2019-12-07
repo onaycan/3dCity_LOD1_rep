@@ -11,6 +11,7 @@ class vertex:
         self.coords_lat_long.append(float(_coords_lat_long[1]))#long
         #self.homes=[]
         self.homes=set()
+        self.home_columns=set()
         #self.coords.append(float(_coords[2]))#dummy
         self.facetids=[]
         self.results={}

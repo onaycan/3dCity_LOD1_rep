@@ -1,14 +1,13 @@
 #
-#	Finds the tcl files inside the folder
+#	Finds the tcl files inside the folder and its subfolders
 # 	The number of tcl files gives the number of buildings
-#	Every folder has a block of buildings, or a single building
-#	Assumed input file names are like "xxx_123.tcl"
-#	where xxx and 123 are seperated by "_"
-#	and the file has an extension ".tcl"  (FileExt is a string storing ".tcl" defined in the main part of the code)
 #
-set contents [glob -directory  $InputDir "*.tcl"]
+#set contents [glob -directory  $InputDir "*.tcl"]
+set FileExt ".tcl"
+set ainputFilename [findFiles $InputDir "INPUT_*"]
+set Buildingnum [llength $ainputFilename]
 
-foreach item $contents {
+foreach item $ainputFilename {
     lappend pathname $item
 }
 foreach ff $pathname {
@@ -23,6 +22,6 @@ foreach kk $infiles {
     set kk [split $kk $FileExt]
 	set iFID [lindex $kk 0]
     lappend FID $iFID;	# File ID
-	lappend ainputFilename $inputFilename$iFID$FileExt
-	set Buildingnum [expr $Buildingnum+1]
 }
+
+set PoundingInputFileList [findFiles $InputDir "POUNDING_*"]; # additional files for Pounding 

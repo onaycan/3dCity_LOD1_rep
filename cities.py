@@ -141,6 +141,10 @@ class city:
             self.femid2vertexid[str(_femid)]=v.id
             _femid+=1
 
+        self.femid2trussid={}
+        for cb in self.columns_and_beams.values():
+            self.femid2trussid[str(cb.femid)]=cb.id
+            
         last_vertex_femid=max([int(v.femid) for v in self.vertices.values()])
         floorvertices=[]
         dummy_vertex=_vertices.vertex(str(last_vertex_femid+1),[0.0,0.0])
@@ -189,6 +193,7 @@ class city:
         self.ground_vertices=_origincity.ground_vertices
         self.ground_triangles=_origincity.ground_triangles
         self.femid2vertexid=_origincity.femid2vertexid
+        self.femid2trussid=_origincity.femid2trussid
     
     def copy_city_interactor_properties(self,_origincity):
         self.vtk_interactor.b_vertexId2VtkPointId=_origincity.vtk_interactor.b_vertexId2VtkPointId

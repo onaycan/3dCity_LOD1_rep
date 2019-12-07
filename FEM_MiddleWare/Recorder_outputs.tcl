@@ -77,25 +77,25 @@ set tmpoutDataDir $dataDir/Force_AllElements.out
 	append recorderstr $str$arg
 	puts $outFileforRecorder $recorderstr
 #
-set tmpoutDataDir $dataDir/Force_AllBeamElements_sec_1.out
+set tmpoutDataDir $dataDir/Force_AllElements_sec_1.out
 	set recorderstr "recorder Element -file $tmpoutDataDir -time -ele ";	# section forces, axial and moment, node i
 	set arg "section 1 force"
 	append recorderstr $str$arg
 	puts $outFileforRecorder $recorderstr
 #
-set tmpoutDataDir $dataDir/Deformation_AllBeamElements_sec_1.out
+set tmpoutDataDir $dataDir/Deformation_AllElements_sec_1.out
 	set recorderstr "recorder Element -file $tmpoutDataDir -time -ele ";	# section deformations, axial and curvature, node i
 	set arg "section 1 deformation"
 	append recorderstr $str$arg
 	puts $outFileforRecorder $recorderstr
 #
-set tmpoutDataDir $dataDir/Force_AllBeamElements_sec$_numIntgrPts.out
+set tmpoutDataDir $dataDir/Force_AllElements_sec$_numIntgrPts.out
 	set recorderstr "recorder Element -file $tmpoutDataDir -time -ele ";	# section forces, axial and moment, node j
 	set arg "section $numIntgrPts force"
 	append recorderstr $str$arg
 	puts $outFileforRecorder $recorderstr
 #
-set tmpoutDataDir $dataDir/Deformation_AllBeamElements_sec$_numIntgrPts.out
+set tmpoutDataDir $dataDir/Deformation_AllElements_sec$_numIntgrPts.out
 	set recorderstr "recorder Element -file $tmpoutDataDir -time -ele ";	# section deformations, axial and curvature, node j
 	set arg "section $numIntgrPts deformation"
 	append recorderstr $str$arg
@@ -112,21 +112,74 @@ set tmpoutDataDir $dataDir/Deformation_AllBeamElements_sec$_numIntgrPts.out
 #recorder Element -file $dataDir/Force_AllColumnElements_sec$_numIntgrPts.out -time -ele $AllColumnsFirst $AllColumnsLast section $numIntgrPts force;	# section forces, axial and moment, node j
 #recorder Element -file $dataDir/Deformation_AllColumnElements_sec$_numIntgrPts.out -time -ele $AllColumnsFirst $AllColumnsLast section $numIntgrPts deformation;# section deformations, axial and curvature, node j
 if {$RCSection=="True"} {
+	set yFiber [expr $HBeam/2-$cover];		# fiber location for stress-strain recorder, local coords
+	set zFiber [expr $BBeam/2-$cover];		# fiber location for stress-strain recorder, local coords
+
+	set infileBeamEltIDName [open $dataDir/BeamElementIDs.out r]
+	set strbeam ""
+	while { [gets $infileBeamEltIDName line] >= 0 } {
+		append strbeam $line " "
+	}
+	close $infileBeamEltIDName
+	#
+	set tmpoutDataDir $dataDir/StressStrain_AllBeamElements_concEle_sec_1.out
+		set recorderstr "recorder Element -file $tmpoutDataDir -time -ele ";	# Core Concrete stress-strain, node i
+		set arg "section $numIntgrPts fiber $yFiber $zFiber $IDconcCore  stressStrain"
+		append recorderstr $strbeam$arg
+		puts $outFileforRecorder $recorderstr
+	#
+	set tmpoutDataDir $dataDir/StressStrain_AllBeamElements_reinfEle_sec_1.out
+		set recorderstr "recorder Element -file $tmpoutDataDir -time -ele ";	# steel fiber stress-strain, node i
+		set arg "section $numIntgrPts fiber $yFiber $zFiber $IDSteel  stressStrain"
+		append recorderstr $strbeam$arg
+		puts $outFileforRecorder $recorderstr
+#
+#	
+	set yFiber [expr $HGird/2-$cover];		# fiber location for stress-strain recorder, local coords
+	set zFiber [expr $BGird/2-$cover];		# fiber location for stress-strain recorder, local coords
+	
+	set infileGirderEltIDName [open $dataDir/GirderElementIDs.out r]
+	set strgird ""
+	while { [gets $infileGirderEltIDName line] >= 0 } {
+		append strgird $line " "
+	}
+	close $infileGirderEltIDName
+	#
+	set tmpoutDataDir $dataDir/StressStrain_AllGirderElements_concEle_sec_1.out
+		set recorderstr "recorder Element -file $tmpoutDataDir -time -ele ";	# Core Concrete stress-strain, node i
+		set arg "section $numIntgrPts fiber $yFiber $zFiber $IDconcCore  stressStrain"
+		append recorderstr $strgird$arg
+		puts $outFileforRecorder $recorderstr
+	#
+	set tmpoutDataDir $dataDir/StressStrain_AllGirderElements_reinfEle_sec_1.out
+		set recorderstr "recorder Element -file $tmpoutDataDir -time -ele ";	# steel fiber stress-strain, node i
+		set arg "section $numIntgrPts fiber $yFiber $zFiber $IDSteel  stressStrain"
+		append recorderstr $strgird$arg
+		puts $outFileforRecorder $recorderstr	
+#
+#
 	set yFiber [expr $HCol/2-$cover];		# fiber location for stress-strain recorder, local coords
 	set zFiber [expr $BCol/2-$cover];		# fiber location for stress-strain recorder, local coords
 	
+	set infileColumnEltIDName [open $dataDir/ColumnElementIDs.out r]
+	set strcol ""
+	while { [gets $infileColumnEltIDName line] >= 0 } {
+		append strcol $line " "
+	}
+	close $infileColumnEltIDName
 	#
-	set tmpoutDataDir $dataDir/StressStrain_AllElements_concEle_sec_1.out
+	set tmpoutDataDir $dataDir/StressStrain_AllColumnElements_concEle_sec_1.out
 		set recorderstr "recorder Element -file $tmpoutDataDir -time -ele ";	# Core Concrete stress-strain, node i
 		set arg "section $numIntgrPts fiber $yFiber $zFiber $IDconcCore  stressStrain"
-		append recorderstr $str$arg
+		append recorderstr $strcol$arg
 		puts $outFileforRecorder $recorderstr
 	#
-	set tmpoutDataDir $dataDir/StressStrain_AllElements_reinfEle_sec_1.out
+	set tmpoutDataDir $dataDir/StressStrain_AllColumnElements_reinfEle_sec_1.out
 		set recorderstr "recorder Element -file $tmpoutDataDir -time -ele ";	# steel fiber stress-strain, node i
 		set arg "section $numIntgrPts fiber $yFiber $zFiber $IDSteel  stressStrain"
-		append recorderstr $str$arg
+		append recorderstr $strcol$arg
 		puts $outFileforRecorder $recorderstr
+		
 #	recorder Element -file $dataDir/StressStrain_AllGirderElements_concEle_sec_1.out -time -eleRange $AllGirdersFirst $AllGirdersLast section $numIntgrPts fiber $yFiber $zFiber $IDconcCore  stressStrain;	# Core Concrete stress-strain, node i
 #	recorder Element -file $dataDir/StressStrain_AllGirderElements_reinfEle_sec_1.out -time -eleRange $AllGirdersFirst $AllGirdersLast section $numIntgrPts fiber $yFiber $zFiber $IDSteel  stressStrain;	# steel fiber stress-strain, node i
 #	recorder Element -file $dataDir/StressStrain_AllColumnElements_concEle_sec_1.out -time -eleRange $AllColumnsFirst $AllColumnsLast section $numIntgrPts fiber $yFiber $zFiber $IDconcCore  stressStrain;	# Core Concrete stress-strain, node i

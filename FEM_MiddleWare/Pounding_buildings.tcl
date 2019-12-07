@@ -1,7 +1,8 @@
 #
-#	DIKKAT BU DAHA BI BASLANGIC; 
+#	POUNDING DEFINITIONS of ATTACHED BUILDINGS
 #
 # ################################################# implementation of zeroLengthImpact3D with nodes in 3DOF domain:
+#
 model BasicBuilder -ndm 3 -ndf 3
 node 30110122	576.0	336.0	0.0
 node 30110222	576.0	336.0	288.0
@@ -20,7 +21,6 @@ equalDOF 20000122 20110122 1 2 3
 equalDOF 20000222 20110222 1 2 3
 equalDOF 20000131 20110131 1 2 3
 equalDOF 20000231 20110231 1 2 3
-#
 set direction 1; # direction of normal of contact surface
 set initGap 0.01; # initial gap  5cm = 1.97 inch
 set frictionRatio 0.3; # friction ratio 

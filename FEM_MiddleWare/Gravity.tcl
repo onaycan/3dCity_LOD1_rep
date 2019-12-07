@@ -16,7 +16,7 @@ for {set numInFile 0} {$numInFile <= [expr $Buildingnum-1]} {incr numInFile 1} {
 }
 }; # Pattern plain 101 linear close 
 
-puts goGravity
+#puts goGravity
 # Gravity-analysis parameters -- load-controlled static analysis
 set Tol 1.0e-8;			# convergence tolerance for test
 variable constraintsTypeGravity Plain;		# default;

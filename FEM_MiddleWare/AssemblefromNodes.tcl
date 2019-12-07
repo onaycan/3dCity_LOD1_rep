@@ -2,8 +2,6 @@
 #
 # Script for calculating:
 # 	Node lists for floors, Special Node lists for outputting (for instance "Free Node ID")
-# 	
-#	by: Serhat Adilak, 2019
 #
 # ------------------------  Free Node ID for OUTPUT ---------- Better to take a node defined??????  Take all nodes
 	if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {

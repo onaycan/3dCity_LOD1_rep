@@ -629,71 +629,69 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
 
         if value=="Stress":
             self.scalarresult_comboBox.clear()
-            self.scalarresult_comboBox.addItem("Stress XX")
-            self.scalarresult_comboBox.addItem("Stress YY")
-            self.scalarresult_comboBox.addItem("Stress ZZ")
-            self.scalarresult_comboBox.addItem("Stress XY")
-            self.scalarresult_comboBox.addItem("Stress YZ")
-            self.scalarresult_comboBox.addItem("Stress ZX")
-
+            self.scalarresult_comboBox.addItem("Axial Stress in Reinf.")
+            self.scalarresult_comboBox.addItem("Axial Stress in Conc.")
+            
         if value=="Strain":
             self.scalarresult_comboBox.clear()
-            self.scalarresult_comboBox.addItem("Strain XX")
-            self.scalarresult_comboBox.addItem("Strain YY")
-            self.scalarresult_comboBox.addItem("Strain ZZ")
-            self.scalarresult_comboBox.addItem("Strain XY")
-            self.scalarresult_comboBox.addItem("Strain YZ")
-            self.scalarresult_comboBox.addItem("Strain ZX")
+            self.scalarresult_comboBox.addItem("Axial Strain in Reinf.")
+            self.scalarresult_comboBox.addItem("Axial Strain in Conc.")
 
         
 
     def set_scalar_result(self,value):
         
-        
-        val2key={"Displacement X":"dX0",
-                 "Displacement Y":"dX1",
-                 "Displacement Z":"dX2",
-                 "Displacement Mag":"dXmag"
-        }
-        
-        if value.startswith("Displacement"):
+        if value!='':
+            print("INSIDE!")
+            val2key={"Displacement X":"dX0",
+                     "Displacement Y":"dX1",
+                     "Displacement Z":"dX2",
+                     "Displacement Mag":"dXmag",
+                     "Axial Stress in Reinf.":"StressReinfMean",
+                     "Axial Stress in Conc.":"StressConcMean",
+                     "Axial Strain in Reinf.":"StrainReinfMean",
+                     "Axial Strain in Conc.":"StrainConcMean"
+
+            }
+
+            #if value.startswith("Displacement") or value=="Axial Stress in Reinf.":
             for b in self.results.keys():
                 for vid in self.results[b]["Displacements"].keys():
                     current_vertex_id=self.post_eq_city.femid2vertexid[vid]
                     self.post_eq_city.vertices[current_vertex_id].rColorMap_activ=self.post_eq_city.vertices[current_vertex_id].rColorMaps[val2key[value]]
 
 
-        rows = 9
-        columns=2
-        self.legend_table.setColumnCount(columns)
-        self.legend_table.setRowCount(rows)
-        self.legend_table.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("Colour"))
-        self.legend_table.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("Value"))
+            rows = 9
+            columns=2
+            self.legend_table.setColumnCount(columns)
+            self.legend_table.setRowCount(rows)
+            self.legend_table.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("Colour"))
+            self.legend_table.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("Value"))
 
 
-        print(self.resultmaxmins[val2key[value]][0])
-        print(self.resultmaxmins[val2key[value]][1])
-        
+            print(self.resultmaxmins[val2key[value]][0])
+            print(self.resultmaxmins[val2key[value]][1])
 
-        for i in range(rows):
-            current_value=i/(rows-1)
-            current_color_button=QtWidgets.QPushButton()
-            if i==0:
-                current_color_button.setText("Min:")
-            if i==rows-1:
-                current_color_button.setText("Max:")
-            color_vals=self.cmap(current_value)
-            current_style="background:rgb("+str(int(color_vals[0]*255))+","+str(int(color_vals[1]*255))+","+str(int(color_vals[2]*255))+")"
-            print(current_style)
-            current_color_button.setStyleSheet(current_style)
-            self.legend_table.setCellWidget(i,0,current_color_button)
-            print_value=current_value*(self.resultmaxmins[val2key[value]][1]-self.resultmaxmins[val2key[value]][0])+self.resultmaxmins[val2key[value]][0]
-            self.legend_table.setItem(i, 1, QtWidgets.QTableWidgetItem(str(round(print_value, 5))))
-            
 
-        #stop animation and show colors
-        self.Start_Animation_Push_Button.setChecked(False)
-        self.set_timelabel()
+            for i in range(rows):
+                current_value=i/(rows-1)
+                current_color_button=QtWidgets.QPushButton()
+                if i==0:
+                    current_color_button.setText("Min:")
+                if i==rows-1:
+                    current_color_button.setText("Max:")
+                color_vals=self.cmap(current_value)
+                current_style="background:rgb("+str(int(color_vals[0]*255))+","+str(int(color_vals[1]*255))+","+str(int(color_vals[2]*255))+")"
+                print(current_style)
+                current_color_button.setStyleSheet(current_style)
+                self.legend_table.setCellWidget(i,0,current_color_button)
+                print_value=current_value*(self.resultmaxmins[val2key[value]][1]-self.resultmaxmins[val2key[value]][0])+self.resultmaxmins[val2key[value]][0]
+                self.legend_table.setItem(i, 1, QtWidgets.QTableWidgetItem(str(round(print_value, 5))))
+
+
+            #stop animation and show colors
+            self.Start_Animation_Push_Button.setChecked(False)
+            self.set_timelabel()
         
 
     def calculate_colormap_values(self):
@@ -715,6 +713,38 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
                 vals=numpy.multiply(self.post_eq_city.vertices[current_vertex_id].dXmag[:,0]-self.resultmaxmins["dXmag"][0],1.0/(self.resultmaxmins["dXmag"][1]-self.resultmaxmins["dXmag"][0]))
                 self.post_eq_city.vertices[current_vertex_id].rColorMaps["dXmag"]=numpy.multiply(self.cmap(vals)[:,0:3],255)
 
+        self.resultmaxmins["StressReinfMean"].append(numpy.amin([numpy.amin(v.StressReinfMean) for v in self.post_eq_city.vertices.values()]))
+        self.resultmaxmins["StressReinfMean"].append(numpy.amax([numpy.amax(v.StressReinfMean) for v in self.post_eq_city.vertices.values()]))
+        for b in self.results.keys():
+            for vid in self.results[b]["Displacements"].keys():
+                current_vertex_id=self.post_eq_city.femid2vertexid[vid]
+                vals=numpy.multiply(self.post_eq_city.vertices[current_vertex_id].StressReinfMean-self.resultmaxmins["StressReinfMean"][0],1.0/(self.resultmaxmins["StressReinfMean"][1]-self.resultmaxmins["StressReinfMean"][0]))
+                self.post_eq_city.vertices[current_vertex_id].rColorMaps["StressReinfMean"]=numpy.multiply(self.cmap(vals)[:,0:3],255)
+
+        self.resultmaxmins["StressConcMean"].append(numpy.amin([numpy.amin(v.StressConcMean) for v in self.post_eq_city.vertices.values()]))
+        self.resultmaxmins["StressConcMean"].append(numpy.amax([numpy.amax(v.StressConcMean) for v in self.post_eq_city.vertices.values()]))
+        for b in self.results.keys():
+            for vid in self.results[b]["Displacements"].keys():
+                current_vertex_id=self.post_eq_city.femid2vertexid[vid]
+                vals=numpy.multiply(self.post_eq_city.vertices[current_vertex_id].StressConcMean-self.resultmaxmins["StressConcMean"][0],1.0/(self.resultmaxmins["StressConcMean"][1]-self.resultmaxmins["StressConcMean"][0]))
+                self.post_eq_city.vertices[current_vertex_id].rColorMaps["StressConcMean"]=numpy.multiply(self.cmap(vals)[:,0:3],255)
+
+        self.resultmaxmins["StrainReinfMean"].append(numpy.amin([numpy.amin(v.StrainReinfMean) for v in self.post_eq_city.vertices.values()]))
+        self.resultmaxmins["StrainReinfMean"].append(numpy.amax([numpy.amax(v.StrainReinfMean) for v in self.post_eq_city.vertices.values()]))
+        for b in self.results.keys():
+            for vid in self.results[b]["Displacements"].keys():
+                current_vertex_id=self.post_eq_city.femid2vertexid[vid]
+                vals=numpy.multiply(self.post_eq_city.vertices[current_vertex_id].StrainReinfMean-self.resultmaxmins["StrainReinfMean"][0],1.0/(self.resultmaxmins["StrainReinfMean"][1]-self.resultmaxmins["StrainReinfMean"][0]))
+                self.post_eq_city.vertices[current_vertex_id].rColorMaps["StrainReinfMean"]=numpy.multiply(self.cmap(vals)[:,0:3],255)
+
+        self.resultmaxmins["StrainConcMean"].append(numpy.amin([numpy.amin(v.StrainConcMean) for v in self.post_eq_city.vertices.values()]))
+        self.resultmaxmins["StrainConcMean"].append(numpy.amax([numpy.amax(v.StrainConcMean) for v in self.post_eq_city.vertices.values()]))
+        for b in self.results.keys():
+            for vid in self.results[b]["Displacements"].keys():
+                current_vertex_id=self.post_eq_city.femid2vertexid[vid]
+                vals=numpy.multiply(self.post_eq_city.vertices[current_vertex_id].StrainConcMean-self.resultmaxmins["StrainConcMean"][0],1.0/(self.resultmaxmins["StrainConcMean"][1]-self.resultmaxmins["StrainConcMean"][0]))
+                self.post_eq_city.vertices[current_vertex_id].rColorMaps["StrainConcMean"]=numpy.multiply(self.cmap(vals)[:,0:3],255)
+
 
     def show_results(self):
 
@@ -735,11 +765,16 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
                     bulding_paths[name.split("_")[1]]=os.path.abspath(root+"\\"+name)
                     self.results[name.split("_")[1]]={}
                     self.results[name.split("_")[1]]["Displacements"]={}
+                    self.results[name.split("_")[1]]["StressReinf"]={}
+                    self.results[name.split("_")[1]]["StrainReinf"]={}
+                    self.results[name.split("_")[1]]["StressConc"]={}
+                    self.results[name.split("_")[1]]["StrainConc"]={}
 
         #pprint.pprint(bulding_paths)
         last_b=0
         last_v=0
         for b,bp in bulding_paths.items():
+            #START DISPLACEMENT READING
             idfilename=bp+"\\"+"NodeIDs.out"
             idfile=open(idfilename,'r')
             dispfilename=bp+"\\"+"Displacement_AllNodes.out"
@@ -753,12 +788,46 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
                 last_v=_id[0]
                 self.results[b]["Displacements"][_id[0]]=ndisps[10:,counter*3+1:counter*3+3+1]
                 counter+=1
+            #END DISPLACEMENT READING
+
+            #START STRESS STRAIN Reinforcement READING
+            idfilename=bp+"\\"+"ColumnElementIDs.out"
+            idfile=open(idfilename,'r')
+            sfilename=bp+"\\"+"StressStrain_AllColumnElements_reinfEle_sec_1.out"
+            sfile=open(sfilename,'r')
+            ids=list(csv.reader(idfile))
+            ss=list(csv.reader(sfile,delimiter=" "))
+            nss = numpy.array(ss, dtype=numpy.float)
+            counter=0
+            for _id in ids:
+                self.results[b]["StressReinf"][_id[0]]=nss[10:,counter*2+1]-nss[10,counter*2+1]
+                self.results[b]["StrainReinf"][_id[0]]=nss[10:,counter*2+2]-nss[10,counter*2+2]
+                counter+=1
+            #END STRESS STRAIN Reinforcement READING
+
+            #START STRESS STRAIN Concrete READING
+            idfilename=bp+"\\"+"ColumnElementIDs.out"
+            idfile=open(idfilename,'r')
+            sfilename=bp+"\\"+"StressStrain_AllColumnElements_concEle_sec_1.out"
+            sfile=open(sfilename,'r')
+            ids=list(csv.reader(idfile))
+            ss=list(csv.reader(sfile,delimiter=" "))
+            nss = numpy.array(ss, dtype=numpy.float)
+            counter=0
+            for _id in ids:
+                self.results[b]["StressConc"][_id[0]]=nss[10:,counter*2+1]-nss[10,counter*2+1]
+                self.results[b]["StrainConc"][_id[0]]=nss[10:,counter*2+2]-nss[10,counter*2+2]
+                counter+=1
+            #END STRESS STRAIN Concrete READING
             last_b=b
-            
         end=datetime.datetime.now()
         delta=end-start
         print("end searching result files")
         print("took "+str(delta.total_seconds()))
+
+
+
+        
         self.numberoftimeintervals=self.results[last_b]["Displacements"][last_v].shape[0]
         self.dT=deltaT
         self.numberofframes_ina_second=1.0/self.dT
@@ -773,7 +842,7 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
         dc_zero = numpy.array([[0.0,0.0,0.0]])
         dval_zero = numpy.array([[0.0]])
 
-        result_flags=["dX0","dX1","dX2","dXmag"]
+        result_flags=["dX0","dX1","dX2","dXmag","StressReinfMean","StressConcMean","StrainReinfMean","StrainConcMean"]
         self.resultmaxmins={}
         for k in result_flags:
             self.resultmaxmins[k]=[]
@@ -784,6 +853,11 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
             v.coordsXT=numpy.repeat(x, repeats=self.numberoftimeintervals, axis=0)
             v.dXT=numpy.repeat(dx_zero, repeats=self.numberoftimeintervals, axis=0)
             v.dXmag=numpy.repeat(dval_zero, repeats=self.numberoftimeintervals, axis=0)
+            v.StressReinfMean=numpy.repeat(dval_zero, repeats=self.numberoftimeintervals, axis=0)
+            v.StressConcMean=numpy.repeat(dval_zero, repeats=self.numberoftimeintervals, axis=0)
+            v.StrainReinfMean=numpy.repeat(dval_zero, repeats=self.numberoftimeintervals, axis=0)
+            v.StrainConcMean=numpy.repeat(dval_zero, repeats=self.numberoftimeintervals, axis=0)
+            
             for k in result_flags:
                 v.rColorMaps[k]=numpy.repeat(dc_zero, repeats=self.numberoftimeintervals, axis=0)
                 
@@ -805,12 +879,20 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
             for vid in self.results[b]["Displacements"].keys():
                 current_vertex_id=self.post_eq_city.femid2vertexid[vid]
                 self.modified_vertices.append(current_vertex_id)
-                #self.post_eq_city.vertices[current_vertex_id].coordsx=numpy.add(self.post_eq_city.vertices[current_vertex_id].coordsXT,self.results[b]["Displacements"][vid]*self.scalefact_doubleSpinBox.value())
                 self.post_eq_city.vertices[current_vertex_id].dXT=self.results[b]["Displacements"][vid]
-                #for i in range(self.numberoftimeintervals):
-                #    self.post_eq_city.vertices[current_vertex_id].dXmag[i][0]=numpy.linalg.norm(self.post_eq_city.vertices[current_vertex_id].dXT[i][0:3])
-                #axis 1 is critical here for efficiency
                 self.post_eq_city.vertices[current_vertex_id].dXmag[:,0]=numpy.linalg.norm(self.post_eq_city.vertices[current_vertex_id].dXT[:,0:3],axis=1)
+                
+                node_vals=numpy.array([self.results[b]["StressReinf"][str(cid)] for cid in self.post_eq_city.vertices[current_vertex_id].home_columns])
+                self.post_eq_city.vertices[current_vertex_id].StressReinfMean=numpy.mean(node_vals, axis=0)
+                node_vals=numpy.array([self.results[b]["StressConc"][str(cid)] for cid in self.post_eq_city.vertices[current_vertex_id].home_columns])
+                self.post_eq_city.vertices[current_vertex_id].StressConcMean=numpy.mean(node_vals, axis=0)
+
+                node_vals=numpy.array([self.results[b]["StrainReinf"][str(cid)] for cid in self.post_eq_city.vertices[current_vertex_id].home_columns])
+                self.post_eq_city.vertices[current_vertex_id].StrainReinfMean=numpy.mean(node_vals, axis=0)
+                node_vals=numpy.array([self.results[b]["StrainConc"][str(cid)] for cid in self.post_eq_city.vertices[current_vertex_id].home_columns])
+                self.post_eq_city.vertices[current_vertex_id].StrainConcMean=numpy.mean(node_vals, axis=0)
+                
+                    
         end=datetime.datetime.now()
         delta=end-start
         print("np dX coords updated")

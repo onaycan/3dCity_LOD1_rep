@@ -20,7 +20,7 @@ set outFileColumnEltIDName $dataDir/ColumnElementIDs.out
 for {set numInFile 0} {$numInFile <= [expr $Buildingnum-1]} {incr numInFile 1} {
 	for {set i 0} {$i <= [expr [lindex $NStory $numInFile]-1]} {incr i 1} {
 		for {set j 0} {$j <= [expr [lindex $nodecount $i]-1]} {incr j 1} {
-		puts [lindex $ifloornodes $numInFile $i $j 0]
+		#puts [lindex $ifloornodes $numInFile $i $j 0]
 			puts $outFileFloorNodeID [lindex $ifloornodes $numInFile $i $j 0]
 		}
 	}

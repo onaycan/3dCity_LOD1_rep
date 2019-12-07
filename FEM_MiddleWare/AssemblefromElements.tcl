@@ -11,7 +11,7 @@
 # 
 # Script also calculates each ELEMENT LENGTHs 
 # 	
-#	by: Serhat Adilak, 2019
+#	S.Adilak, 2019
 #
 
 # --------- Take all Element ID's with their NODE ID's from INPUT FILE ---------
