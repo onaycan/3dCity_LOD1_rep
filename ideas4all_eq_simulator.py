@@ -134,6 +134,35 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
             event.accept()
         else:
             event.ignore()
+    
+    def highlight_whole_city(self):
+        _city=self.pre_eq_city
+        _interactor=_city.vtk_interactor
+        facetids=[]
+
+        #curret_building_vertices=set()
+        current_building_facets=set()
+
+        for bbk in _city.buildingblocks.keys():
+            self.comboboxes['Building Blocks'].addItem(_city.buildingblocks[bbk].id)
+            self.comboboxes['Building Blocks'].setCurrentIndex(self.comboboxes['Building Blocks'].count() - 1)
+            for b in _city.buildingblocks[bbk].buildings:
+                self.comboboxes['Buildings'].addItem(b.name)
+                self.comboboxes['Buildings'].setCurrentIndex(self.comboboxes['Buildings'].count() - 1)
+                current_building_facets.update(b.get_building_facets())
+
+        for fid in current_building_facets:
+            facetids.append(_interactor.b_TriangleId2VtkTriangleid[fid])
+
+        
+        for f in facetids:
+            _interactor.BuildingCellColors.SetTuple3(int(f),255,0,0)
+        
+        _interactor.PolyData_BuildingCells.GetCellData().SetScalars(_interactor.BuildingCellColors)
+        _interactor.mapper_BuildingCells.ScalarVisibilityOff()
+        _interactor.mapper_BuildingCells.ScalarVisibilityOn()
+        _interactor.renWin.Render()
+        self.append_pushbutton.setEnabled(True)
 
     def handleItemChanged(self, item, column):
         checked_items={'Building Blocks': 0, 'Buildings': 0, 'Panels': 0, 'Panel Facets': 0, 'Panel Beams': 0, 'Panel Girders': 0, 'Walls': 0, 'Wall Facets': 0, "Wall Columns" : 0, "Terrain" : 0}
@@ -172,15 +201,18 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
         if self.EnableSelection_checkBox.isChecked():
             print("Selection is Enabled")
             #self.facets_pushbutton.setEnabled(True)
-            self.buildings_pushbutton.setEnabled(True)
+            #self.buildings_pushbutton.setEnabled(True)
+            self.all_pushbutton.setEnabled(True)
             self.buildingBlocks_pushbutton.setEnabled(True)
         else:
             print("Selection is Disabled")
             #self.facets_pushbutton.setChecked(False)
-            self.buildings_pushbutton.setChecked(False)
+            #self.buildings_pushbutton.setChecked(False)
+            self.all_pushbutton.setChecked(False)
             self.buildingBlocks_pushbutton.setChecked(False)
             #self.facets_pushbutton.setEnabled(False)
-            self.buildings_pushbutton.setEnabled(False)
+            #self.buildings_pushbutton.setEnabled(False)
+            self.all_pushbutton.setEnabled(False)
             self.buildingBlocks_pushbutton.setEnabled(False)
 
 
@@ -196,11 +228,19 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
             #self.facets_pushbutton.setChecked(False)
             self.buildingBlocks_pushbutton.setChecked(False)
 
+
+    def manage_selection_box_all(self):
+         if self.all_pushbutton.isChecked():
+            print("All city will be selejcted")
+            #self.facets_pushbutton.setChecked(False)
+            self.buildingBlocks_pushbutton.setChecked(False)
+            self.highlight_whole_city()
+
     def manage_selection_box_bb(self):
         if self.buildingBlocks_pushbutton.isChecked():
             print("Building Block selection is activated")
             #self.facets_pushbutton.setChecked(False)
-            self.buildings_pushbutton.setChecked(False)
+            #self.all_pushbutton.setChecked(False)
 
     def change_background_of_tablewidget(self):
         self.tableWidget.item(1,2).setBackground(QtGui.QColor(255, 255, 255))
@@ -514,7 +554,7 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
                 
         for i in range(self.comboboxes['Building Blocks'].count()):
             current_bb_id=self.comboboxes['Building Blocks'].itemText(i)
-            if current_bb_id!="None":
+            if current_bb_id!="None" and len(self.building_blocks[current_bb_id].buildings)>1:
                 bbs.add(current_bb_id)
         
         for bb in bbs:
@@ -772,13 +812,20 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
                 if name.startswith("b_") or name.startswith("bb_"):
                     necessaryfile=os.path.abspath(root+"\\"+name+"\\"+"NodeIDs.out")
                     if(os.path.isfile(necessaryfile)):
-                        bulding_paths[name.split("_")[1]]=os.path.abspath(root+"\\"+name)
-                        self.results[name.split("_")[1]]={}
-                        self.results[name.split("_")[1]]["Displacements"]={}
-                        self.results[name.split("_")[1]]["StressReinf"]={}
-                        self.results[name.split("_")[1]]["StrainReinf"]={}
-                        self.results[name.split("_")[1]]["StressConc"]={}
-                        self.results[name.split("_")[1]]["StrainConc"]={}
+                        bulding_paths[name]=os.path.abspath(root+"\\"+name)
+                        self.results[name]={}
+                        self.results[name]["Displacements"]={}
+                        self.results[name]["StressReinf"]={}
+                        self.results[name]["StrainReinf"]={}
+                        self.results[name]["StressConc"]={}
+                        self.results[name]["StrainConc"]={}
+                        #bulding_paths[name.split("_")[1]]=os.path.abspath(root+"\\"+name)
+                        #self.results[name.split("_")[1]]={}
+                        #self.results[name.split("_")[1]]["Displacements"]={}
+                        #self.results[name.split("_")[1]]["StressReinf"]={}
+                        #self.results[name.split("_")[1]]["StrainReinf"]={}
+                        #self.results[name.split("_")[1]]["StressConc"]={}
+                        #self.results[name.split("_")[1]]["StrainConc"]={}
 
         #pprint.pprint(bulding_paths)
         last_b=0
@@ -793,10 +840,13 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
             disps=list(csv.reader(dispfile,delimiter=" "))
             ndisps = numpy.array(disps, dtype=numpy.float)
             deltaT=ndisps.item((12,0))-ndisps.item((11,0))
+            startr=10
+            if b.startswith("bb_"):
+                startr=0
             counter=0
             for _id in ids:
                 last_v=_id[0]
-                self.results[b]["Displacements"][_id[0]]=ndisps[10:,counter*3+1:counter*3+3+1]*inches2meter
+                self.results[b]["Displacements"][_id[0]]=ndisps[startr:,counter*3+1:counter*3+3+1]*inches2meter
                 counter+=1
             #END DISPLACEMENT READING
 
@@ -809,9 +859,10 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
             ss=list(csv.reader(sfile,delimiter=" "))
             nss = numpy.array(ss, dtype=numpy.float)
             counter=0
+            
             for _id in ids:
-                self.results[b]["StressReinf"][_id[0]]=nss[10:,counter*2+1]-nss[10,counter*2+1]
-                self.results[b]["StrainReinf"][_id[0]]=nss[10:,counter*2+2]-nss[10,counter*2+2]
+                self.results[b]["StressReinf"][_id[0]]=nss[startr:,counter*2+1]-nss[10,counter*2+1]
+                self.results[b]["StrainReinf"][_id[0]]=nss[startr:,counter*2+2]-nss[10,counter*2+2]
                 counter+=1
             #END STRESS STRAIN Reinforcement READING
 
@@ -825,8 +876,8 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
             nss = numpy.array(ss, dtype=numpy.float)
             counter=0
             for _id in ids:
-                self.results[b]["StressConc"][_id[0]]=nss[10:,counter*2+1]-nss[10,counter*2+1]
-                self.results[b]["StrainConc"][_id[0]]=nss[10:,counter*2+2]-nss[10,counter*2+2]
+                self.results[b]["StressConc"][_id[0]]=nss[startr:,counter*2+1]-nss[10,counter*2+1]
+                self.results[b]["StrainConc"][_id[0]]=nss[startr:,counter*2+2]-nss[10,counter*2+2]
                 counter+=1
             #END STRESS STRAIN Concrete READING
             last_b=b
@@ -890,6 +941,7 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
                 current_vertex_id=self.post_eq_city.femid2vertexid[vid]
                 self.modified_vertices.append(current_vertex_id)
                 self.post_eq_city.vertices[current_vertex_id].dXT=self.results[b]["Displacements"][vid]
+                print(b)
                 self.post_eq_city.vertices[current_vertex_id].dXmag[:,0]=numpy.linalg.norm(self.post_eq_city.vertices[current_vertex_id].dXT[:,0:3],axis=1)
                 
                 node_vals=numpy.array([self.results[b]["StressReinf"][str(cid)] for cid in self.post_eq_city.vertices[current_vertex_id].home_columns])
@@ -935,6 +987,7 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
         self.dial.valueChanged.connect(self.set_timelabel)
         self.Start_Animation_Push_Button.clicked.connect(self.animatewindow)
         print("result reading finished")
+
 
 
 
@@ -1021,7 +1074,8 @@ if __name__=='__main__':
     window.show_tree_widget(pre_eq_city)
     
     window.EnableSelection_checkBox.stateChanged.connect(window.manage_selection_enablebox)
-    window.buildings_pushbutton.clicked.connect(window.manage_selection_box_b)
+    #window.buildings_pushbutton.clicked.connect(window.manage_selection_box_b)
+    window.all_pushbutton.clicked.connect(window.manage_selection_box_all)
     window.buildingBlocks_pushbutton.clicked.connect(window.manage_selection_box_bb)
     window.append_pushbutton.clicked.connect(window.fill_table_widget)
     window.configure_simulation_pushbutton.clicked.connect(window.configure_simulation)
@@ -1034,6 +1088,7 @@ if __name__=='__main__':
     print("render window is rendered")
     pre_eq_city.vtk_interactor.iren.Initialize()
     pre_eq_city.vtk_interactor.iren.Start()
+    
 
 
 

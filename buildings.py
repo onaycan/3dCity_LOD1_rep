@@ -101,6 +101,15 @@ class building:
                     _buildings[bb].buildingblock_id=current_bb_id
 
 
+    def get_building_facets(self):
+        building_facets=set()
+        for bs in range(0,len(self.basesets)):
+            for f in self.basesets[bs].triangles:
+                building_facets.add(f.id)
+        for w in range(0,len(self.walls)):
+            for f in self.walls[w].triangles:
+                building_facets.add(f.id)
+        return building_facets
 
 
 

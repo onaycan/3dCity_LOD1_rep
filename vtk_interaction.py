@@ -34,6 +34,7 @@ class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
         #self.SetDefaultRenderer(self.vtkinteractor.ren)
         self.window=_window
         self.buildings=_window.buildings
+        self.buildingblocks=_window.building_blocks
         self.ground_triangles=_window.ground_triangles
         self.vertices=_window.vertices
         #homes=[v.homes for v in self.vertices.values()]
@@ -59,7 +60,7 @@ class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
     def ButtonEvent(self,obj,event):
         
         if self.spressed:
-            if self.window.buildings_pushbutton.isChecked() or self.window.buildingBlocks_pushbutton.isChecked():
+            if self.window.buildingBlocks_pushbutton.isChecked():
             
                 print("number of building triangles: "+str(self.vtkinteractor.building_triangles.GetNumberOfCells()))
                 
@@ -95,25 +96,21 @@ class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
 
                     common_home=[set.intersection(*sets)][0] #in fact this is buggy.but you can not choose really a side wall or bottom triangle with common edge without being able to see it 
                     common_home=list(common_home)[0]
-                    self.window.comboboxes['Buildings'].addItem(common_home)
-                    self.window.comboboxes['Buildings'].setCurrentIndex(self.window.comboboxes['Buildings'].count() - 1)
+                    #self.window.comboboxes['Buildings'].addItem(common_home)
+                    #self.window.comboboxes['Buildings'].setCurrentIndex(self.window.comboboxes['Buildings'].count() - 1)
 
                     self.get_building_vertices(common_home)
                     self.get_building_facets(common_home)
 
 
-                    if self.window.buildingBlocks_pushbutton.isChecked():
-                        self.window.comboboxes['Building Blocks'].addItem(self.buildings[common_home].buildingblock_id)
-                        self.window.comboboxes['Building Blocks'].setCurrentIndex(self.window.comboboxes['Building Blocks'].count() - 1)
-                        for n in self.buildings[common_home].neighbours:
-                            self.window.comboboxes['Buildings'].addItem(n)
-                            self.window.comboboxes['Buildings'].setCurrentIndex(self.window.comboboxes['Buildings'].count() - 1)
-                            self.get_building_facets(n)
-                            #for bb in self.buildings[n].beamsets:
-                            #    for v in bb.vertices:
-                            #        self.building_vertices.add(v.id)
+                    #if self.window.buildingBlocks_pushbutton.isChecked():
+                    self.window.comboboxes['Building Blocks'].addItem(self.buildings[common_home].buildingblock_id)
+                    self.window.comboboxes['Building Blocks'].setCurrentIndex(self.window.comboboxes['Building Blocks'].count() - 1)
+                    for n in self.buildings[common_home].neighbours:
+                        self.window.comboboxes['Buildings'].addItem(n)
+                        self.window.comboboxes['Buildings'].setCurrentIndex(self.window.comboboxes['Buildings'].count() - 1)
+                        self.get_building_facets(n)
 
-                    #self.window.fill_table_widget()
                     self.window.append_pushbutton.setEnabled(True)
 
 
@@ -442,53 +439,44 @@ class vtk_interactor:
                 self.insert_building(b,_checked_items, _only_colors)
             #print(b.name)
             
+    def get_building_facets(self,_home):
+        b=_home
+        for bs in range(0,len(b.basesets)):
+            for f in b.basesets[bs].triangles:
+                self.building_facets.add(f.id)
+        for w in range(0,len(b.walls)):
+            for f in b.walls[w].triangles:
+                self.building_facets.add(f.id)
 
 
+    def highlight_whole_city(self,_window):
+        _city=_window.pre_eq_city
+        facetids=[]
 
-    '''
-    def insert_building_triangle(self,_building):
+        self.building_vertices=set()
+        self.building_facets=set()
+        for bbk in _city.buildingblocks.keys():
+            _window.comboboxes['Building Blocks'].addItem(_city.buildingblocks[bbk].id)
+            _window.comboboxes['Building Blocks'].setCurrentIndex(_window.comboboxes['Building Blocks'].count() - 1)
+            for b in _city.buildingblocks[bbk].buildings:
+                _window.comboboxes['Buildings'].addItem(b.id)
+                _window.comboboxes['Buildings'].setCurrentIndex(_window.comboboxes['Buildings'].count() - 1)
+                self.get_building_facets(b)
+
+        for fid in self.building_facets:
+            facetids.append(self.b_TriangleId2VtkTriangleid[fid])
+
         
-        #for v in _building.vertices:
-        #    VtkPointId=self.points.InsertNextPoint(v.coords[0],v.coords[1],v.coords[2])
-        #    self.vertexId2VtkPointId[v.id]=VtkPointId
-
-        #print(vertexId2VtkPointId.keys())
-        for f in _building.facets:
-            triangle = vtk.vtkTriangle()
-            for i in range(3):
-                triangle.GetPointIds().SetId(i,self.vertexId2VtkPointId[f.vertices[i].id])
-            self.triangles.InsertNextCell(triangle)
-
-    def insert_building_truss(self,_building):
-        truss_counter=1
-        candidate_trusses=[]
+        for f in facetids:
+            self.BuildingCellColors.SetTuple3(int(f),255,0,0)
         
-        for f in _building.facets:
-            candidate_trusses.append(trusses.truss(truss_counter,[f.vertices[0],f.vertices[1]]))    
-            truss_counter+=1
-            candidate_trusses.append(trusses.truss(truss_counter,[f.vertices[1],f.vertices[2]]))
-            truss_counter+=1    
-            candidate_trusses.append(trusses.truss(truss_counter,[f.vertices[2],f.vertices[1]]))    
-            truss_counter+=1
+        self.PolyData_BuildingCells.GetCellData().SetScalars(self.BuildingCellColors)
+        self.mapper_BuildingCells.ScalarVisibilityOff()
+        self.mapper_BuildingCells.ScalarVisibilityOn()
+        self.renWin.Render()
+
         
-        truss_counter=1
-        for c in candidate_trusses:
-            if c.check_if_beam() or c.check_if_column():
-                if not _building.check_truss_contained(c):
-                    c.id=truss_counter
-                    _building.append_truss(c)
-                    truss_counter+=1
 
-        for t in _building.trusses:
-            self.trusses.InsertNextCell(2)
-            self.trusses.InsertCellPoint(self.vertexId2VtkPointId[t.vertices[0].id])
-            self.trusses.InsertCellPoint(self.vertexId2VtkPointId[t.vertices[1].id])
-
-    def insert_buildings_triangle(self,_buildings):
-        for b in _buildings:
-            self.insert_building_triangle(b)
-            #print(b.name)
-    '''
     def visualize(self,_nodal=False,_initial=False):
         
         _wireframe=True

@@ -42,7 +42,7 @@
           <enum>QTabWidget::West</enum>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="pretab">
           <attribute name="title">
@@ -171,12 +171,12 @@
                      <item>
                       <layout class="QHBoxLayout" name="horizontalLayout_5">
                        <item>
-                        <widget class="QPushButton" name="buildings_pushbutton">
+                        <widget class="QPushButton" name="buildingBlocks_pushbutton">
                          <property name="enabled">
                           <bool>false</bool>
                          </property>
                          <property name="text">
-                          <string>Buildings</string>
+                          <string>Select Individual Building Items</string>
                          </property>
                          <property name="checkable">
                           <bool>true</bool>
@@ -184,12 +184,12 @@
                         </widget>
                        </item>
                        <item>
-                        <widget class="QPushButton" name="buildingBlocks_pushbutton">
+                        <widget class="QPushButton" name="all_pushbutton">
                          <property name="enabled">
                           <bool>false</bool>
                          </property>
                          <property name="text">
-                          <string>Building Blocks</string>
+                          <string>Select all City </string>
                          </property>
                          <property name="checkable">
                           <bool>true</bool>
