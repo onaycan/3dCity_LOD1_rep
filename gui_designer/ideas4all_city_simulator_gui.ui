@@ -42,7 +42,7 @@
           <enum>QTabWidget::West</enum>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="pretab">
           <attribute name="title">
@@ -337,15 +337,21 @@
                        <layout class="QGridLayout" name="gridLayout_2">
                         <item row="0" column="0">
                          <layout class="QGridLayout" name="gridLayout">
-                          <item row="2" column="1">
-                           <widget class="QDoubleSpinBox" name="duration_doubleSpinBox">
-                            <property name="value">
-                             <double>10.000000000000000</double>
+                          <item row="3" column="0">
+                           <widget class="QLabel" name="label_dt">
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="text">
+                             <string>Time Step [s]</string>
                             </property>
                            </widget>
                           </item>
                           <item row="1" column="1">
                            <widget class="QComboBox" name="simtype_comboBox">
+                            <property name="currentText">
+                             <string>Dynamic</string>
+                            </property>
                             <item>
                              <property name="text">
                               <string>Dynamic</string>
@@ -358,6 +364,20 @@
                             </item>
                            </widget>
                           </item>
+                          <item row="4" column="1">
+                           <widget class="QSpinBox" name="mode_spinBox">
+                            <property name="value">
+                             <number>3</number>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="2" column="1">
+                           <widget class="QDoubleSpinBox" name="duration_doubleSpinBox">
+                            <property name="value">
+                             <double>10.000000000000000</double>
+                            </property>
+                           </widget>
+                          </item>
                           <item row="4" column="0">
                            <widget class="QLabel" name="label_5">
                             <property name="frameShape">
@@ -365,13 +385,6 @@
                             </property>
                             <property name="text">
                              <string># of Modes [-]</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="4" column="1">
-                           <widget class="QSpinBox" name="mode_spinBox">
-                            <property name="value">
-                             <number>3</number>
                             </property>
                            </widget>
                           </item>
@@ -401,16 +414,6 @@
                             </property>
                            </widget>
                           </item>
-                          <item row="3" column="0">
-                           <widget class="QLabel" name="label_dt">
-                            <property name="frameShape">
-                             <enum>QFrame::StyledPanel</enum>
-                            </property>
-                            <property name="text">
-                             <string>Time Step [s]</string>
-                            </property>
-                           </widget>
-                          </item>
                           <item row="3" column="1">
                            <widget class="QDoubleSpinBox" name="dt_doubleSpinBox">
                             <property name="maximum">
@@ -422,6 +425,33 @@
                             <property name="value">
                              <double>0.010000000000000</double>
                             </property>
+                           </widget>
+                          </item>
+                          <item row="5" column="0">
+                           <widget class="QLabel" name="label_16">
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="text">
+                             <string>Unit System</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="5" column="1">
+                           <widget class="QComboBox" name="unit_comboBox">
+                            <property name="currentText">
+                             <string>US</string>
+                            </property>
+                            <item>
+                             <property name="text">
+                              <string>US</string>
+                             </property>
+                            </item>
+                            <item>
+                             <property name="text">
+                              <string>SI</string>
+                             </property>
+                            </item>
                            </widget>
                           </item>
                          </layout>
@@ -1002,6 +1032,12 @@
               <layout class="QVBoxLayout" name="verticalLayout_7">
                <item>
                 <widget class="QGroupBox" name="groupBox_5">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="title">
                   <string>MapWindow</string>
                  </property>

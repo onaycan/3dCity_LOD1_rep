@@ -24,42 +24,8 @@
 		}
 	close $inFileID
 	}
-# ------------------------  Number of Storeys ------------------------------------------------------
-set NStorytmp 0
-	if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {
-		puts stderr "Cannot open input file for reading number of storeys"
-	} else {
-	set flag 1
-		foreach line [split [read $inFileID] \n] {
-			if {[llength $line] == 0} {
-				# Blank line --> do nothing
-				continue
-			} elseif {$flag == 1} {
-				foreach word [split $line] {
-					if {[string match $word "#MASTERNODES"] == 1} {
-						set flag 0
-						break
-					}
-				}
-				if {$flag == 1} {
-					foreach word [split $line] {
-						if {[string match $word "#FLOOR"] == 1} {
-							set NStorytmp [expr $NStorytmp+1];	 # number of stories above ground level
-							break
-						}
-					}
-				}
-			} else {break}
-		}
-	lappend NStory $NStorytmp
-	close $inFileID
-	}
 
-
-# --------- CREATE MODEL from input files -----------------------------------------------------
-	source AssemblefromNodes.tcl;					# Identify special lists from Nodal input, define output node lists, etc.
-	source AssemblefromElements.tcl;				# Beam/Girder tags, Transformation, vector definitions, etc.
-	source CreateNodes.tcl;							# Creates nodes
+# ---------------------------------------------------------------------------------------------
 	source CreateElements.tcl;						# Creates elements
 #
 # --------------------- FLOOR HEIGHTs ---------------------------------------------------------  

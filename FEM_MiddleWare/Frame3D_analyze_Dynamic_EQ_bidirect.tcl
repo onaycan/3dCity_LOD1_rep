@@ -17,10 +17,10 @@ source AreaPolygon.tcl
 source subfolderSearch.tcl
 # ------------------  Define SECTIONS ------------------------------------------------------
 set SectionType FiberSection;		# options: Elastic FiberSection
-if {$RCSection=="True"} {
+if {$RCSection=="true"} {
 	source BuildRCrectSection.tcl;		# procedure for definining RC fiber section
 }
-if {$WSection=="True"} {
+if {$WSection=="true"} {
 	source Wsection.tcl; # procedure for definining steel W section
 }
 # Bidirectional Uniform Earthquake ground motion (uniform acceleration input at all support nodes)
@@ -52,13 +52,18 @@ set BeamSecTagFiber 5
 set GirdSecTagFiber 6
 set SecTagTorsion 70
 # ---------------------- Define SECTIONs --------------------------------
-if {$RCSection=="True"} {
+if {$RCSection=="true"} {
 	source RCrectSectionProperties.tcl
 }
-if {$WSection=="True"} {
+if {$WSection=="true"} {
 	source WSectionProperties.tcl
 }
-#
+# ---------------------   READ INPUTS  ----------------------------------------------------------
+for {set numInFile 0} {$numInFile <= [expr $Buildingnum-1]} {incr numInFile 1} {
+	source AssemblefromNodes.tcl;					# Identify special lists from Nodal input, define output node lists, etc.
+	source AssemblefromElements.tcl;				# Beam/Girder tags, Transformation, vector definitions, etc.
+}
+source CreateNodes.tcl
 # ---------------------   CREATE THE MODEL  ----------------------------------------------------------
 for {set numInFile 0} {$numInFile <= [expr $Buildingnum-1]} {incr numInFile 1} {
 	source Frame3D_Build_RC.tcl ;  			#inputing many building parameters
@@ -81,7 +86,9 @@ source ModalAnalysis.tcl;	#Modal Analysis and Output here
 
 #
 # Define DISPLAY -------------------------------------------------------------
-DisplayModel3D DeformedShape ;	 # options: DeformedShape NodeNumbers ModeShape
+if {[string match $displaymodel "true"] == 1} {
+	DisplayModel3D DeformedShape ;	 # options: DeformedShape NodeNumbers ModeShape
+}
 #
 # ---------------------  GRAVITY LOADS  -----------------------------------------------------
 source Gravity.tcl
@@ -105,8 +112,14 @@ analyze $NstepGravity;		# apply gravity
 # ------------------------------------------------- maintain constant gravity loads and reset time to zero
 loadConst -time 0.0
 # Plot displacements -------------------------------------------------------------
-#recorder plot $Outdir/Disp_FreeNodes$_aBID.out DisplDOF[lindex $iGMdirection 0] 1100 10 400 400 -columns  1 [expr 1+[lindex $iGMdirection 0]] ; # a window to plot the nodal displacements versus time
-#recorder plot $Outdir/Disp_FreeNodes$_aBID.out DisplDOF[lindex $iGMdirection 1] 1100 410 400 400 -columns 1 [expr 1+[lindex $iGMdirection 1]] ; # a window to plot the nodal displacements versus time
+if {[string match $displayrecorder "true"] == 1} {
+	for {set numInFile 0} {$numInFile <= [expr $Buildingnum-1]} {incr numInFile 1} {
+		set aBID [lindex $BID $numInFile 0]; # assign Building number
+		set _aBID "_Building_$aBID"
+		recorder plot $dataDir/Disp_FreeNodes$_aBID.out DisplDOF[lindex $iGMdirection 0] 1100 10 400 400 -columns  1 [expr 1+[lindex $iGMdirection 0]] ; # a window to plot the nodal displacements versus time
+		recorder plot $dataDir/Disp_FreeNodes$_aBID.out DisplDOF[lindex $iGMdirection 1] 1100 410 400 400 -columns 1 [expr 1+[lindex $iGMdirection 1]] ; # a window to plot the nodal displacements versus time
+	}	
+}
 #
 #
 # ----------- set up analysis parameters

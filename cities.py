@@ -156,6 +156,24 @@ class city:
 
 
 
+        for bbk in self.buildingblocks.keys():
+            if len(self.buildingblocks[bbk].buildings)>1:
+                self.buildingblocks[bbk].configure_pounding(self.vertices)
+        
+
+        #start poinding nodes
+        #print("pounding configuration")
+        #self.buildingblocks["bb33"].configure_pounding(self.vertices)
+        #current_dir=".\\patlaks"
+        #self.buildingblocks["bb33"].print_pounding_file(current_dir)
+
+        #start dummy printing
+
+        #end dummy printing
+        #end pounding nodes
+
+
+
 
 
     def set_interactor(self):

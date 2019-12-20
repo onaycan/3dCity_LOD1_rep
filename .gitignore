@@ -1,2 +1,4 @@
 working_dir/
 results_small/
+__pycache__/
+.vscode/

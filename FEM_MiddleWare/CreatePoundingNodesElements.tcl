@@ -8,15 +8,15 @@
 #
 #		Pounding Parameters:
 #
-set direction 1; # direction of normal of contact surface
-set initGap 0.01; # initial gap  5cm = 1.97 inch
-set frictionRatio 0.3; # friction ratio 
-set mu 0.3; # friction coefficient 
-set Kt 1.6e12; # penalty stiffness for tangential directions 		
-set Kn 1.6e12; # penalty stiffness for normal direction		 
+#set direction 1; # direction of normal of contact surface
+#set mu 0.4; # friction coefficient 
+#set Kt 1.0e5; # penalty stiffness for tangential directions 		
+#set Kn 1.0e15; # penalty stiffness for normal direction		 
+#set cohesion 1.0e5; # cohesion
 set Kn2 [expr $Kn * 0.1]; # penalty stiffness after yielding, based on Hertz impact model 
-set Delta_y 0.1; # yield displacement based on Hertz impact model 	  
-set cohesion 0; # cohesion
+#set initGap 0.01; # initial gap  5cm = 1.97 inch
+#set frictionRatio 0.3; # friction ratio 
+#set Delta_y 0.01; # yield displacement based on Hertz impact model 
 #
 #
 set outFileforPoundingSTR CreatePoundingCommands.tcl
@@ -115,8 +115,15 @@ if [catch {open [lindex $PoundingInputFileList 0] r} inFileID] {
 						set eltID [lindex $tags 0]
 						set nodei [lindex $tags 1]
 						set nodej [lindex $tags 2]
-						set poundingstr "element zeroLengthImpact3D	"
-						append poundingstr $eltID "	" $nodei "	" $nodej "	" $direction "	" $initGap "	" $frictionRatio "	" $Kt "	" $Kn "	" $Kn2 "	" $Delta_y "	" $cohesion
+						if {[string match $poundingtype "zeroLengthImpact3D"] == 1} {
+							set poundingstr "element zeroLengthImpact3D	"
+							append poundingstr $eltID "	" $nodei "	" $nodej "	" $direction "	" $initGap "	" $frictionRatio "	" $Kt "	" $Kn "	" $Kn2 "	" $Delta_y "	" $cohesion
+						} elseif {[string match $poundingtype "zeroLengthContact3D"] == 1} {
+							set poundingstr "element zeroLengthContact3D "
+							append poundingstr $eltID "	" $nodei "	" $nodej "	" $Kn "	" $Kt "	" $mu "	" $cohesion "	" $direction
+						} else {
+							set poundingstr ""
+						}
 						lappend poundingimpactList $poundingstr
 					}	
 					break
@@ -132,7 +139,6 @@ if [catch {open [lindex $PoundingInputFileList 0] r} inFileID] {
 						set eltID [lindex $tags 0]
 						set nodei [lindex $tags 1]
 						set nodej [lindex $tags 2]
-						# springs with very low stiffness for convergance of Newton-Raphson method 
 						set poundingstr "element zeroLength	"
 						append poundingstr $eltID "	" $nodei "	" $nodej " -mat 6 7 6 -dir 1 2 3"
 						lappend poundingelementList $poundingstr
@@ -161,8 +167,9 @@ for {set i 0} {$i <= [expr [llength [lindex $poundingconstList]]-1]} {incr i 1} 
 for {set i 0} {$i <= [expr [llength [lindex $poundingimpactList]]-1]} {incr i 1} {
 	puts $outFileforPounding [lindex $poundingimpactList $i]
 }
-set poundingstr "\nuniaxialMaterial Elastic 6 1.0e2\n"
-append poundingstr "uniaxialMaterial Elastic 7 1.0e3"
+# springs with very low stiffness for convergance of Newton-Raphson method 
+set poundingstr "\nuniaxialMaterial Elastic 6 $stiffness\n";	# mat 6
+append poundingstr "uniaxialMaterial Elastic 7 $stiffness";	# mat 7
 puts $outFileforPounding $poundingstr
 for {set i 0} {$i <= [expr [llength [lindex $poundingelementList]]-1]} {incr i 1} {
 	puts $outFileforPounding [lindex $poundingelementList $i]

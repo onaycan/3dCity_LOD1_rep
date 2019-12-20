@@ -19,4 +19,5 @@ for {set numInFile 0} {$numInFile <= [expr $Buildingnum-1]} {incr numInFile 1} {
 #puts goGravity
 # Gravity-analysis parameters -- load-controlled static analysis
 set Tol 1.0e-8;			# convergence tolerance for test
+#set Tol 1.0e-3;			# convergence tolerance for zerolengthContact convergence
 variable constraintsTypeGravity Plain;		# default;

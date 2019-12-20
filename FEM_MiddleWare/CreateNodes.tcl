@@ -1,118 +1,51 @@
 #
-#	CREATE NODES
+#	Create Nodes
 #
-
-if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {
-		puts stderr "Cannot open input file for reading ground fix points"
-    } else {
-      set flag 1
-		foreach line [split [read $inFileID] \n] {
-			if {[llength $line] == 0} {
-				# Blank line --> do nothing
-				continue
-			} 
-			if {$flag == 1} {
-				foreach word [split $line] {
-					if {[string match $word "#BEAM"] == 1} {
-					set flag 0
-					break
-					}
-				}
-				if {$flag == 1} {
-					foreach word [split $line] {
-						if {[string match $word "node"] == 1} {
-							set list [regexp -all -inline -- {[-+]?[0-9]*\.?[0-9]+} $line]
-							set tags ""
-							foreach tagstmp [split $list] {
-								lappend tags $tagstmp
-							}
-							set nodeID [lindex $tags 0]
-							set X [lindex $tags 1]
-							set Y [lindex $tags 2]
-							set Z [lindex $tags 3]
-							node $nodeID $X $Y $Z;		# actually define node
-						}		
-						break
-					}
-				}
+for {set m 0} {$m <= [expr [llength [lindex $nodeIDcheckList]]-1]} {incr m 1} {
+set NodeList_2 ""
+	for {set numInFile 0} {$numInFile <= [expr $Buildingnum-1]} {incr numInFile 1} {
+		for {set i 0} {$i <= [expr [llength [lindex $iNodeList $numInFile]]-1]} {incr i 1} {
+			if {[lindex $iNodeList $numInFile $i 0] == [lindex $nodeIDcheckList $m]} {
+				set nodeID [lindex $iNodeList $numInFile $i 0]
+				set X [lindex $iNodeList $numInFile $i 1]
+				set Y [lindex $iNodeList $numInFile $i 2]
+				set Z [lindex $iNodeList $numInFile $i 3]
 			}
 		}
 	}
-	close $inFileID
+	lappend NodeList_2 $nodeID
+	lappend NodeList_2 $X
+	lappend NodeList_2 $Y
+	lappend NodeList_2 $Z
+	lappend iNodeList_2 $NodeList_2
+}
 
+for {set i 0} {$i <= [expr [llength $iNodeList_2]-1]} {incr i 1} {
+	set nodeID [lindex $iNodeList_2 $i 0]	
+	set X [lindex $iNodeList_2 $i 1]
+	set Y [lindex $iNodeList_2 $i 2]
+	set Z [lindex $iNodeList_2 $i 3]
+
+	node $nodeID $X $Y $Z;		# actually define node
+}
+set SupportNodeIDList $nodeIDcheckList
+for {set m 0} {$m <= [expr [llength [lindex $SupportNodeIDList]]-1]} {incr m 1} {
+	for {set n 0} {$n <= [expr [llength [lindex $floornodeIDcheckList]]-1]} {incr n 1} {
+		set floornodeID [lindex $floornodeIDcheckList $n]
+		set idx [lsearch -all $SupportNodeIDList $floornodeID]
+		if {$idx!=""} {
+			set SupportNodeIDList [lreplace $SupportNodeIDList $idx $idx]; # floornodeIDs are removed from BC node List (ground nodes)	
+		}
+	}
+}
 # ------------------------  Boundary NODES ------------------------------------------------------
 # determine support nodes where ground motions are input, for multiple-support excitation
-    if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {
-		puts stderr "Cannot open input file for reading ground fix points"
-    } else {
-      set flag 0
-	  set iSupportNodetmp ""
-		foreach line [split [read $inFileID] \n] {
-			if {[llength $line] == 0} {
-				# Blank line --> do nothing
-				continue
-			} elseif {$flag == 1} {
-				foreach word [split $line] {
-					if {[string match $word "#FLOOR"] == 1} {
-					set flag 0
-					break
-					}
-				}
-				if {$flag == 1} {
-					set list [regexp -all -inline -- {[-+]?[0-9]*\.?[0-9]+} $line]
-					foreach word [split $list] {
-						# BOUNDARY CONDITIONS
-						fix $word 1 1 1 0 1 0;		# pin all Ground Floor nodes
-						lappend iSupportNodetmp $word
-						break
-					}
-				}
-			} else {
-				foreach word [split $line] {
-					if {[string match $word "#GROUND"] == 1} {
-						set flag 1
-						break
-					}
-				}
-			}
-		}
-	close $inFileID
-	}
-	lappend iSupportNode $iSupportNodetmp; # SUPPORT NODE IDS
-	
-# ----------------------MASTERNODES IDS ------------------------------------------------------
+for {set i 0} {$i <= [expr [llength $SupportNodeIDList]-1]} {incr i 1} {
+	set nodeID [lindex $SupportNodeIDList $i]
+	# BOUNDARY CONDITIONS
+	fix $nodeID 1 1 1 0 1 0;		# pin all Ground Floor nodes
+}
 
-    if [catch {open [lindex $ainputFilename $numInFile 0] r} inFileID] {
-      puts stderr "Cannot open input file for reading constrain dofs rather than rigid diaphragm"
-    } else {
-      set flag 0
-	  set iMasterNodetmp ""
-      foreach line [split [read $inFileID] \n] {
-         if {[llength $line] == 0} {
-            # Blank line --> do nothing
-            continue
-         } elseif {$flag == 1} {
-		    foreach word [split $line] {
-			   if {[string match $word "#BEAM"] == 1} {set flag 0}
-            }
-			if {$flag == 1} {
-				set list [regexp -all -inline -- {[-+]?[0-9]*\.?[0-9]+} $line]
-				foreach MasterNodeID [split $list] {
-					fix $MasterNodeID 0  1  0  1  0  1;		# constrain other dofs that don't belong to rigid diaphragm control
-					lappend iMasterNodetmp $MasterNodeID
-					break
-				}
-			}
-         } else {
-            foreach word [split $line] {
-               if {$flag == 1} {
-                  break
-               }
-               if {[string match $word "#MASTERNODES"] == 1} {set flag 1}
-            }
-         }
-      }
-      close $inFileID
-   }
-  lappend iMasterNode $iMasterNodetmp
-	
+#
+#
+

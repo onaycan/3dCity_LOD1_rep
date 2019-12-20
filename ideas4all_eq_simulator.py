@@ -13,6 +13,7 @@ from PyQt5.QtCore import Qt as qut
 from PyQt5.QtCore import QTimer
 from PyQt5 import QtTest
 from PyQt5.QtWebEngineWidgets import QWebEngineView as QWebView
+from PyQt5.QtWebEngineWidgets import QWebEngineSettings
 from PyQt5.QtCore import QUrl, QObject, pyqtSlot
 from PyQt5.QtWebChannel import QWebChannel
 import matplotlib
@@ -30,7 +31,6 @@ from astropy.io import ascii
 from gui_designer.ideas4all_city_simulator_gui import Ui_MainWindow
 
 
-
 class CallHandler(QObject):
 
     def setmainWidget(self, mainWidget):
@@ -40,17 +40,18 @@ class CallHandler(QObject):
 class WebView(QWebView):
 
     def config(self, mainWidget, filename):
-        self.channel = QWebChannel()
-        self.handler = CallHandler()
-        self.handler.setmainWidget(mainWidget)
-        self.channel.registerObject('handler', self.handler)
-        self.page().setWebChannel(self.channel)
-        local_url = QUrl.fromLocalFile(filename)
-        #local_url=QUrl(filename)
-        self.load(local_url)
-        self.show()
+        QWebView.__init__(self)
+        #self.initialize()
 
-        print("Configuration done")
+        #self.channel = QWebChannel()
+        ##self.handler = CallHandler()
+        ##self.handler.setmainWidget(mainWidget)
+        ##self.channel.registerObject('handler', self.handler)
+        #self.page().setWebChannel(self.channel)
+        ##local_url = QUrl.fromLocalFile(filename)
+        local_url=QUrl(filename)
+        self.load(local_url)
+        ##self.show()
     
 
 class CheckableComboBox(QtWidgets.QComboBox):
@@ -113,7 +114,7 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(Ui, self).__init__(parent)
         self.setupUi(self)
-        self.showFullScreen()
+        #self.showFullScreen()
         #self.showMaximized()
         #self.adjustSize()
         #uic.loadUi('./gui_designer/ideas4all_city_simulator_gui.ui', self)
@@ -443,11 +444,56 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
         self.lonfile_label.setText(os.path.basename(fileName))
 
 
+    def write_parameter_file(self, middlewaredir, outputpath, inputpath):
+        configfile=open(middlewaredir+"/Paramaters_Input.txt",'w')
+        configfile.write("#Input folder path:\n")
+        configfile.write(os.path.abspath(inputpath).replace("\\","/")+"\n")
+        configfile.write("#Output folder path:\n")
+        configfile.write(os.path.abspath(outputpath).replace("\\","/")+"\n")
+        configfile.write("#Unit system <Metric> <US>\n")
+        configfile.write(str(self.unit_comboBox.currentText()).lower()+"\n")
+        configfile.write("#Acceleration recording in lateral direction:\n")
+        configfile.write(self.latfile.replace("\\","/")+"\n")
+        configfile.write("#Acceleration recording in perpendicular direction:\n")
+        configfile.write(self.lonfile.replace("\\","/")+"\n")
+        configfile.write("#Simulation type: <Dynamic> or <Static>:\n")
+        configfile.write(str(self.simtype_comboBox.currentText())+"\n")
+        configfile.write("#Maximum duration for <Dynamic> simulation in seconds:\n")
+        configfile.write(str(self.duration_doubleSpinBox.value())+"\n")
+        configfile.write("#Time step dt in seconds:\n")
+        configfile.write(str(self.dt_doubleSpinBox.value())+"\n")
+        configfile.write("#Number of modes in Modal Analysis:\n")
+        configfile.write(str(self.mode_spinBox.value())+"\n")
+        configfile.write("#RC Section\n")
+        if self.rc_checkBox.isChecked():
+            configfile.write("True\n")
+        else:
+            configfile.write("False\n")
+        configfile.write("#Square-Column section width in inches:\n")
+        configfile.write(str(self.cw_doubleSpinBox.value())+"\n")
+        configfile.write("#Beam depth -- perpendicular to bending axis in inches:\n")
+        configfile.write(str(self.bd_doubleSpinBox.value())+"\n")
+        configfile.write("#Beam width -- parallel to bending axis in inches:\n")
+        configfile.write(str(self.bw_doubleSpinBox.value())+"\n")
+        configfile.write("#Girder depth -- perpendicular to bending axis in inches:\n")
+        configfile.write(str(self.gd_doubleSpinBox.value())+"\n")
+        configfile.write("#Girder width -- parallel to bending axis in inches:\n")
+        configfile.write(str(self.gw_doubleSpinBox.value())+"\n")
+        configfile.write("#W Section\n")
+        if self.ws_checkBox.isChecked():
+            configfile.write("True\n")
+        else:
+            configfile.write("False\n")
+        configfile.write("#Live Loads (uniformly distributed) on each floor (furniture, etc.) in psf (pounds per square foot):\n")
+        configfile.write(str(self.ll_doubleSpinBox.value())+"\n")
+        configfile.close()
+
     def runsimulation(self):
 
         
         self.showresults_pushButton.setEnabled(False)
         bs=set()
+        bbs=set()
         #root="./FEM_MiddleWare"
         middlewaredir=".\\FEM_MiddleWare"
         root=self.load_folder_name
@@ -456,72 +502,34 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
             if current_building_id!="None":
                 bs.add(current_building_id)
         for b in bs:
-            inputpath=root+"/inputs/b_"+str(b)
-            outputpath=root+"/outputs/b_"+str(b)
+            if not self.buildings[b].pounding_building:
+                inputpath=root+"/inputs/b_"+str(b)
+                outputpath=root+"/outputs/b_"+str(b)
+                os.makedirs(inputpath, exist_ok=True)
+                self.buildings[b].print_simulation_file(inputpath+"/"+"INPUT_1.tcl")
+                self.write_parameter_file(middlewaredir, outputpath, inputpath)
+                os.chdir(middlewaredir)
+                os.system("OpenSees.exe ./StartSimulation.tcl "+"b_"+str(b))
+                os.chdir("..")
+                
+        for i in range(self.comboboxes['Building Blocks'].count()):
+            current_bb_id=self.comboboxes['Building Blocks'].itemText(i)
+            if current_bb_id!="None":
+                bbs.add(current_bb_id)
+        
+        for bb in bbs:
+            inputpath=root+"/inputs/"+str(bb).replace("bb","bb_")
+            outputpath=root+"/outputs/"+str(bb).replace("bb","bb_")
             os.makedirs(inputpath, exist_ok=True)
-            self.buildings[b].print_simulation_file(inputpath+"/"+"INPUT_1.tcl")
-            configfile=open(middlewaredir+"/Paramaters_Input.txt",'w')
-            
-            configfile.write("#Input folder path:\n")
-            configfile.write(os.path.abspath(inputpath).replace("\\","/")+"\n")
-
-            configfile.write("#Output folder path:\n")
-            configfile.write(os.path.abspath(outputpath).replace("\\","/")+"\n")
-
-            
-            configfile.write("#Acceleration recording in lateral direction:\n")
-            configfile.write(self.latfile.replace("\\","/")+"\n")
-            configfile.write("#Acceleration recording in perpendicular direction:\n")
-            configfile.write(self.lonfile.replace("\\","/")+"\n")
-            configfile.write("#Simulation type: <Dynamic> or <Static> Pushover:\n")
-            configfile.write(str(self.simtype_comboBox.currentText())+"\n")
-            configfile.write("#Maximum duration for <Dynamic> simulation in seconds:\n")
-            configfile.write(str(self.duration_doubleSpinBox.value())+"\n")
-            configfile.write("#Time step dt in seconds:\n")
-            configfile.write(str(self.dt_doubleSpinBox.value())+"\n")
-            configfile.write("#Number of modes in Modal Analysis:\n")
-            configfile.write(str(self.mode_spinBox.value())+"\n")
-
-            configfile.write("#RC Section\n")
-            if self.rc_checkBox.isChecked():
-                configfile.write("True\n")
-            else:
-                configfile.write("False\n")
-
-            configfile.write("#Square-Column section width in inches:\n")
-            configfile.write(str(self.cw_doubleSpinBox.value())+"\n")
-            configfile.write("#Beam depth -- perpendicular to bending axis in inches:\n")
-            configfile.write(str(self.bd_doubleSpinBox.value())+"\n")
-            configfile.write("#Beam width -- parallel to bending axis in inches:\n")
-            configfile.write(str(self.bw_doubleSpinBox.value())+"\n")
-            configfile.write("#Girder depth -- perpendicular to bending axis in inches:\n")
-            configfile.write(str(self.gd_doubleSpinBox.value())+"\n")
-            configfile.write("#Girder width -- parallel to bending axis in inches:\n")
-            configfile.write(str(self.gw_doubleSpinBox.value())+"\n")
-
-            configfile.write("#W Section\n")
-            if self.ws_checkBox.isChecked():
-                configfile.write("True\n")
-            else:
-                configfile.write("False\n")
-            
-            configfile.write("#Live Loads (uniformly distributed) on each floor (furniture, etc.) in psf (pounds per square foot):\n")
-            configfile.write(str(self.ll_doubleSpinBox.value())+"\n")
-
-
-
-
-
-
-            configfile.close()
-
+            self.building_blocks[bb].print_pounding_file(inputpath)
+            self.write_parameter_file(middlewaredir, outputpath, inputpath)
             os.chdir(middlewaredir)
-            os.system("OpenSees.exe ./StartSimulation.tcl "+"b_"+str(b))
+            os.system("OpenSees.exe ./StartSimulation.tcl "+str(b))
             os.chdir("..")
+            
+                
         
         outputpath=root+"/outputs/"
-        #if os.path.abspath(outputpath)!=self.load_folder_name:
-        #    shutil.copytree(os.path.abspath(outputpath),os.path.join(self.load_folder_name,"outputs"))
         self.showresults_pushButton.setEnabled(True)
     def manage_simparams(self):
         self.load_folder_name=os.path.abspath(".\\FEM_MiddleWare\\outputs")
@@ -747,7 +755,7 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
 
 
     def show_results(self):
-
+        inches2meter=1.0/39.3701
         
 
         self.param_tabWidget.setCurrentWidget(self.postprocessing_tab)
@@ -761,14 +769,16 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
         start=datetime.datetime.now()
         for root, dirs, files in os.walk(self.result_path, topdown=False):
             for name in dirs:
-                if name.startswith("b_"):
-                    bulding_paths[name.split("_")[1]]=os.path.abspath(root+"\\"+name)
-                    self.results[name.split("_")[1]]={}
-                    self.results[name.split("_")[1]]["Displacements"]={}
-                    self.results[name.split("_")[1]]["StressReinf"]={}
-                    self.results[name.split("_")[1]]["StrainReinf"]={}
-                    self.results[name.split("_")[1]]["StressConc"]={}
-                    self.results[name.split("_")[1]]["StrainConc"]={}
+                if name.startswith("b_") or name.startswith("bb_"):
+                    necessaryfile=os.path.abspath(root+"\\"+name+"\\"+"NodeIDs.out")
+                    if(os.path.isfile(necessaryfile)):
+                        bulding_paths[name.split("_")[1]]=os.path.abspath(root+"\\"+name)
+                        self.results[name.split("_")[1]]={}
+                        self.results[name.split("_")[1]]["Displacements"]={}
+                        self.results[name.split("_")[1]]["StressReinf"]={}
+                        self.results[name.split("_")[1]]["StrainReinf"]={}
+                        self.results[name.split("_")[1]]["StressConc"]={}
+                        self.results[name.split("_")[1]]["StrainConc"]={}
 
         #pprint.pprint(bulding_paths)
         last_b=0
@@ -786,7 +796,7 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
             counter=0
             for _id in ids:
                 last_v=_id[0]
-                self.results[b]["Displacements"][_id[0]]=ndisps[10:,counter*3+1:counter*3+3+1]
+                self.results[b]["Displacements"][_id[0]]=ndisps[10:,counter*3+1:counter*3+3+1]*inches2meter
                 counter+=1
             #END DISPLACEMENT READING
 
@@ -1066,17 +1076,19 @@ if __name__=='__main__':
     window.scalarresult_comboBox.currentTextChanged.connect(window.set_scalar_result)
     window.legend_table=QtWidgets.QTableWidget()
     window.legend_layout.addWidget(window.legend_table)
+    
         
 
 
-    #mapwidget.config(window,"https://www.google.com/")
     #mapwidget = WebView()
-    #mapwidget.config(window, os.path.abspath(".\\LeafLetOffline\\plot_robust.html"))
-    #window.Postprocessing_tabwidget.setTabsClosable(True)
-    #window.Postprocessing_tabwidget.setMovable(True)
-    #window.Postprocessing_tabwidget.setStyleSheet("QTabBar::tab:selected { color: blue; }")
-    #window.Postprocessing_tabwidget.addTab(mapwidget, "yarro")
+    #mapwidget.config(window,"https://www.google.com/")
+    ##mapwidget.config(window, os.path.abspath(".\\LeafLetOffline\\plot_robust.html"))
+    ##window.Postprocessing_tabwidget.setTabsClosable(True)
+    ##window.Postprocessing_tabwidget.setMovable(True)
+    ##window.Postprocessing_tabwidget.setStyleSheet("QTabBar::tab:selected { color: blue; }")
+    ##window.Postprocessing_tabwidget.addTab(mapwidget, "yarro")
     #window.horizontalLayout_2.addWidget(mapwidget)
+
 
     
 
@@ -1100,6 +1112,7 @@ if __name__=='__main__':
 
 
     sys.exit(app.exec_())
+    #app.quit()
     
     
     

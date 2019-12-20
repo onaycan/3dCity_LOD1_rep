@@ -1,12 +1,14 @@
 #Input folder path:
-C:/PZI_16292/CAN/PersDev/EQ/05_QuickPipeline/00_AdressLevels_Master/working_dir/inputs/b_693988144
+C:/PZI_16292/CAN/PersDev/EQ/05_QuickPipeline/00_AdressLevels_Master/example_dir/inputs/bb_73
 #Output folder path:
-C:/PZI_16292/CAN/PersDev/EQ/05_QuickPipeline/00_AdressLevels_Master/working_dir/outputs/b_693988144
+C:/PZI_16292/CAN/PersDev/EQ/05_QuickPipeline/00_AdressLevels_Master/example_dir/outputs/bb_73
+#Unit system <Metric> <US>
+us
 #Acceleration recording in lateral direction:
 C:/PZI_16292/CAN/PersDev/EQ/05_QuickPipeline/00_AdressLevels_Master/3dCity_LOD1_rep/FEM_MiddleWare/GMfiles/H-E12140.at2
 #Acceleration recording in perpendicular direction:
 C:/PZI_16292/CAN/PersDev/EQ/05_QuickPipeline/00_AdressLevels_Master/3dCity_LOD1_rep/FEM_MiddleWare/GMfiles/H-E01140.at2
-#Simulation type: <Dynamic> or <Static> Pushover:
+#Simulation type: <Dynamic> or <Static>:
 Dynamic
 #Maximum duration for <Dynamic> simulation in seconds:
 10.0

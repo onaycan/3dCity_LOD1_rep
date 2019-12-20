@@ -14,9 +14,6 @@ set outFileforRecorder [open $outFileforRecorderSTR w]
 
 set _numIntgrPts "_$numIntgrPts"
 
-set AllnodesFirst [lindex $iNodeList 0 0 0]
-set AllnodesLast [lindex $iNodeList [expr $Buildingnum-1] [expr [llength [lindex $iNodeList [expr $Buildingnum-1]]]-1] 0]
-
 set AllEltFirst [lindex $ElementwColumns 0 0 0]
 set AllEltLast [lindex $ElementwColumns [expr $Buildingnum-1] [expr [llength [lindex $ElementwColumns [expr $Buildingnum-1]]]-1] 0]
 
@@ -33,10 +30,9 @@ for {set numInFile 0} {$numInFile <= [expr $Buildingnum-1]} {incr numInFile 1} {
 	set _aBID "_Building_$aBID"
 	set SupportNodeFirst [lindex $iSupportNode $numInFile 0];						# ID: first support node
 	recorder Drift -file $dataDir/LateralDrift$_aBID.out -time -iNode $SupportNodeFirst  -jNode [lindex $FreeNodeID $numInFile 0] -dof 1 -perpDirn 2;	# lateral drift
+	#For displaying purpose:
+	recorder Node -file $dataDir/Disp_FreeNodes$_aBID.out -time -node [lindex $FreeNodeID $numInFile 0] -dof 1 2 3 disp; # displacements of free node
 }
-#For displaying purpose:
-#recorder Node -file $dataDir/Disp_FreeNodes.out -time -node [lindex $FreeNodeID $numInFile 0] -dof 1 2 3 disp; # displacements of free node
-
 # -------------------------------  Node RESULTs ------------------------------------------
 	set infileNodeIDName [open $dataDir/NodeIDs.out r]
 	set str ""
@@ -51,7 +47,7 @@ set tmpoutDataDir $dataDir/Displacement_AllNodes.out
 	append recorderstr $str$arg
 	puts $outFileforRecorder $recorderstr
 #
-if {$typesim=="Dynamic"} {
+if {$typesim=="dynamic"} {
 for { set k 1 } { $k <= $numModes } { incr k } {
 	set tmpoutDataDir [format "$dataDir/mode%i_AllNodes.out" $k]
 		set recorderstr "recorder Node -file $tmpoutDataDir -node ";	# displacements of All Nodes
@@ -61,8 +57,6 @@ for { set k 1 } { $k <= $numModes } { incr k } {
 	#
 }
 }
-#recorder Node -file $dataDir/Displacement_AllNodes.out -time -nodeRange $AllnodesFirst $AllnodesLast -dof 1 2 3 disp;# displacements of All Nodes
-
 # -------------------------------  Element RESULTs ------------------------------------------
 	set infileEltIDName [open $dataDir/ElementIDs.out r]
 	set str ""
@@ -111,7 +105,7 @@ set tmpoutDataDir $dataDir/Deformation_AllElements_sec$_numIntgrPts.out
 #recorder Element -file $dataDir/Deformation_AllColumnElements_sec_1.out -time -ele $AllColumnsFirst $AllColumnsLast section 1 deformation;	# section deformations, axial and curvature, node i
 #recorder Element -file $dataDir/Force_AllColumnElements_sec$_numIntgrPts.out -time -ele $AllColumnsFirst $AllColumnsLast section $numIntgrPts force;	# section forces, axial and moment, node j
 #recorder Element -file $dataDir/Deformation_AllColumnElements_sec$_numIntgrPts.out -time -ele $AllColumnsFirst $AllColumnsLast section $numIntgrPts deformation;# section deformations, axial and curvature, node j
-if {$RCSection=="True"} {
+if {$RCSection=="true"} {
 	set yFiber [expr $HBeam/2-$cover];		# fiber location for stress-strain recorder, local coords
 	set zFiber [expr $BBeam/2-$cover];		# fiber location for stress-strain recorder, local coords
 
@@ -185,7 +179,7 @@ if {$RCSection=="True"} {
 #	recorder Element -file $dataDir/StressStrain_AllColumnElements_concEle_sec_1.out -time -eleRange $AllColumnsFirst $AllColumnsLast section $numIntgrPts fiber $yFiber $zFiber $IDconcCore  stressStrain;	# Core Concrete stress-strain, node i
 #	recorder Element -file $dataDir/StressStrain_AllColumnElements_reinfEle_sec_1.out -time -eleRange $AllColumnsFirst $AllColumnsLast section $numIntgrPts fiber $yFiber $zFiber $IDSteel  stressStrain;	# steel fiber stress-strain, node i
 }
-if {$WSection=="True"} {
+if {$WSection=="true"} {
 	set yFiber [expr 0.];								# fiber location for stress-strain recorder, local coords
 	set zFiber [expr 0.];								# fiber location for stress-strain recorder, local coords
 
