@@ -17,8 +17,17 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(Ui, self).__init__(parent)
         self.setupUi(self)
-        self.showFullScreen()
-        #self.showMaximized()
+        #self.showFullScreen()
+        self.showMaximized()
+        #self.setWindowFlags(
+        #QtCore.Qt.Window |
+        #QtCore.Qt.CustomizeWindowHint |
+        #QtCore.Qt.WindowTitleHint |
+        #QtCore.Qt.WindowCloseButtonHint |
+        #QtCore.Qt.WindowStaysOnTopHint
+        #)
+        #self.hide()
+        #self.show()
         self.checked_items={'Building Blocks': 2, 'Buildings': 2, 'Panels': 2, 'Panel Facets': 2, 'Panel Beams': 2, 'Panel Girders': 2, 'Walls': 2, 'Wall Facets': 2, "Wall Columns" : 2, "Terrain" :2}
         self.numberoftimeintervals=0
 

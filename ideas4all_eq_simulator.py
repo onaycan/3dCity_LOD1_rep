@@ -6,31 +6,58 @@ import time
 import pandas
 import shutil
 import datetime
-from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QTreeWidgetItem, QColorDialog, QFileDialog, QTabWidget
-from PyQt5 import Qt, QtCore, QtGui
 from PyQt5.QtCore import Qt as qut
-from PyQt5.QtCore import QTimer
-from PyQt5 import QtTest
+from PyQt5 import QtWidgets, uic
+from PyQt5 import Qt, QtCore, QtGui
 from PyQt5.QtWebEngineWidgets import QWebEngineView as QWebView
 from PyQt5.QtWebEngineWidgets import QWebEngineSettings
 from PyQt5.QtCore import QUrl, QObject, pyqtSlot
 from PyQt5.QtWebChannel import QWebChannel
-import matplotlib
+from PyQt5.QtGui import QPainter
 import sys
 import cities
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 import vtk
 import vtk_interaction
 import numpy
-import csv
 from petl import fromcsv, look, cut, tocsv, fromtext
 import petl
 from astropy.io import ascii
 
-from gui_designer.ideas4all_city_simulator_gui import Ui_MainWindow
+
 import Ui_main
 
+
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.figure import Figure
+from mpl_toolkits.basemap import Basemap
+
+#warnings.filterwarnings("ignore")
+
+
+class MyMplCanvas(FigureCanvas):
+    def __init__(self, parent=None):
+        fig = Figure()
+        self.axes = fig.add_subplot(111)
+
+        FigureCanvas.__init__(self, fig)
+        self.setParent(parent)
+
+        FigureCanvas.setSizePolicy(self,
+                                   QtWidgets.QSizePolicy.Expanding,
+                                   QtWidgets.QSizePolicy.Expanding)
+        FigureCanvas.updateGeometry(self)
+
+        map = Basemap(llcrnrlon=27.979530,llcrnrlat=40.015137,urcrnrlon=29.979530,urcrnrlat=42.015137,
+             resolution='h', projection='lcc', lat_0 = 41.015137, lon_0 = 28.979530, ax=self.axes)
+
+        map.drawmapboundary(fill_color='aqua')
+        map.fillcontinents(color='#ddaa66',lake_color='aqua')
+        map.drawcoastlines()
+        #parent.addToolBar(QtCore.Qt.BottomToolBarArea, NavigationToolbar(self, parent.groupBox_5))
+        parent.verticalLayout_20.addWidget(NavigationToolbar(self,parent))
 
 class CallHandler(QObject):
 
@@ -42,6 +69,14 @@ class WebView(QWebView):
 
     def config(self, mainWidget, filename):
         QWebView.__init__(self)
+        self.setFixedSize(500,500)
+        #self.setAttribute(QtCore.Qt.WA_DontShowOnScreen, True)
+        #self.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
+        QWebEngineSettings.FullScreenSupportEnabled
+        QWebEngineSettings.WebGLEnabled
+        QWebEngineSettings.Accelerated2dCanvasEnabled
+        self.show()
+        #self.setRenderHint(QPainter.SmoothPixmapTransform, False)
         #self.initialize()
 
         #self.channel = QWebChannel()
@@ -55,59 +90,8 @@ class WebView(QWebView):
         ##self.show()
     
 
-class CheckableComboBox(QtWidgets.QComboBox):
-    def __init__(self):    
-        super(CheckableComboBox, self).__init__()
- 
 
-    def addItem(self, item):
-        if item not in self.get_set_items():
-            super(CheckableComboBox, self).addItem(item)
 
-    def addItems(self, items):
-        items = list(self.get_set_items() | set(items))
-        super(CheckableComboBox, self).addItems(items)
-
-    def get_set_items(self):
-        return set([self.itemText(i) for i in range(1,self.count())])
-
-    def flags(self):
-        return Qt.ItemIsUserCheckable | Qt.ItemIsSelectable | Qt.ItemIsEnabled
-
-class ColorButton(QtWidgets.QPushButton):
-    def __init__(self,_city_vtk, _objects_key, _buildings, _checked_items):
-        super().__init__()
-        self.setText('')
-        self.city_vtk=_city_vtk
-        self.objects_key=_objects_key
-        self.buildings=_buildings
-        self.checked_items=_checked_items
-
-    def on_click(self):
-
-        
-        color = QColorDialog.getColor()
-        #print(color.getRgb())
-        self.setStyleSheet("background:rgb("+str(color.getRgb()[0])+","+str(color.getRgb()[1])+","+str(color.getRgb()[2])+")")
-        current_color=[color.getRgb()[0],color.getRgb()[1],color.getRgb()[2]]
-        self.city_vtk.LineColorLabels[self.objects_key]=current_color
-        self.city_vtk.LineColors = vtk.vtkUnsignedCharArray()
-        self.city_vtk.LineColors.SetNumberOfComponents(3)
-        self.city_vtk.LineColors.SetName("LineColors")
-        
-        self.city_vtk.BuildingColorLabels[self.objects_key]=current_color
-        self.city_vtk.BuildingCellColors = vtk.vtkUnsignedCharArray()
-        self.city_vtk.BuildingCellColors.SetNumberOfComponents(3)
-        self.city_vtk.BuildingCellColors.SetName("BuildingCellColors")
-        
-        self.city_vtk.insert_buildings(self.buildings,self.checked_items, _only_colors=True)
-        
-        self.city_vtk.PolyData_Lines = vtk.vtkPolyData()
-        self.city_vtk.PolyData_BuildingCells = vtk.vtkPolyData()
-        self.city_vtk.visualize()
-        #self.city_vtk.mapper_BuildingCells.ScalarVisibilityOn()
-        self.city_vtk.renWin.Render()
-       
 
 
 
@@ -173,28 +157,26 @@ if __name__=='__main__':
     # end application of dark theme
     
     window = Ui_main.Ui()
-    window.showMaximized()
+    #window.showMaximized()
+
+    
+
     window.show_table_widget()
 
     
-
-    frame = window.tabWidget
-
-    vl=window.vtkLayout
-    vtkWidget = QVTKRenderWindowInteractor(frame)
-    vl.addWidget(vtkWidget)
-
-    window.manage_simparams()
-
     
-    pre_eq_city=cities.city("caferaga","pre-eq",vtkWidget,"map_kadiköy_caferaga_small.osm","map_kadiköy_caferaga.json")
+    pre_frame = window.preFrame
+    vl=window.prevtkLayout
+    prevtkWidget = QVTKRenderWindowInteractor(pre_frame)
+    vl.addWidget(prevtkWidget)
+    window.manage_simparams()
+    pre_eq_city=cities.city("caferaga","pre-eq",prevtkWidget,"map_kadiköy_caferaga_small.osm","map_kadiköy_caferaga.json")
     pre_eq_city.build_city()
     pre_eq_city.set_interactor()
     
     window.show_tree_widget(pre_eq_city)
     
     window.EnableSelection_checkBox.stateChanged.connect(window.manage_selection_enablebox)
-    #window.buildings_pushbutton.clicked.connect(window.manage_selection_box_b)
     window.all_pushbutton.clicked.connect(window.manage_selection_box_all)
     window.buildingBlocks_pushbutton.clicked.connect(window.manage_selection_box_bb)
     window.append_pushbutton.clicked.connect(window.fill_table_widget)
@@ -213,14 +195,13 @@ if __name__=='__main__':
 
 
     # start postwindow
-    post_frame = window.Postprocessing_tabwidget
-    vpl=window.vtkPostLayout
+    post_frame = window.postFrame
+    vpl=window.postvtkLayout
     postvtkWidget = QVTKRenderWindowInteractor(post_frame)
     vpl.addWidget(postvtkWidget)
     post_eq_city=cities.city("caferaga","post-eq",postvtkWidget,"map_kadiköy_caferaga_small.osm","map_kadiköy_caferaga.json")
     post_eq_city.copy_city(pre_eq_city)
     post_eq_city.set_interactor()
-    #post_eq_city.copy_city_interactor_properties(pre_eq_city)
     window.post_eq_city=post_eq_city
     post_eq_city.vtk_interactor.iren.SetInteractorStyle(vtk.vtkInteractorStyleTrackballCamera())
     post_eq_city.vtk_interactor.visualize(_initial=True)
@@ -228,6 +209,8 @@ if __name__=='__main__':
     print("render window is rendered")
     post_eq_city.vtk_interactor.iren.Initialize()
     post_eq_city.vtk_interactor.iren.Start()
+
+
 
 
     errOut = vtk.vtkFileOutputWindow()
@@ -252,17 +235,44 @@ if __name__=='__main__':
     window.legend_table=QtWidgets.QTableWidget()
     window.legend_layout.addWidget(window.legend_table)
     
-        
+    
 
 
+    #vl.removeWidget(prevtkWidget)
+    #vl.deleteLater()
+    #vl = None
+#
+#
+    #vpl.removeWidget(postvtkWidget)
+    #vpl.deleteLater()
+    #vpl = None
+
+    sc = MyMplCanvas(window)
+    window.verticalLayout_20.addWidget(sc)
+
+
+    #frame = window.frame
+    #frame.resize(500,300)
+    #vlb=window.verticalLayout_19
+    ##mapwidget = QVTKRenderWindowInteractor(frame)
     #mapwidget = WebView()
     #mapwidget.config(window,"https://www.google.com/")
-    ##mapwidget.config(window, os.path.abspath(".\\LeafLetOffline\\plot_robust.html"))
-    ##window.Postprocessing_tabwidget.setTabsClosable(True)
-    ##window.Postprocessing_tabwidget.setMovable(True)
-    ##window.Postprocessing_tabwidget.setStyleSheet("QTabBar::tab:selected { color: blue; }")
-    ##window.Postprocessing_tabwidget.addTab(mapwidget, "yarro")
-    #window.horizontalLayout_2.addWidget(mapwidget)
+    #
+    #vlb.addWidget(mapwidget)
+
+
+    
+
+
+    
+    
+    #mapwidget.config(window, os.path.abspath(".\\LeafLetOffline\\plot_robust.html"))
+    #window.Postprocessing_tabwidget.setTabsClosable(True)
+    #window.Postprocessing_tabwidget.setMovable(True)
+    #window.Postprocessing_tabwidget.setStyleSheet("QTabBar::tab:selected { color: blue; }")
+    #window.Postprocessing_tabwidget.addTab(mapwidget, "yarro")
+
+    #window.verticalLayout_19.addWidget(mapwidget)
 
 
     
