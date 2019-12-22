@@ -10,14 +10,14 @@ import matplotlib
 
 
 def manage_acc_buttons(self):
-        if self.acc_checkbutton.isChecked():
-            self.lat_pushButton.setEnabled(True)
-            self.lon_pushButton.setEnabled(True)
-            self.loadsscenario_pushButton.setEnabled(False)
-        else:
-            self.lat_pushButton.setEnabled(False)
-            self.lon_pushButton.setEnabled(False)
-            self.loadsscenario_pushButton.setEnabled(True)
+    if self.acc_checkbutton.isChecked():
+        self.lat_pushButton.setEnabled(True)
+        self.lon_pushButton.setEnabled(True)
+        self.loadsscenario_pushButton.setEnabled(False)
+    else:
+        self.lat_pushButton.setEnabled(False)
+        self.lon_pushButton.setEnabled(False)
+        self.loadsscenario_pushButton.setEnabled(True)
 
 def selectDirDialogrun(self):
     options = QFileDialog.Options()

@@ -29,69 +29,8 @@ from astropy.io import ascii
 import Ui_main
 
 
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from matplotlib.figure import Figure
-from mpl_toolkits.basemap import Basemap
 
 #warnings.filterwarnings("ignore")
-
-
-class MyMplCanvas(FigureCanvas):
-    def __init__(self, parent=None):
-        fig = Figure()
-        self.axes = fig.add_subplot(111)
-
-        FigureCanvas.__init__(self, fig)
-        self.setParent(parent)
-
-        FigureCanvas.setSizePolicy(self,
-                                   QtWidgets.QSizePolicy.Expanding,
-                                   QtWidgets.QSizePolicy.Expanding)
-        FigureCanvas.updateGeometry(self)
-
-        map = Basemap(llcrnrlon=27.979530,llcrnrlat=40.015137,urcrnrlon=29.979530,urcrnrlat=42.015137,
-             resolution='h', projection='lcc', lat_0 = 41.015137, lon_0 = 28.979530, ax=self.axes)
-
-        map.drawmapboundary(fill_color='aqua')
-        map.fillcontinents(color='#ddaa66',lake_color='aqua')
-        map.drawcoastlines()
-        #parent.addToolBar(QtCore.Qt.BottomToolBarArea, NavigationToolbar(self, parent.groupBox_5))
-        parent.verticalLayout_20.addWidget(NavigationToolbar(self,parent))
-
-class CallHandler(QObject):
-
-    def setmainWidget(self, mainWidget):
-        self.mainWidget = mainWidget
-
-
-class WebView(QWebView):
-
-    def config(self, mainWidget, filename):
-        QWebView.__init__(self)
-        self.setFixedSize(500,500)
-        #self.setAttribute(QtCore.Qt.WA_DontShowOnScreen, True)
-        #self.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
-        QWebEngineSettings.FullScreenSupportEnabled
-        QWebEngineSettings.WebGLEnabled
-        QWebEngineSettings.Accelerated2dCanvasEnabled
-        self.show()
-        #self.setRenderHint(QPainter.SmoothPixmapTransform, False)
-        #self.initialize()
-
-        #self.channel = QWebChannel()
-        ##self.handler = CallHandler()
-        ##self.handler.setmainWidget(mainWidget)
-        ##self.channel.registerObject('handler', self.handler)
-        #self.page().setWebChannel(self.channel)
-        ##local_url = QUrl.fromLocalFile(filename)
-        local_url=QUrl(filename)
-        self.load(local_url)
-        ##self.show()
-    
-
-
-
 
 
 
@@ -115,6 +54,8 @@ class OutLog:
 
         if self.out:
             self.out.write(m)
+
+
 def set_app_style(_app):
     _app.setStyle("Fusion")
     palette = QtGui.QPalette()
@@ -238,57 +179,8 @@ if __name__=='__main__':
     
 
 
-    #vl.removeWidget(prevtkWidget)
-    #vl.deleteLater()
-    #vl = None
-#
-#
-    #vpl.removeWidget(postvtkWidget)
-    #vpl.deleteLater()
-    #vpl = None
 
-    sc = MyMplCanvas(window)
-    window.verticalLayout_20.addWidget(sc)
-
-
-    #frame = window.frame
-    #frame.resize(500,300)
-    #vlb=window.verticalLayout_19
-    ##mapwidget = QVTKRenderWindowInteractor(frame)
-    #mapwidget = WebView()
-    #mapwidget.config(window,"https://www.google.com/")
-    #
-    #vlb.addWidget(mapwidget)
-
-
-    
-
-
-    
-    
-    #mapwidget.config(window, os.path.abspath(".\\LeafLetOffline\\plot_robust.html"))
-    #window.Postprocessing_tabwidget.setTabsClosable(True)
-    #window.Postprocessing_tabwidget.setMovable(True)
-    #window.Postprocessing_tabwidget.setStyleSheet("QTabBar::tab:selected { color: blue; }")
-    #window.Postprocessing_tabwidget.addTab(mapwidget, "yarro")
-
-    #window.verticalLayout_19.addWidget(mapwidget)
-
-
-    
-
-    #window.webTabwidget = QTabWidget()
-    #window.webTabwidget.setTabsClosable(True)
-    #window.webTabwidget.setMovable(True)
-    #window.webTabwidget.addTab(mapwidget, "seismic map")
-    #window.preeq_post_tabwidget.addTab(mapwidget, "yarro")
-    
-    
-
-
-
-
-
+    window.set_mapcanvas()
 
 
     #edit=window.textEdit_Log

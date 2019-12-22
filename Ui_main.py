@@ -3,11 +3,12 @@ import os
 from PyQt5 import QtWidgets, uic
 from PyQt5 import Qt, QtCore, QtGui
 from gui_designer.ideas4all_city_simulator_gui import Ui_MainWindow
-import Ui_preproc
-import Ui_proc
 import datetime
 import numpy 
 
+import Ui_preproc
+import Ui_proc
+import Ui_eqmap
 
 
        
@@ -131,6 +132,11 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
         Ui_proc.proc_write_parameter_file(self, middlewaredir, outputpath, inputpath)
 
     #END PROCESSING FUNCTIONS
+
+    #START EQ MAP FUNCTIONS
+    def set_mapcanvas(self):
+        Ui_eqmap.set_mapcanvas(self)
+    #END EQ MAP FUNCTIONS
 
 
 
