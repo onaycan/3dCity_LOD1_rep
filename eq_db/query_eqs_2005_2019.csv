@@ -1,0 +1,169 @@
+time;latitude;longitude;depth;mag;magType;nst;gap;dmin;rms;net;id;updated;place;type;horizontalError;depthError;magError;magNst;status;locationSource;magSource
+2019-10-10T16:52:03.151Z;40.7283;29.2125;10;4.3;mb;;55;1.272;0.69;us;us70005t3c;2019-11-08T22:28:53.451Z;9km NNW of Yalova, Turkey;earthquake;3.7;1.9;0.306;3;reviewed;us;us
+2019-09-26T20:20:18.595Z;40.8151;28.1964;10;4.3;mb;;46;1.632;0.56;us;us70005lyy;2019-12-20T19:02:59.040Z;26km SE of Marmaraereglisi, Turkey;earthquake;5.4;2;0.308;3;reviewed;us;us
+2019-09-26T20:02:41.002Z;40.849;28.1699;10;4.5;mb;;73;1.611;1.01;us;us70005s19;2019-12-20T19:04:23.040Z;22km SE of Marmaraereglisi, Turkey;earthquake;5.7;1.9;0.542;1;reviewed;us;us
+2019-09-26T11:26:37.619Z;40.8568;28.1814;10;4.4;mb;;56;1.619;0.81;us;us70005ll1;2019-12-20T19:02:49.040Z;22km ESE of Marmaraereglisi, Turkey;earthquake;5.6;1.9;0.19;8;reviewed;us;us
+2019-09-26T10:59:25.648Z;40.9035;28.1502;8;5.7;mww;;19;1.595;0.9;us;us70005lkl;2019-12-20T19:02:48.040Z;18km ESE of Marmaraereglisi, Turkey;earthquake;5.2;1.8;0.033;88;reviewed;us;us
+2019-09-24T08:00:24.160Z;40.8578;28.1454;10;4.9;mb;;39;1.592;1.23;us;us60005mmr;2019-12-20T19:02:02.040Z;20km SE of Marmaraereglisi, Turkey;earthquake;5.1;1.9;0.067;70;reviewed;us;us
+2019-06-02T13:08:47.500Z;40.7824;30.7838;5.39;4.5;mwr;;27;0.442;0.37;us;us70003uej;2019-08-24T21:17:49.040Z;3km ESE of Hendek, Turkey;earthquake;4.1;5.1;0.071;19;reviewed;us;us
+2019-04-12T13:03:48.107Z;40.7066;30.6426;10;4.4;mb;;53;0.483;0.87;us;us700034ym;2019-06-20T19:03:24.040Z;2km NE of Akyazi, Turkey;earthquake;5.2;1.9;0.117;21;reviewed;us;us
+2019-02-19T21:33:56.760Z;40.375;27.0809;10;4.1;mb;;34;0.938;1.09;us;us2000jk8x;2019-05-11T17:40:41.040Z;21km NW of Biga, Turkey;earthquake;5.1;2;0.37;2;reviewed;us;us
+2019-01-11T16:09:57.480Z;40.1781;28.7761;10;3.4;ml;;85;0.547;1.38;us;us2000j32l;2019-04-02T20:52:12.040Z;23km SSW of Mudanya, Turkey;earthquake;4;2;0.085;18;reviewed;us;us
+2019-01-05T04:20:15.070Z;40.4257;28.357;10;3.7;ml;;103;1.696;0.74;us;us2000j0fw;2019-03-08T17:50:16.040Z;23km N of Karacabey, Turkey;earthquake;4.1;1.3;0.076;23;reviewed;us;us
+2018-12-20T06:34:25.190Z;40.6063;28.9761;10;4.3;mb;;24;0.714;0.67;us;us2000iv9d;2019-02-23T20:20:44.040Z;5km WSW of Kocadere, Turkey;earthquake;2.1;1.9;0.138;15;reviewed;us;us
+2018-11-30T02:36:35.720Z;40.595;28.955;10;4.2;mb;;44;1.713;1.19;us;us1000hy6z;2019-02-09T19:02:08.040Z;7km WSW of Kocadere, Turkey;earthquake;5.3;1.9;0.215;6;reviewed;us;us
+2018-05-03T02:04:34.710Z;40.0364;26.8817;10;4.3;mb;;50;1.067;0.75;us;us1000dwe0;2018-07-27T20:20:31.040Z;14km W of Can, Turkey;earthquake;4.3;1.9;0.137;15;reviewed;us;us
+2017-12-31T20:12:02.880Z;40.5104;27.8564;11.78;4.3;mb;;96;0.869;0.5;us;us1000byld;2018-03-17T01:54:40.040Z;13km NNE of Erdek, Turkey;earthquake;4.1;8.4;0.53;1;reviewed;us;us
+2017-07-22T22:12:32.970Z;40.1102;27.1829;6.72;4.1;mb;;55;1.167;0.77;us;us20009zv8;2017-10-11T01:04:03.040Z;14km SSW of Biga, Turkey;earthquake;5.1;7.8;0.302;3;reviewed;us;us
+2016-10-16T14:11:25.790Z;40.8652;30.9058;10;4.3;mb;;88;0.451;1.15;us;us20007el8;2017-01-15T01:13:52.040Z;3km WSW of Cumayeri, Turkey;earthquake;4.7;2;0.265;4;reviewed;us;us
+2016-07-17T08:55:41.580Z;40.7118;29.18;7.4;4.2;mb;;;;0.65;us;us20006fbz;2016-09-17T01:27:48.040Z;6km NNE of Korukoy, Turkey;earthquake;5;5.3;0.305;3;reviewed;isk;us
+2016-06-25T05:40:11.000Z;40.7032;29.2147;6.8;4.1;mb;;;;0.83;us;us200066rf;2016-08-31T03:08:15.040Z;6km NE of Korukoy, Turkey;earthquake;5.2;5.7;0.158;11;reviewed;isk;us
+2016-06-07T04:09:45.810Z;40.2627;29.146;11.5;4.4;mwr;;;;0.88;us;us200062gc;2016-08-18T00:36:33.040Z;4km ESE of Demirtas, Turkey;earthquake;2.5;4.8;;;reviewed;isk;isk
+2016-01-01T09:11:14.070Z;40.053;30.527;5;4.1;mb;;;;0.58;us;us10004apx;2016-03-28T22:09:31.040Z;2km NNE of Saricakaya, Turkey;earthquake;5;4.2;0.185;9;reviewed;isk;us
+2015-11-16T15:45:44.660Z;40.8751;28.7644;9.27;4.4;mb;;54;1.407;0.76;us;us10003ypf;2016-02-13T02:08:25.040Z;14km SSE of Yakuplu, Turkey;earthquake;4.8;3.5;0.239;5;reviewed;us;us
+2015-10-28T16:20:02.050Z;40.82;27.765;12.7;4.4;mb;;;;0.84;us;us2000408w;2016-01-22T23:41:21.040Z;23km SW of Marmaraereglisi, Turkey;earthquake;6;5;0.169;10;reviewed;isk;us
+2015-01-23T10:19:42.130Z;40.065;28.587;5;4.2;mb;;;;1.01;us;usc000tijv;2015-04-24T16:55:11.040Z;22km SE of Karacabey, Turkey;earthquake;4.4;4.2;0.146;13;reviewed;isk;us
+2014-12-16T09:02:13.760Z;40.148;27.074;8.8;4.4;mb;;;;1.15;us;usc000t797;2015-03-04T21:55:06.040Z;12km N of Can, Turkey;earthquake;5.9;7.2;0.381;2;reviewed;isk;us
+2014-10-22T17:11:05.620Z;40.4047;30.1188;7.6;4.3;mwr;;;;1.07;us;usb000spt6;2015-01-17T01:25:32.040Z;10km ENE of Osmaneli, Turkey;earthquake;3.2;4.8;0.089;12;reviewed;isk;us
+2014-08-03T22:22:45.390Z;40.6243;29.2073;10.04;4;mb;;40;1.524;0.92;us;usb000rzq2;2015-01-30T20:19:46.080Z;1km WNW of Kadikoy, Turkey;earthquake;;5;0.126;17;reviewed;us;us
+2014-07-03T05:04:46.230Z;40.2083;27.9282;12.1;4.6;mwr;;;;0.77;us;usc000rpuu;2014-10-04T19:59:52.000Z;16km SSW of Bandirma, Turkey;earthquake;;4.7;0.065;23;reviewed;isk;us
+2014-02-05T01:56:44.100Z;41.3725;28.6327;12;3.8;ml;;;;0.77;us;usc000mj1p;2014-04-22T18:30:05.000Z;8km NNW of Durusu, Turkey;earthquake;;5.4;;;reviewed;isk;isk
+2013-11-27T04:21:35.490Z;40.8478;27.9123;7.4;4;mb;;;;0.92;us;usb000l75g;2014-02-12T01:08:34.000Z;14km SSW of Marmaraereglisi, Turkey;earthquake;;5.3;0.258;;reviewed;isk;us
+2013-11-27T04:13:37.390Z;40.851;27.9198;9.6;4.5;mb;;;;0.82;us;usb000l74s;2015-01-31T03:07:26.904Z;13km SSW of Marmaraereglisi, Turkey;earthquake;;4.4;0.151;;reviewed;isk;us
+2013-08-29T09:03:24.190Z;40.4567;29.1227;3.2;3.3;ml;;;;2.36;us;usb000jd2z;2013-11-06T01:33:32.000Z;2km S of Kucukkumla, Turkey;earthquake;;6.7;;;reviewed;us_isk;us_isk
+2013-08-29T06:20:34.940Z;40.3423;27.4427;14.1;4.4;mb;;;;0.73;us;usb000jd1a;2013-11-06T01:33:32.000Z;21km NE of Biga, Turkey;earthquake;;2.6;0.379;;reviewed;us_isk;us
+2013-08-17T18:16:31.000Z;40.4095;29.1213;5.7;4.1;mb;;;;0.7;us;usb000j5ms;2013-10-19T02:41:48.000Z;4km SW of Gemlik, Turkey;earthquake;;6.3;0.198;;reviewed;us_isk;us
+2012-07-04T08:45:28.790Z;39.952;27.845;9;4.4;ml;36;69.2;;;us;usp000jnkh;2014-11-07T01:48:15.996Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2012-06-07T20:54:25.840Z;40.848;27.921;14.9;4.9;mb;208;30.6;;;us;usp000jmg2;2015-03-24T01:30:12.736Z;western Turkey;earthquake;;;;51;reviewed;isk;us
+2012-05-04T05:38:13.000Z;40.314;26.995;11.3;4.4;mb;69;27.6;;;us;usp000jjze;2014-11-07T01:47:44.158Z;western Turkey;earthquake;;;;3;reviewed;isk;us
+2011-08-16T17:30:06.730Z;40.439;28.895;5.1;4;ml;25;88.3;;;us;usp000j6ja;2014-11-07T01:45:37.345Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2011-07-25T17:57:20.610Z;40.802;27.752;16.4;5.1;mwc;198;34.2;;;us;usp000j5g9;2015-03-24T01:19:20.505Z;western Turkey;earthquake;;;;;reviewed;isk;gcmt
+2011-07-11T16:09:12.960Z;40.247;29.954;5;4.5;mb;144;38.8;;;us;usp000j4ns;2015-03-24T02:08:27.963Z;western Turkey;earthquake;;;;25;reviewed;isk;us
+2011-03-30T17:07:20.370Z;40.039;27.858;15.2;4.4;ml;37;44.9;;;us;usp000hyy5;2014-11-07T01:44:22.542Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2011-01-20T02:09:37.000Z;40.71;29.763;11.8;4.1;mb;57;48.6;;;us;usp000htcm;2014-11-07T01:43:27.831Z;western Turkey;earthquake;;;;4;reviewed;isk;us
+2010-12-31T20:57:36.720Z;40.597;27.367;8.6;4.5;ml;33;44.7;;;us;usp000hscm;2014-11-07T01:43:16.932Z;western Turkey;earthquake;;;;;reviewed;isk;the
+2010-10-03T17:49:02.960Z;40.847;28.11;11.2;4.4;mb;35;48.5;;;us;usp000hmjk;2014-11-07T01:42:38.493Z;western Turkey;earthquake;;;;5;reviewed;isk;us
+2010-06-11T10:56:44.000Z;40.43;28.925;12.1;4.3;ml;57;33;;;us;usp000hdud;2014-11-07T01:41:40.026Z;western Turkey;earthquake;;;;;reviewed;isk;the
+2010-05-15T14:08:23.000Z;41.183;30.121;8.9;4.3;ml;45;54;;;us;usp000hcss;2014-11-07T01:41:29.464Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2009-08-08T13:52:38.310Z;40.322;27.367;6.7;4.3;mb;82;40.2;;1.3;us;usp000h03t;2015-03-24T02:23:00.063Z;western Turkey;earthquake;;13.7;;4;reviewed;us;us
+2009-01-24T15:58:38.000Z;40.798;27.785;11.2;4.6;ml;56;37.7;;;us;usp000gt21;2014-11-07T01:38:14.799Z;western Turkey;earthquake;;;;;reviewed;isk;the
+2008-11-24T19:46:21.000Z;39.98;28.17;9.8;3.7;ml;7;115.7;;;us;usp000gpcg;2014-11-07T01:37:47.741Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2008-10-22T01:00:35.000Z;40.748;29.174;9.4;3.6;ml;10;123.8;;;us;usp000gksg;2014-11-07T01:37:31.232Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2008-10-05T06:04:05.000Z;40.65;29.017;8.5;4.1;ml;18;53.6;;;us;usp000gjc6;2014-11-07T01:37:23.826Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2008-07-17T01:43:01.000Z;40.25;28.027;6.5;3.3;ml;6;161.3;;;us;usp000gccu;2014-11-07T01:36:39.066Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2008-07-15T09:19:48.000Z;40.369;27.448;6;4.1;ml;18;93.4;;;us;usp000gc7w;2014-11-07T01:36:38.190Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2008-07-14T16:02:12.000Z;40.728;27.369;10.4;3.7;ml;23;175.1;;;us;usp000gc5k;2014-11-07T01:36:37.864Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2008-07-10T07:49:53.710Z;39.995;27.704;13.2;4.2;mb;199;18.1;;;us;usp000gbtg;2014-11-07T01:36:36.419Z;western Turkey;earthquake;;;;24;reviewed;isk;us
+2008-07-09T04:54:48.000Z;40.466;28.721;2.8;3.6;ml;5;199.5;;;us;usp000gbq2;2014-11-07T01:36:35.962Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2008-07-08T21:10:15.000Z;39.949;27.42;5.5;3.3;md;6;222.2;;;us;usp000gbp3;2014-11-07T01:36:35.863Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2008-06-29T08:28:01.000Z;40.459;29.021;5;3.9;md;14;112.3;;;us;usp000gaxf;2014-11-07T01:36:27.978Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2008-06-13T11:02:22.000Z;40.372;28.005;5.9;3.7;md;4;269.2;;;us;usp000g9f5;2014-11-07T01:36:20.619Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2008-06-05T00:42:21.000Z;40.189;26.902;3.3;3.1;md;8;223.6;;;us;usp000g8k5;2014-11-07T01:36:14.669Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2008-06-03T22:53:31.000Z;40.157;26.915;6.6;3.5;md;6;223;;;us;usp000g8gu;2014-11-07T01:36:14.351Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2008-06-03T06:59:21.000Z;40.174;26.913;9;3.8;ml;19;88.6;;;us;usp000g8fc;2014-11-07T01:36:13.945Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2008-06-02T17:24:21.600Z;40.17;26.99;28;3.4;md;8;227.3;;;us;usp000g8dm;2014-11-07T01:36:13.615Z;western Turkey;earthquake;;;;;reviewed;ath;ath
+2008-06-01T22:21:55.350Z;40.148;26.915;5;3.7;md;40;27.6;;;us;usp000g8bn;2014-11-07T01:36:12.890Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2008-06-01T03:35:24.000Z;40.213;26.928;7.8;4.1;mb;137;35.9;;;us;usp000g894;2014-11-07T01:36:11.458Z;western Turkey;earthquake;;;;44;reviewed;isk;us
+2008-05-19T10:18:16.000Z;40.5;27.8;10;4;ml;6;296.2;;;us;usp000g784;2014-11-07T01:36:03.319Z;western Turkey;earthquake;;;;;reviewed;ath;ath
+2008-05-17T23:43:25.000Z;40.393;27.094;6.5;3.6;md;7;241.4;;;us;usp000g743;2014-11-07T01:36:02.303Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2008-05-12T15:11:25.000Z;40.633;27.376;21.5;3.9;ml;15;87.7;;;us;usp000g6b4;2014-11-07T01:35:58.855Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2008-05-10T18:35:06.000Z;40.49;27.15;10;3.4;ml;7;233.2;;;us;usp000g60z;2014-11-07T01:35:54.958Z;western Turkey;earthquake;;;;;reviewed;ath;ath
+2008-04-12T03:25:20.000Z;40.375;27.424;8.7;3.5;ml;14;180.1;;;us;usp000g3qr;2014-11-07T01:35:36.165Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2008-03-26T11:49:03.000Z;40.54;26.81;10;3.7;ml;4;228.3;;;us;usp000g2dh;2014-11-07T01:35:19.486Z;western Turkey;earthquake;;;;;reviewed;ath;ath
+2008-03-23T19:46:56.000Z;40.137;26.968;9.6;3.1;md;4;253.8;;;us;usp000g25f;2014-11-07T01:35:18.458Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2008-03-17T04:24:47.000Z;40.242;27.986;9.2;3.6;md;7;135.7;;;us;usp000g1nk;2014-11-07T01:35:16.179Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2008-03-14T00:25:41.080Z;40.681;30.517;10;3.8;ml;19;168.4;;;us;usp000g1ec;2014-11-07T01:35:15.180Z;western Turkey;earthquake;;;;;reviewed;buc;isk
+2008-03-12T18:53:31.000Z;40.621;29.011;11.2;4.3;mb;176;24;;;us;usp000g1ba;2015-03-24T00:55:13.273Z;western Turkey;earthquake;;;;16;reviewed;isk;us
+2008-02-28T12:06:09.000Z;40.74;27.27;10;3.9;ml;10;195.3;;;us;usp000g078;2014-11-07T01:35:04.848Z;western Turkey;earthquake;;;;;reviewed;ath;ath
+2008-02-21T08:45:29.000Z;40.798;27.748;9.4;3.8;md;31;185.6;;;us;usp000fzga;2014-11-07T01:35:00.045Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2008-01-28T00:50:43.000Z;40.13;28.957;5;3.5;ml;13;96.2;;;us;usp000fxkr;2014-11-07T01:34:46.381Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2008-01-27T18:55:43.000Z;40.801;27.742;9;3.3;md;8;209;;;us;usp000fxk6;2014-11-07T01:34:46.335Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2007-12-14T01:43:52.000Z;40.475;27.114;8.6;3.6;md;14;154.8;;;us;usp000fudu;2014-11-07T01:34:25.317Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2007-12-11T06:03:10.670Z;40.862;28.163;5;3;md;23;52.4;;;us;usp000fu89;2014-11-07T01:34:23.675Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2007-12-10T11:39:06.000Z;40.805;31.031;4.8;3.6;ml;13;81.9;;;us;usp000fu6j;2014-11-07T01:34:23.429Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2007-12-09T03:20:09.000Z;40.375;27.413;15.8;3.7;md;8;156.7;;;us;usp000fu36;2014-11-07T01:34:22.570Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2007-12-07T04:40:11.000Z;41.679;28.476;8.2;3.4;md;8;285.8;;;us;usp000ftz4;2014-11-07T01:34:22.063Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2007-11-29T09:29:30.480Z;40.604;27.429;4.7;3.4;md;4;201.8;;;us;usp000fthc;2014-11-07T01:34:15.957Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2007-10-25T11:02:32.390Z;40.851;28.694;5.4;2.7;md;13;66.2;;;us;usp000fr85;2014-11-07T01:33:59.305Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2007-10-10T12:16:50.000Z;40.284;28.022;4.8;3.5;md;4;264.8;;;us;usp000fq8q;2014-11-07T01:33:53.415Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2007-10-08T14:06:01.000Z;40.725;27.417;8;3.7;md;5;261.6;;;us;usp000fq4h;2014-11-07T01:33:52.141Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2007-08-18T07:37:39.900Z;40.569;27.01;18.6;4;ml;20;164.9;;;us;usp000fk3m;2014-11-07T01:33:18.824Z;western Turkey;earthquake;;;;;reviewed;the;the
+2007-08-11T23:26:25.000Z;40.373;27.498;14;3.3;md;4;253.1;;;us;usp000fjeq;2014-11-07T01:33:14.941Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2007-08-09T23:05:32.380Z;40.935;30.754;7.1;2.8;md;12;152.7;;;us;usp000fj9t;2014-11-07T01:33:13.848Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2007-08-01T19:03:09.850Z;40.754;30.082;10;3.9;ml;14;106.3;;1.06;us;usp000fhmg;2014-11-07T01:33:09.354Z;western Turkey;earthquake;;;;;reviewed;us;isk
+2007-08-01T18:57:16.000Z;40.624;27.258;4.9;3.5;md;7;254.2;;;us;usp000fhmf;2014-11-07T01:33:09.350Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2007-07-18T16:51:13.000Z;39.992;27.684;6.9;3.3;md;21;83.5;;;us;usp000fgjp;2014-11-07T01:32:59.930Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2007-07-10T04:06:57.000Z;40.364;27.045;8.5;3;md;4;255.5;;;us;usp000ffwr;2014-11-07T01:32:56.143Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2007-07-09T18:26:51.500Z;40.42;27.83;9;3.5;md;5;262.9;;;us;usp000ffvr;2014-11-07T01:32:56.035Z;western Turkey;earthquake;;;;;reviewed;ath;ath
+2007-06-06T08:15:27.000Z;40.399;27.449;6.2;3.5;md;4;252.4;;;us;usp000fdfq;2014-11-07T01:32:39.669Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2007-05-27T19:43:02.000Z;40.729;27.368;6.6;3.3;ml;7;198.6;;;us;usp000fcvx;2014-11-07T01:32:32.687Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2007-05-22T20:40:13.000Z;40.62;26.95;10;3.4;ml;5;231.8;;;us;usp000fch7;2014-11-07T01:32:30.822Z;western Turkey;earthquake;;;;;reviewed;ath;ath
+2007-05-10T12:01:43.120Z;40.654;29.007;5.5;2.8;md;17;48.5;;;us;usp000fbp8;2014-11-07T01:32:26.474Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2007-05-08T04:30:06.000Z;40.817;27.512;6.5;3.3;md;4;288.6;;;us;usp000fbgv;2014-11-07T01:32:25.719Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2007-03-17T14:10:56.900Z;40.071;27.726;8;2.7;md;8;179.4;;;us;usp000f6vs;2014-11-07T01:31:53.136Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2007-02-16T01:12:15.000Z;40.415;27.629;14;3.4;md;8;246;;;us;usp000f4y2;2014-11-07T01:31:38.249Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2007-02-10T12:55:51.570Z;40.576;28.358;16.6;2.8;md;7;88;;;us;usp000f4mj;2014-11-07T01:31:36.324Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2007-02-08T13:18:16.930Z;40.84;28.709;10.7;2.8;md;7;142.3;;;us;usp000f4ge;2014-11-07T01:31:35.684Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2007-02-06T01:03:24.770Z;40.918;30.841;5.9;3.5;ml;40;91.3;;;us;usp000f4br;2014-11-07T01:31:35.025Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2007-02-05T11:43:59.880Z;40.771;27.41;10.8;3.7;md;33;52.7;;;us;usp000f4aq;2014-11-07T01:31:34.859Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2007-01-28T18:06:59.000Z;40.586;28.39;6.4;4;ml;31;47.8;;;us;usp000f3u8;2014-11-07T01:31:28.526Z;western Turkey;earthquake;;;;;reviewed;isk;the
+2007-01-25T19:42:46.000Z;40.446;27.931;10;3.5;md;9;224.1;;;us;usp000f3ke;2014-11-07T01:31:27.387Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2007-01-22T11:50:56.340Z;40.219;29.66;12.1;2.7;md;14;69.7;;;us;usp000f3a4;2014-11-07T01:31:26.369Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2007-01-14T16:35:48.720Z;40.714;27.483;10;3.9;md;16;89.9;;0.71;us;usp000f2ju;2014-11-07T01:31:22.744Z;western Turkey;earthquake;;;;;reviewed;us;ath
+2007-01-14T08:27:45.510Z;40.702;29.156;13.2;2.7;md;8;83.7;;;us;usp000f2hf;2014-11-07T01:31:22.607Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2007-01-08T23:33:22.700Z;40.42;28.99;5.4;3.1;md;20;52.1;;;us;usp000f20c;2014-11-07T01:31:20.108Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-12-31T04:15:24.400Z;40.489;29.167;5;2.6;md;9;87.7;;;us;usp000f1d9;2014-11-07T01:31:13.531Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-12-30T19:25:11.500Z;40.474;27.677;10;2.5;md;7;167.8;;;us;usp000f1bv;2014-11-07T01:31:13.372Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-12-30T16:48:31.300Z;40.321;28.052;4;2.6;md;5;176.9;;;us;usp000f1bf;2014-11-07T01:31:13.312Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-12-28T07:04:04.900Z;40.447;30.31;7;2.8;md;10;140.5;;;us;usp000f165;2014-11-07T01:31:12.753Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-12-25T02:37:52.100Z;40.431;28.983;14;2.5;md;6;161.8;;;us;usp000f0y0;2014-11-07T01:31:11.297Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-12-24T09:14:16.500Z;40.438;28.802;17;2.6;md;6;156.5;;;us;usp000f0w6;2014-11-07T01:31:11.083Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-12-24T05:14:40.100Z;40.037;29.034;5;2.5;md;5;168.4;;;us;usp000f0vv;2014-11-07T01:31:11.042Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-12-19T19:15:37.000Z;40.391;28.321;11.1;4.6;mb;25;84.6;;;us;usp000f0k6;2014-11-07T01:31:10.032Z;western Turkey;earthquake;;;;1;reviewed;isk;us
+2006-12-14T07:54:18.000Z;40.54;26.82;10;3.6;ml;6;228.5;;;us;usp000f06c;2014-11-07T01:31:08.252Z;western Turkey;earthquake;;;;;reviewed;ath;ath
+2006-12-07T22:22:30.240Z;40.294;27.992;11;3.6;md;31;40.8;;;us;usp000ezrj;2014-11-07T01:31:05.988Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2006-12-05T08:10:27.000Z;40.109;27.035;5;2.6;md;5;162;;;us;usp000ezjn;2014-11-07T01:31:05.227Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-12-05T07:00:09.970Z;40.342;28.531;23.4;2.8;md;13;60.7;;;us;usp000ezjf;2014-11-07T01:31:05.205Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-11-22T01:30:10.920Z;40.808;27.754;20;3.6;md;26;83.8;;;us;usp000eygj;2014-11-07T01:30:55.480Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2006-11-21T09:14:11.110Z;40.847;31.294;5.3;3.8;ml;34;67.5;;;us;usp000eyew;2014-11-07T01:30:55.318Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-11-12T07:44:22.680Z;40.23;27.986;8.9;3;md;13;90.4;;;us;usp000ex78;2014-11-07T01:30:48.223Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-11-04T02:56:35.000Z;40.283;28.04;12.1;2.9;ml;6;288.4;;;us;usp000ewkj;2014-11-07T01:30:44.942Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-10-28T15:28:26.000Z;40.642;29.233;5.6;3.3;ml;11;229.3;;;us;usp000ew6f;2014-11-07T01:30:38.502Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-10-25T11:56:03.840Z;40.423;28.996;14.6;3.7;ml;26;68.1;;;us;usp000ew07;2014-11-07T01:30:37.798Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-10-25T11:12:07.020Z;40.468;29.064;15.8;2.9;ml;8;130.2;;;us;usp000ew03;2014-11-07T01:30:37.789Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-10-25T00:56:55.000Z;40.408;29.004;10.3;3.9;md;20;95.7;;;us;usp000evyy;2014-11-07T01:30:37.668Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2006-10-24T16:06:43.500Z;40.69;27.35;46;3.6;md;9;227.9;;;us;usp000evy5;2014-11-07T01:30:37.577Z;western Turkey;earthquake;;;;;reviewed;ath;ath
+2006-10-24T14:00:21.670Z;40.424;29.107;9.3;5;mwc;227;29.8;;1.15;us;usp000evxq;2016-11-10T01:30:07.540Z;western Turkey;earthquake;;;;;reviewed;us;gcmt
+2006-10-24T09:22:29.780Z;40.789;27.503;21.2;2.9;md;8;90.8;;;us;usp000evx8;2014-11-07T01:30:37.492Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-10-24T08:55:28.360Z;40.265;28.003;15.1;3;md;12;89.5;;;us;usp000evx5;2014-11-07T01:30:37.485Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-10-21T07:30:36.000Z;40.288;28.001;8.4;3.7;md;8;110;;;us;usp000evpc;2014-11-07T01:30:36.628Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2006-10-20T18:15:26.140Z;40.236;28.059;10;4.8;mb;276;21.6;;1.28;us;usp000evmd;2015-03-24T01:46:12.587Z;western Turkey;earthquake;;0;;79;reviewed;us;us
+2006-10-12T18:12:44.200Z;40.28;26.92;7;3.7;md;5;215.8;;;us;usp000ev16;2014-11-07T01:30:33.298Z;western Turkey;earthquake;;;;;reviewed;ath;ath
+2006-08-18T09:16:09.000Z;39.956;26.771;10.4;3.5;md;17;181.8;;;us;usp000er81;2014-11-07T01:29:59.541Z;near the coast of western Turkey;earthquake;;;;;reviewed;isk;ath
+2006-08-01T21:40:37.000Z;40.776;28.013;11.6;3.7;md;15;133.1;;;us;usp000eq1j;2014-11-07T01:29:52.351Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2006-06-30T14:41:14.600Z;39.999;28.612;18;2.5;md;4;338.8;;;us;usp000emn2;2014-11-07T01:29:30.358Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-06-28T19:24:03.500Z;40.792;27.702;14;2.9;md;18;56.7;;;us;usp000emgp;2014-11-07T01:29:29.759Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-06-27T21:22:09.700Z;40.79;27.686;20;2.7;md;11;91;;;us;usp000emem;2014-11-07T01:29:29.520Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-06-27T12:43:54.700Z;40.79;27.485;5;2.8;md;14;90.7;;;us;usp000emd4;2014-11-07T01:29:29.205Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-06-27T12:04:16.900Z;40.814;27.691;8;2.6;md;9;100.7;;;us;usp000emd3;2014-11-07T01:29:29.204Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-06-27T00:23:32.900Z;40.8;27.697;15;3.3;md;18;91.9;;;us;usp000emc3;2014-11-07T01:29:28.944Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2006-06-26T20:05:09.600Z;40.818;27.682;12;2.7;md;12;93.8;;;us;usp000embp;2014-11-07T01:29:28.911Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-05-29T16:57:25.000Z;40.288;27.303;11.6;3.8;md;21;177.4;;;us;usp000ej8e;2014-11-07T01:29:12.782Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2006-05-29T09:10:23.010Z;40.34;29.138;13.9;2.9;md;15;73.3;;;us;usp000ej7n;2014-11-07T01:29:12.667Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-04-27T13:15:42.580Z;40.612;29.256;6.7;2.8;md;11;198.2;;;us;usp000efmc;2014-11-07T01:28:55.508Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-04-27T11:56:30.290Z;40.613;29.284;7.2;2.8;md;7;239;;;us;usp000efm8;2014-11-07T01:28:55.501Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-04-17T11:25:46.450Z;40.207;27.696;15.7;2.9;md;14;74.5;;;us;usp000eerq;2014-11-07T01:28:51.206Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-03-28T13:07:00.670Z;40.566;28.12;12.8;3.9;md;30;47.1;;;us;usp000ed4d;2014-11-07T01:28:36.372Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2006-03-16T10:03:30.880Z;40.686;30.321;12.5;3.3;md;9;143.7;;;us;usp000ec97;2014-11-07T01:28:32.092Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-03-16T10:01:09.270Z;40.699;30.326;19.3;3.1;md;10;144.5;;;us;usp000ec96;2014-11-07T01:28:32.091Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-03-15T19:46:08.800Z;40.16;27.66;10;3.6;md;5;207.7;;;us;usp000ec7z;2014-11-07T01:28:31.984Z;western Turkey;earthquake;;;;;reviewed;ath;ath
+2006-02-10T18:58:50.000Z;40.752;30.618;12.6;3.2;md;10;203.6;;;us;usp000e9we;2014-11-07T01:28:17.878Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2006-02-08T05:24:25.870Z;40.69;30.349;10.7;3.8;md;26;67.6;;;us;usp000e9rj;2014-11-07T01:28:17.393Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2006-02-08T04:07:41.620Z;40.704;30.352;8.8;4.6;mb;75;61.3;;;us;usp000e9rd;2014-11-07T01:28:17.355Z;western Turkey;earthquake;;;;8;reviewed;isk;us
+2006-01-13T17:08:58.000Z;40.371;27.111;6.3;3.4;md;30;201.6;;;us;usp000e865;2014-11-07T01:28:06.179Z;western Turkey;earthquake;;;;;reviewed;isk;ath
+2005-12-28T15:41:47.000Z;40.477;29.158;5;2.5;md;5;150.3;;;us;usp000e73r;2014-11-07T01:27:57.865Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2005-12-26T14:03:05.600Z;40.245;29.632;25;2.8;md;10;88.2;;;us;usp000e6yr;2014-11-07T01:27:57.263Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2005-12-26T04:08:25.400Z;40.392;27.608;16;2.8;md;16;66.6;;;us;usp000e6x9;2014-11-07T01:27:57.094Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2005-12-24T22:49:45.600Z;40.796;27.652;28;2.6;md;6;150.7;;;us;usp000e6t6;2014-11-07T01:27:56.395Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2005-12-24T10:12:34.700Z;40.664;30.695;27;2.7;md;6;146.7;;;us;usp000e6s7;2014-11-07T01:27:56.276Z;western Turkey;earthquake;;;;;reviewed;isk;isk
+2005-12-24T01:54:37.200Z;40.242;29.012;5;2.9;md;14;68.4;;;us;usp000e6rc;2014-11-07T01:27:56.187Z;western Turkey;earthquake;;;;;reviewed;isk;isk

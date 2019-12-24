@@ -19,7 +19,7 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
         super(Ui, self).__init__(parent)
         self.setupUi(self)
         #self.showFullScreen()
-        self.showMaximized()
+        #self.showMaximized()
         #self.setWindowFlags(
         #QtCore.Qt.Window |
         #QtCore.Qt.CustomizeWindowHint |
@@ -38,10 +38,13 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
             "Are you sure to quit?", QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
 
         if reply == QtWidgets.QMessageBox.Yes:
-            self.pre_eq_city.vtk_interactor.shutDownVTK()
-            self.post_eq_city.vtk_interactor.shutDownVTK()
-
-            event.accept()
+            try:
+                self.pre_eq_city.vtk_interactor.shutDownVTK()
+                self.post_eq_city.vtk_interactor.shutDownVTK()
+            except:
+                pass
+            else:
+                event.accept()
         else:
             event.ignore()
 
@@ -136,7 +139,13 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
     #START EQ MAP FUNCTIONS
     def set_mapcanvas(self):
         Ui_eqmap.set_mapcanvas(self)
-    #END EQ MAP FUNCTIONS
+    
+    def config_eq_locs(self):
+        Ui_eqmap.config_eq_locs(self)
+
+    def selection_changes(self):
+        Ui_eqmap.selection_changes(self)
+     #END EQ MAP FUNCTIONS
 
 
 

@@ -92,20 +92,27 @@ def set_app_style(_app):
 
 
 if __name__=='__main__':
+
+    
+
     app = QtWidgets.QApplication(sys.argv)
     # start application of dark theme
     set_app_style(app)
     # end application of dark theme
     
     window = Ui_main.Ui()
-    #window.showMaximized()
+
+    
+    edit=window.textEdit_Log
+    sys.stdout = OutLog( edit, sys.stdout)
+    window.showMaximized()
+
+    window.set_mapcanvas()
+    window.config_eq_locs()
 
     
 
     window.show_table_widget()
-
-    
-    
     pre_frame = window.preFrame
     vl=window.prevtkLayout
     prevtkWidget = QVTKRenderWindowInteractor(pre_frame)
@@ -177,14 +184,13 @@ if __name__=='__main__':
     window.legend_layout.addWidget(window.legend_table)
     
     
+    
 
 
+    
 
-    window.set_mapcanvas()
 
-
-    #edit=window.textEdit_Log
-    #sys.stdout = OutLog( edit, sys.stdout)
+    
     
 
 
