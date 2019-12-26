@@ -14,9 +14,12 @@ from numpy import genfromtxt
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
-
-
+from sklearn.preprocessing import minmax_scale
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+from geopy.distance import geodesic
     
+from PyQt5 import QtCore 
 
 class MapCanvas(FigureCanvas):
     def __init__(self, parent=None, width=8, height=4, dpi=100):
@@ -40,6 +43,7 @@ class MapCanvas(FigureCanvas):
         #self.geomap.etopo()        
 
         self.fig.tight_layout()
+        self.fig.patch.set_facecolor('black')
         self.axes.autoscale(enable=True,axis='both',tight=True)
         self.fig.tight_layout()
         self.nav_widget=NavigationToolbar(self,parent)
@@ -78,81 +82,246 @@ def set_mapcanvas(self):
 
 def config_eq_locs(self):
 
+    self.lineEdit.setText("40.98549606")
+    self.lineEdit_2.setText("29.03533319")
+    self.lineEdit.setReadOnly(True)
+    self.lineEdit_2.setReadOnly(True)
+    
+    self.orig=[float(self.lineEdit.text()),float(self.lineEdit_2.text())]
+    x, y = self.mapcanvas.geomap(self.orig[1], self.orig[0])
+    origin_marker=self.mapcanvas.geomap.scatter(x, y, marker="$City$", s=250, color="red", zorder=10, alpha=0.9)
+    self.mapcanvas.draw()
+
+
     self.additionals=False
     self.annots=[]
-    
-    eqsfilename=".\\eq_db\\query_eqs_2005_2019.csv"
-    
-    eqsdata=pd.read_csv(eqsfilename, delimiter=';').to_dict()
-
-    
-    size_scale=10
-    lons=list(eqsdata['longitude'].values())
-    lats=list(eqsdata['latitude'].values())
-    mags_s=[float(v)*size_scale for v in eqsdata['mag'].values()]
-    mags=[float(v) for v in eqsdata['mag'].values()]
-    #cm = matplotlib.cm.get_cmap('viridis')
-    x, y = self.mapcanvas.geomap(lons, lats)
-    sc=self.mapcanvas.geomap.scatter(x, y, marker="o", s=mags_s, alpha=0.9, cmap='Oranges', c=mags)
+    self.cluster_annots=[]
+    self.eq_distlines=[]
+    eqsfilename=".\\eq_db\\query_eqs_1500_2019.csv"
+    self.eqsdata=pd.read_csv(eqsfilename, delimiter=',').to_dict()
 
 
-    
-    divider = make_axes_locatable(self.mapcanvas.axes)
-    cax = divider.append_axes('right', size='5%', pad=0.15)
-    cbar=self.mapcanvas.fig.colorbar(sc,cax=cax)
-    cbar.set_label('Earthquaqe Magnitude', rotation=270,horizontalalignment='center', labelpad=10)
+    self.eq_times=list(self.eqsdata['time'].values())
+    self.eq_lons=list(self.eqsdata['longitude'].values())
+    self.eq_lats=list(self.eqsdata['latitude'].values())
+    self.eq_mags=[float(v) for v in self.eqsdata['mag'].values()]
+    self.eq_depths=[float(v) for v in self.eqsdata['depth'].values()]
+        
+    numberofclusters=11
+    self.cluster_labels=self.cluster_eqs(numberofclusters)
+    #pprint.pprint(cluster_labels)
 
-    times=[datetime.strptime((v.split("T")[0]+" "+v.split("T")[1].split(".")[0]), '%Y-%m-%d %H:%M:%S') for v in eqsdata['time'].values()]
-    
+    self.sc=False
+    self.cbar_occurence=-1    
+
+    times=[datetime.strptime((v.split("T")[0]+" "+v.split("T")[1].split(".")[0]), '%Y-%m-%d %H:%M:%S') for v in self.eqsdata['time'].values()]
     min_date=str(min(times))
     minqdate = QtCore.QDateTime.fromString(min_date, 'yyyy-M-d hh:mm:ss')
     self.dateTimeEdit.setDateTime(minqdate)
-
+    self.dateTimeEdit.setReadOnly(True)
     max_date=str(max(times))
     maxqdate = QtCore.QDateTime.fromString(max_date, 'yyyy-M-d hh:mm:ss')
     self.dateTimeEdit_2.setDateTime(maxqdate)
+    self.dateTimeEdit_2.setReadOnly(True)
 
-    self.tableWidget_2.setColumnCount(4)
-    self.tableWidget_2.setRowCount(len(times))
-    self.tableWidget_2.show()
-    self.tableWidget_2.setHorizontalHeaderLabels(["DateTime","Mag.","Lat.","Log"])
+    #start clusters table 
+    self.eq_checkboxes={}
+    self.eq_clusters={}
+    for c in range(numberofclusters):   
+        cluster_mags=numpy.array([self.eq_mags[ci] for ci in range(len(self.cluster_labels)) if self.cluster_labels[ci]==c])
+        cluster_depths=numpy.array([self.eq_depths[ci] for ci in range(len(self.cluster_labels)) if self.cluster_labels[ci]==c])
+        cluster_lats=numpy.array([self.eq_lats[ci] for ci in range(len(self.cluster_labels)) if self.cluster_labels[ci]==c])
+        cluster_lons=numpy.array([self.eq_lons[ci] for ci in range(len(self.cluster_labels)) if self.cluster_labels[ci]==c])
+        max_cluster_mags=round(max(cluster_mags),2)
+        std_cluster_mags=round(numpy.std(cluster_mags),2)
+        std_cluster_depths=round(numpy.std(cluster_depths),2)
+        mean_cluster_mags=round(numpy.mean(cluster_mags),2)
+        mean_cluster_depths=round(numpy.mean(cluster_depths),2)
+        mean_cluster_lats=round(numpy.mean(cluster_lats),2)
+        mean_cluster_lons=round(numpy.mean(cluster_lons),2)
+
+        here=(mean_cluster_lats,mean_cluster_lons)
+        dist=round(geodesic(self.orig,here).kilometers,2)
+        current_res=[c, len(cluster_mags), dist, max_cluster_mags, mean_cluster_mags, std_cluster_mags, mean_cluster_depths, std_cluster_depths, mean_cluster_lats, mean_cluster_lons]
+        self.eq_clusters[c]=current_res
 
 
-    #self.checkboxes={}    
-    for j in range(len(times)):
-        #self.checkboxes[j]=QtWidgets.QCheckBox()
-        #self.checkboxes[j].setCheckState(False)
-        #self.tableWidget_2.setCellWidget(j, 0, self.checkboxes[j])
-        self.tableWidget_2.setItem(j, 0, QtWidgets.QTableWidgetItem(str(times[j])))
-        self.tableWidget_2.setItem(j, 1, QtWidgets.QTableWidgetItem(str(mags[j])))
-        self.tableWidget_2.setItem(j, 2, QtWidgets.QTableWidgetItem(str(lats[j])))
-        self.tableWidget_2.setItem(j, 3, QtWidgets.QTableWidgetItem(str(lons[j])))
+    self.tableWidget_3.setColumnCount(10)
+    self.tableWidget_3.setRowCount(numberofclusters)
+    self.tableWidget_3.show()
+    self.tableWidget_3.setHorizontalHeaderLabels(["cluster-id", "#events","Distance2Orig","Max Mag.","Mean Mag.","Std. Mag.","Mean Depth","Std. Depth", "Mean Lat.", "Mean Lon."])
+    for j in range(len(self.eq_clusters)):
+        for i in range(10):
+            item = QtWidgets.QTableWidgetItem()
+            item.setData(QtCore.Qt.DisplayRole,float(self.eq_clusters[j][i]))
+            self.tableWidget_3.setItem(j, i, item)
+            #self.tableWidget_3.setItem(j, i, QtWidgets.QTableWidgetItem(self.eq_clusters[j][i])))
 
+
+    pprint.pprint(self.eq_clusters)
+    self.tableWidget_3.setSortingEnabled(True)
+    #self.tableWidget_3.resizeColumnsToContents()
+
+    self.checkall_pushButton.clicked.connect(self.clickall_eqclusters)
+    self.uncheckall_pushButton.clicked.connect(self.unclickall_eqclusters)
+    self.tableWidget_3.cellClicked.connect(self.eq_cl_cell_was_clicked)
+    #self.tableWidget_3.itemSelectionChanged.connect(self.selection_changes_cl)
 
 
     self.tableWidget_2.setSortingEnabled(True)
-    self.tableWidget_2.itemSelectionChanged.connect(self.selection_changes)
+    self.tableWidget_2.cellClicked.connect(self.eq_events_cell_was_clicked)
+    #self.tableWidget_2.itemSelectionChanged.connect(self.selection_changes)
+
+
+def fill_eq_events_table(self, mags_s):
+    self.tableWidget_2.clear()
+    times=[self.eq_times[i] for i in range(len(mags_s)) if mags_s[i]!=0]
+    mags=[self.eq_mags[i] for i in range(len(mags_s)) if mags_s[i]!=0]
+    lats=[self.eq_lats[i] for i in range(len(mags_s)) if mags_s[i]!=0]
+    lons=[self.eq_lons[i] for i in range(len(mags_s)) if mags_s[i]!=0]
+    cluster_labels=[self.cluster_labels[i] for i in range(len(mags_s)) if mags_s[i]!=0]
+
+    self.tableWidget_2.setColumnCount(5)
+    self.tableWidget_2.setRowCount(len(times))
+    self.tableWidget_2.show()
+    self.tableWidget_2.setHorizontalHeaderLabels(["DateTime","Mag.","Lat.","Lon.","Cluster"])
+    for j in range(len(times)):
+        #self.tableWidget_2.setItem(j, 0, QtWidgets.QTableWidgetItem(str(times[j])))
+        #self.tableWidget_2.setItem(j, 1, QtWidgets.QTableWidgetItem(str(mags[j])))
+        #self.tableWidget_2.setItem(j, 2, QtWidgets.QTableWidgetItem(str(lats[j])))
+        #self.tableWidget_2.setItem(j, 3, QtWidgets.QTableWidgetItem(str(lons[j])))
+        #self.tableWidget_2.setItem(j, 4, QtWidgets.QTableWidgetItem(str(cluster_labels[j])))
+
+        item = QtWidgets.QTableWidgetItem()
+        item.setData(QtCore.Qt.DisplayRole,str(times[j]))
+        self.tableWidget_2.setItem(j, 0, item)
+
+        item = QtWidgets.QTableWidgetItem()
+        item.setData(QtCore.Qt.DisplayRole,float(mags[j]))
+        self.tableWidget_2.setItem(j, 1, item)
+
+        item = QtWidgets.QTableWidgetItem()
+        item.setData(QtCore.Qt.DisplayRole,float(lats[j]))
+        self.tableWidget_2.setItem(j, 2, item)
+
+        item = QtWidgets.QTableWidgetItem()
+        item.setData(QtCore.Qt.DisplayRole,float(lons[j]))
+        self.tableWidget_2.setItem(j, 3, item)
+
+        item = QtWidgets.QTableWidgetItem()
+        item.setData(QtCore.Qt.DisplayRole,int(cluster_labels[j]))
+        self.tableWidget_2.setItem(j, 4, item)
+
+
+
+def selection_changes_cl(self):
+    self.cbar_occurence+=1
+    if type(self.sc)!=bool:
+        self.sc.remove()
+    selecteds=[int(idx.sibling(idx.row(),0).data()) for idx in self.tableWidget_3.selectionModel().selectedRows()]
+    mags_s=[]
+    size_scale=10
+    for v in range(len(self.eqsdata['mag'].keys())):
+        if self.cluster_labels[v] in selecteds:
+            mags_s.append(size_scale)
+        else:
+            mags_s.append(0)
+    x, y = self.mapcanvas.geomap(self.eq_lons, self.eq_lats)
+    self.sc=self.mapcanvas.geomap.scatter(x, y, marker="o", s=mags_s, alpha=0.9, cmap='rainbow', c=self.cluster_labels)
+    if self.cbar_occurence==0:
+        divider = make_axes_locatable(self.mapcanvas.axes)
+        cax = divider.append_axes('right', size='5%', pad=0.15)
+        cax.tick_params(color="white", labelcolor="white")
+        cbar=self.mapcanvas.fig.colorbar(self.sc,cax=cax)
+        cbar.set_label('Eartquake Clusters', rotation=270,horizontalalignment='center', labelpad=10, color="white")
+    #self.mapcanvas.draw()
+    self.draw_cluster_annotations()
+    self.fill_eq_events_table(mags_s)
+    self.selection_changes()
+
+
+def draw_cluster_annotations(self):
+    selecteds=[[int(idx.sibling(idx.row(),0).data()),float(idx.sibling(idx.row(),8).data()),float(idx.sibling(idx.row(),9).data()),
+                int(idx.sibling(idx.row(),1).data()),float(idx.sibling(idx.row(),3).data()),float(idx.sibling(idx.row(),4).data()),
+                float(idx.sibling(idx.row(),2).data())] 
+                for idx in self.tableWidget_3.selectionModel().selectedRows()]
+    vals1=[float(v[2]) for v in selecteds]
+    vals0=[float(v[1]) for v in selecteds]
+    size=[float(200) for v in selecteds]
+    clusternames=["Cluster: "+str(v[0])+"\nPopulation: "+str(v[3])+"\nMean Mag: "+str(v[5])+"\nMax Mag: "+str(v[4])+"\nDist. to City: "+str(v[6]) for v in selecteds]
+    x, y = self.mapcanvas.geomap(vals1, vals0)
+    if len(self.cluster_annots)>0:
+        for annot in self.cluster_annots:
+            annot.remove()
+        for line in self.eq_distlines:
+            line.remove()
+    
+    self.cluster_annots=[]
+    self.eq_distlines=[]
+    additional_marker=self.mapcanvas.geomap.scatter(x, y, marker="+", s=size, color="white", zorder=10, alpha=0.7)
+    self.cluster_annots.append(additional_marker)
+    for i, (X, Y) in enumerate(zip(x, y), start=1):
+        annot=self.mapcanvas.axes.annotate(str(clusternames[i-1]), (X,Y), xytext=(23, 23), textcoords='offset points', color="white", arrowprops=dict(facecolor='white', shrink=0.005), size=9)
+        self.cluster_annots.append(annot)
+
+
+    #x, y = self.mapcanvas.geomap(self.orig[1], self.orig[0])
+    for v in range(len(vals0)):
+        line,=self.mapcanvas.geomap.plot([self.orig[1], vals1[v]],[self.orig[0],vals0[v]],linewidth=1, color="white",mfc='none', mec='k', latlon=True, linestyle=":")
+        self.eq_distlines.append(line)
+        
+    self.mapcanvas.draw()
+
+
+def clickall_eqclusters(self):
+    self.tableWidget_3.selectAll()
+    self.selection_changes_cl()
+
+def unclickall_eqclusters(self):
+    self.tableWidget_3.clearSelection()
+    self.selection_changes_cl()
+
+def eq_cl_cell_was_clicked(self, row, column):
+    self.tableWidget_3.selectRow(row)
+    self.selection_changes_cl()
+    
+
+def eq_events_cell_was_clicked(self, row, column):
+    self.tableWidget_2.selectRow(row)
+    self.selection_changes()
+
+
+def cluster_eqs(self, _numberofclusters):
+    mags=numpy.array(self.eq_mags)
+    lons=numpy.array(self.eq_lons)
+    lats=numpy.array(self.eq_lats)
+    depths=numpy.array(self.eq_depths)
+
+    self.normal_eqsdata=numpy.stack((mags, lons, lats, depths), axis = 1) 
+    self.normal_eqsdata = minmax_scale(self.normal_eqsdata, feature_range=(0,1), axis=0)
+
+    k_means = KMeans(n_clusters=_numberofclusters, random_state=0).fit(self.normal_eqsdata)
+    #pprint.pprint(list(k_means.labels_))
+    #print(_numberofclusters,k_means.inertia_)
+    ssc=silhouette_score(self.normal_eqsdata, k_means.labels_, metric = 'euclidean')
+    print(_numberofclusters, ssc)
+    return list(k_means.labels_)
+    #pprint.pprint(self.normal_eqsdata)
+
 
 def selection_changes(self):
-    #rows=[idx.row() for idx in self.tableWidget_2.selectionModel().selectedRows()]
-    vals=[[idx.sibling(idx.row(),2).data(),idx.sibling(idx.row(),3).data(),idx.sibling(idx.row(),0).data()] for idx in self.tableWidget_2.selectionModel().selectedRows()]
+    vals=[[idx.sibling(idx.row(),2).data(),idx.sibling(idx.row(),3).data(),idx.sibling(idx.row(),0).data(),idx.sibling(idx.row(),1).data()] for idx in self.tableWidget_2.selectionModel().selectedRows()]
     vals1=[float(v[1]) for v in vals]
     vals0=[float(v[0]) for v in vals]
-    datetim=[str(v[2]) for v in vals]
-    size=[float(200) for v in vals]
-    
-
-    
+    datetim=["date: "+str(v[2])+"\nmag: "+str(v[3]) for v in vals]
     x, y = self.mapcanvas.geomap(vals1, vals0)
-    #if self.additionals!=False:
     if len(self.annots)>0:
-        #self.additionals.remove()
         for annot in self.annots:
             annot.remove()
     
     self.annots=[]
     #self.additionals=self.mapcanvas.geomap.scatter(x, y, marker="v", s=size, color="white", zorder=10, alpha=0.7)
     for i, (X, Y) in enumerate(zip(x, y), start=1):
-        annot=self.mapcanvas.axes.annotate(str(datetim[i-1]), (X,Y), xytext=(5, 5), textcoords='offset points', color="white", arrowprops=dict(facecolor='white', shrink=0.005))
+        annot=self.mapcanvas.axes.annotate(str(datetim[i-1]), (X,Y), xytext=(0, -15), textcoords='offset points', color="white", arrowprops=dict(facecolor='white', shrink=0.005), size=8)
         self.annots.append(annot)
     self.mapcanvas.draw()

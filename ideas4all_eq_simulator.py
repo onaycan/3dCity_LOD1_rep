@@ -102,13 +102,16 @@ if __name__=='__main__':
     
     window = Ui_main.Ui()
 
-    
-    edit=window.textEdit_Log
-    sys.stdout = OutLog( edit, sys.stdout)
-    window.showMaximized()
 
     window.set_mapcanvas()
     window.config_eq_locs()
+    #window.showMaximized()
+    
+    edit=window.textEdit_Log
+    sys.stdout = OutLog( edit, sys.stdout)
+    
+
+    
 
     
 
@@ -183,8 +186,7 @@ if __name__=='__main__':
     window.legend_table=QtWidgets.QTableWidget()
     window.legend_layout.addWidget(window.legend_table)
     
-    
-    
+     
 
 
     

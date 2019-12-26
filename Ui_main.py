@@ -19,7 +19,7 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
         super(Ui, self).__init__(parent)
         self.setupUi(self)
         #self.showFullScreen()
-        #self.showMaximized()
+        self.showMaximized()
         #self.setWindowFlags(
         #QtCore.Qt.Window |
         #QtCore.Qt.CustomizeWindowHint |
@@ -29,6 +29,7 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
         #)
         #self.hide()
         #self.show()
+        #self.adjustSize()
         self.checked_items={'Building Blocks': 2, 'Buildings': 2, 'Panels': 2, 'Panel Facets': 2, 'Panel Beams': 2, 'Panel Girders': 2, 'Walls': 2, 'Wall Facets': 2, "Wall Columns" : 2, "Terrain" :2}
         self.numberoftimeintervals=0
 
@@ -142,9 +143,33 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
     
     def config_eq_locs(self):
         Ui_eqmap.config_eq_locs(self)
-
+    
+    def cluster_eqs(self, _numberofclusters):
+        retval=Ui_eqmap.cluster_eqs(self, _numberofclusters)
+        return retval
     def selection_changes(self):
         Ui_eqmap.selection_changes(self)
+
+    def selection_changes_cl(self):
+        Ui_eqmap.selection_changes_cl(self)
+
+    def clickall_eqclusters(self):
+        Ui_eqmap.clickall_eqclusters(self)
+    
+    def unclickall_eqclusters(self):
+        Ui_eqmap.unclickall_eqclusters(self)
+
+    def fill_eq_events_table(self, mags_s):
+        Ui_eqmap.fill_eq_events_table(self, mags_s)
+    
+    def eq_cl_cell_was_clicked(self, row, column):
+        Ui_eqmap.eq_cl_cell_was_clicked(self,row,column)
+
+    def eq_events_cell_was_clicked(self, row, column):
+        Ui_eqmap.eq_events_cell_was_clicked(self,row,column)
+
+    def draw_cluster_annotations(self):
+        Ui_eqmap.draw_cluster_annotations(self)
      #END EQ MAP FUNCTIONS
 
 
