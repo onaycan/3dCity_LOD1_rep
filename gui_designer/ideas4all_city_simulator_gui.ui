@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1482</width>
-    <height>1147</height>
+    <width>1000</width>
+    <height>1200</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -30,7 +30,7 @@
     <item row="0" column="0">
      <widget class="QWidget" name="widget_mainframe" native="true">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
         <horstretch>0</horstretch>
         <verstretch>6</verstretch>
        </sizepolicy>
@@ -1315,7 +1315,7 @@
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
-           <verstretch>1</verstretch>
+           <verstretch>2</verstretch>
           </sizepolicy>
          </property>
         </widget>
@@ -1330,7 +1330,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1482</width>
+     <width>1000</width>
      <height>21</height>
     </rect>
    </property>

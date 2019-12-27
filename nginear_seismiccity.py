@@ -97,10 +97,12 @@ if __name__=='__main__':
 
     app = QtWidgets.QApplication(sys.argv)
     # start application of dark theme
+    screen_rect = app.desktop().screenGeometry()
+    width, height = screen_rect.width(), screen_rect.height()
     set_app_style(app)
     # end application of dark theme
     
-    window = Ui_main.Ui()
+    window = Ui_main.Ui(width,height)
 
 
     window.set_mapcanvas()
@@ -187,7 +189,7 @@ if __name__=='__main__':
     window.legend_layout.addWidget(window.legend_table)
     
      
-
+    
 
     
 

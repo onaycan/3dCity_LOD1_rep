@@ -248,7 +248,7 @@ def draw_cluster_annotations(self):
     vals1=[float(v[2]) for v in selecteds]
     vals0=[float(v[1]) for v in selecteds]
     size=[float(200) for v in selecteds]
-    clusternames=["Cluster: "+str(v[0])+"\nPopulation: "+str(v[3])+"\nMean Mag: "+str(v[5])+"\nMax Mag: "+str(v[4])+"\nDist. to City: "+str(v[6]) for v in selecteds]
+    clusternames=["Cluster: "+str(v[0])+"\n#ofevents: "+str(v[3])+"\nMean Mag: "+str(v[5])+"\nMax Mag: "+str(v[4])+"\nDist. to City: "+str(v[6]) for v in selecteds]
     x, y = self.mapcanvas.geomap(vals1, vals0)
     if len(self.cluster_annots)>0:
         for annot in self.cluster_annots:

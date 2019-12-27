@@ -15,9 +15,10 @@ import Ui_eqmap
 
 
 class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
-    def __init__(self, parent=None):
+    def __init__(self, width, height, parent=None):
         super(Ui, self).__init__(parent)
         self.setupUi(self)
+        self.resize(width, height) # this in fact is not used, but can stay
         #self.showFullScreen()
         self.showMaximized()
         #self.setWindowFlags(
