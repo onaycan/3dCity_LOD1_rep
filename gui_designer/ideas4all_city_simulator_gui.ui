@@ -26,8 +26,8 @@
      <verstretch>8</verstretch>
     </sizepolicy>
    </property>
-   <layout class="QGridLayout" name="gridLayout_6">
-    <item row="0" column="0">
+   <layout class="QVBoxLayout" name="verticalLayout_21">
+    <item>
      <widget class="QWidget" name="widget_mainframe" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
@@ -524,7 +524,7 @@
                  </sizepolicy>
                 </property>
                 <property name="currentIndex">
-                 <number>0</number>
+                 <number>1</number>
                 </property>
                 <widget class="QWidget" name="simulation_tab">
                  <attribute name="title">
@@ -1194,15 +1194,32 @@
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_13">
                      <item>
+                      <widget class="QRadioButton" name="nr_radioButton">
+                       <property name="text">
+                        <string>Show Native Results</string>
+                       </property>
+                       <property name="checked">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QRadioButton" name="nv_radioButton">
+                       <property name="text">
+                        <string>Show Reserve Factor Results</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
                       <widget class="QGroupBox" name="groupBox_13">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                          <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
+                         <verstretch>1</verstretch>
                         </sizepolicy>
                        </property>
                        <property name="title">
-                        <string/>
+                        <string>FEM Native Results</string>
                        </property>
                        <layout class="QVBoxLayout" name="verticalLayout_17">
                         <item>
@@ -1229,19 +1246,28 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QGroupBox" name="groupBox_14">
+                      <widget class="QGroupBox" name="groupBox_19">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                          <horstretch>0</horstretch>
-                         <verstretch>3</verstretch>
+                         <verstretch>2</verstretch>
                         </sizepolicy>
                        </property>
                        <property name="title">
-                        <string>LegendView</string>
+                        <string>Reserve Factor Results</string>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_18">
+                       <layout class="QVBoxLayout" name="verticalLayout_20">
                         <item>
-                         <layout class="QVBoxLayout" name="legend_layout"/>
+                         <widget class="QTreeWidget" name="treeWidget_2">
+                          <column>
+                           <property name="text">
+                            <string notr="true">1</string>
+                           </property>
+                          </column>
+                         </widget>
                         </item>
                        </layout>
                       </widget>
@@ -1289,18 +1315,36 @@
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
+                   <verstretch>8</verstretch>
                   </sizepolicy>
                  </property>
                  <property name="title">
                   <string>PostRenderWindow</string>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_19">
+                 <layout class="QHBoxLayout" name="horizontalLayout_19">
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_14">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                      <horstretch>2</horstretch>
+                      <verstretch>4</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="title">
+                     <string>LegendView</string>
+                    </property>
+                    <layout class="QVBoxLayout" name="verticalLayout_18">
+                     <item>
+                      <layout class="QVBoxLayout" name="legend_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
                   <item>
                    <widget class="QFrame" name="postFrame">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                      <horstretch>0</horstretch>
+                      <horstretch>10</horstretch>
                       <verstretch>8</verstretch>
                      </sizepolicy>
                     </property>
@@ -1308,113 +1352,116 @@
                      <enum>QFrame::StyledPanel</enum>
                     </property>
                     <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
+                     <enum>QFrame::Sunken</enum>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_23">
+                    <property name="lineWidth">
+                     <number>3</number>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_11">
                      <item>
                       <layout class="QVBoxLayout" name="postvtkLayout"/>
                      </item>
                     </layout>
                    </widget>
                   </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="groupBox_10">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>2</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="title">
+                  <string>Simulation</string>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_12">
                   <item>
-                   <widget class="QGroupBox" name="groupBox_10">
-                    <property name="enabled">
-                     <bool>true</bool>
-                    </property>
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>1</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="title">
-                     <string>Simulation</string>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_12">
-                     <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_11">
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_16">
-                         <item>
-                          <widget class="QPushButton" name="runsimulation_pushButton">
-                           <property name="enabled">
-                            <bool>false</bool>
-                           </property>
-                           <property name="text">
-                            <string>RunSimulation to:</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QLabel" name="runfilename_label">
-                           <property name="enabled">
-                            <bool>false</bool>
-                           </property>
-                           <property name="frameShape">
-                            <enum>QFrame::StyledPanel</enum>
-                           </property>
-                           <property name="text">
-                            <string>TextLabel</string>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <widget class="QPushButton" name="run_pushButton">
-                         <property name="enabled">
-                          <bool>false</bool>
-                         </property>
-                         <property name="text">
-                          <string>RUN</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_15">
-                         <item>
-                          <widget class="QPushButton" name="loadsimulation_pushButton">
-                           <property name="enabled">
-                            <bool>true</bool>
-                           </property>
-                           <property name="text">
-                            <string> LoadSimulation from:</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QLabel" name="loadfilename_label">
-                           <property name="enabled">
-                            <bool>true</bool>
-                           </property>
-                           <property name="frameShape">
-                            <enum>QFrame::StyledPanel</enum>
-                           </property>
-                           <property name="text">
-                            <string>TextLabel</string>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <widget class="QPushButton" name="showresults_pushButton">
-                         <property name="enabled">
-                          <bool>false</bool>
-                         </property>
-                         <property name="text">
-                          <string>ShowResults</string>
-                         </property>
-                         <property name="flat">
-                          <bool>false</bool>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </item>
-                    </layout>
-                   </widget>
+                   <layout class="QVBoxLayout" name="verticalLayout_11">
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_16">
+                      <item>
+                       <widget class="QPushButton" name="runsimulation_pushButton">
+                        <property name="enabled">
+                         <bool>false</bool>
+                        </property>
+                        <property name="text">
+                         <string>RunSimulation to:</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="runfilename_label">
+                        <property name="enabled">
+                         <bool>false</bool>
+                        </property>
+                        <property name="frameShape">
+                         <enum>QFrame::StyledPanel</enum>
+                        </property>
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="run_pushButton">
+                      <property name="enabled">
+                       <bool>false</bool>
+                      </property>
+                      <property name="text">
+                       <string>RUN</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_15">
+                      <item>
+                       <widget class="QPushButton" name="loadsimulation_pushButton">
+                        <property name="enabled">
+                         <bool>true</bool>
+                        </property>
+                        <property name="text">
+                         <string> LoadSimulation from:</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="loadfilename_label">
+                        <property name="enabled">
+                         <bool>true</bool>
+                        </property>
+                        <property name="frameShape">
+                         <enum>QFrame::StyledPanel</enum>
+                        </property>
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="showresults_pushButton">
+                      <property name="enabled">
+                       <bool>false</bool>
+                      </property>
+                      <property name="text">
+                       <string>ShowResults</string>
+                      </property>
+                      <property name="flat">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
                   </item>
                  </layout>
                 </widget>
@@ -1430,7 +1477,7 @@
       </layout>
      </widget>
     </item>
-    <item row="1" column="0">
+    <item>
      <widget class="QGroupBox" name="groupBox_Log">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Ignored" vsizetype="Ignored">

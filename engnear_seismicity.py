@@ -96,49 +96,22 @@ if __name__=='__main__':
     
 
     app = QtWidgets.QApplication(sys.argv)
-    # start application of dark theme
     screen_rect = app.desktop().screenGeometry()
     width, height = screen_rect.width(), screen_rect.height()
     set_app_style(app)
-    # end application of dark theme
     
     window = Ui_main.Ui(width,height)
 
 
-    window.set_mapcanvas()
-    window.config_eq_locs()
-    #window.showMaximized()
-    
-    #edit=window.textEdit_Log
-    #sys.stdout = OutLog( edit, sys.stdout)
-    
-
-    
-
-    
-
+    #START PREPROCESSING TAB 
     window.show_table_widget()
     pre_frame = window.preFrame
-    vl=window.prevtkLayout
-    prevtkWidget = QVTKRenderWindowInteractor(pre_frame)
-    vl.addWidget(prevtkWidget)
-    window.manage_simparams()
-    pre_eq_city=cities.city("caferaga","pre-eq",prevtkWidget,"map_kadiköy_caferaga_small.osm","map_kadiköy_caferaga.json")
-    
-    
+    window.prevtkWidget = QVTKRenderWindowInteractor(pre_frame)
+    pre_eq_city=cities.city("caferaga","pre-eq",window.prevtkWidget,"map_kadiköy_caferaga_small.osm","map_kadiköy_caferaga.json")
     pre_eq_city.build_city()
-    
     pre_eq_city.set_interactor()
-
-    
-    window.show_tree_widget(pre_eq_city)
-    
-    window.EnableSelection_checkBox.stateChanged.connect(window.manage_selection_enablebox)
-    window.all_pushbutton.clicked.connect(window.manage_selection_box_all)
-    window.buildingBlocks_pushbutton.clicked.connect(window.manage_selection_box_bb)
-    window.append_pushbutton.clicked.connect(window.fill_table_widget)
-    window.configure_simulation_pushbutton.clicked.connect(window.configure_simulation)
-
+    window.pre_eq_city=pre_eq_city
+    window.setup_Ui_preproc()
     pre_eq_city.vtk_interactor.style = vtk_interaction.MouseInteractorHighLightActor(pre_eq_city.vtk_interactor, window)
     pre_eq_city.vtk_interactor.style.SetDefaultRenderer(pre_eq_city.vtk_interactor.ren)
     pre_eq_city.vtk_interactor.iren.SetInteractorStyle(pre_eq_city.vtk_interactor.style)
@@ -147,11 +120,15 @@ if __name__=='__main__':
     print("render window is rendered")
     pre_eq_city.vtk_interactor.iren.Initialize()
     pre_eq_city.vtk_interactor.iren.Start()
+    #END PREPROCESSING TAB
+
+
+    #START EQ MAP
+    window.setup_Ui_eqmap()
+    #END EQ MAP
+
     
-
-
-
-    # start postwindow
+    #START PROCESSING TAB
     post_frame = window.postFrame
     vpl=window.postvtkLayout
     postvtkWidget = QVTKRenderWindowInteractor(post_frame)
@@ -166,32 +143,19 @@ if __name__=='__main__':
     print("render window is rendered")
     post_eq_city.vtk_interactor.iren.Initialize()
     post_eq_city.vtk_interactor.iren.Start()
+    window.setup_Ui_proc()
+    #END PROCESSING TAB
 
 
 
+    #edit=window.textEdit_Log
+    #sys.stdout = OutLog( edit, sys.stdout)
 
     errOut = vtk.vtkFileOutputWindow()
     errOut.SetFileName("VTK Error Out.txt")
-    #vtkStdErrOut = vtk.vtkOutputWindow()
-    #vtkStdErrOut.SetInstance(errOut)
-
-    
 
 
-    window.runorloadcheckBox.stateChanged.connect(window.manage_runorload)
-    window.showresults_pushButton.clicked.connect(window.show_results)
-    window.run_pushButton.clicked.connect(window.runsimulation)
-    window.tensorresult_comboBox.addItem("Displacement")        
-    window.tensorresult_comboBox.addItem("Stress")
-    window.tensorresult_comboBox.addItem("Strain")
-    window.tensorresult_comboBox.setCurrentText("Displacement")
-    window.set_combobox_post_legend("Displacement")
-    window.scalarresult_comboBox.setCurrentText("Displacement Mag")
-    window.tensorresult_comboBox.currentTextChanged.connect(window.set_combobox_post_legend)
-    window.scalarresult_comboBox.currentTextChanged.connect(window.set_scalar_result)
-    window.legend_table=QtWidgets.QTableWidget()
-    window.legend_layout.addWidget(window.legend_table)
-    
+
      
     
 

@@ -9,6 +9,21 @@ import csv
 import matplotlib
 
 
+def setup_Ui_proc(self):
+    self.runorloadcheckBox.stateChanged.connect(self.manage_runorload)
+    self.showresults_pushButton.clicked.connect(self.show_results)
+    self.run_pushButton.clicked.connect(self.runsimulation)
+    self.tensorresult_comboBox.addItem("Displacement")        
+    self.tensorresult_comboBox.addItem("Stress")
+    self.tensorresult_comboBox.addItem("Strain")
+    self.tensorresult_comboBox.setCurrentText("Displacement")
+    self.set_combobox_post_legend("Displacement")
+    self.scalarresult_comboBox.setCurrentText("Displacement Mag")
+    self.tensorresult_comboBox.currentTextChanged.connect(self.set_combobox_post_legend)
+    self.scalarresult_comboBox.currentTextChanged.connect(self.set_scalar_result)
+    self.legend_table=QtWidgets.QTableWidget()
+    self.legend_layout.addWidget(self.legend_table)
+
 def manage_acc_buttons(self):
     if self.acc_checkbutton.isChecked():
         self.lat_pushButton.setEnabled(True)

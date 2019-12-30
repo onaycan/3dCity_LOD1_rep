@@ -60,6 +60,19 @@ class ColorButton(QtWidgets.QPushButton):
         #self.city_vtk.mapper_BuildingCells.ScalarVisibilityOn()
         self.city_vtk.renWin.Render()
 
+
+
+def setup_Ui_preproc(self):
+    vl=self.prevtkLayout
+    vl.addWidget(self.prevtkWidget)
+    self.manage_simparams()
+    self.show_tree_widget(self.pre_eq_city)
+    self.EnableSelection_checkBox.stateChanged.connect(self.manage_selection_enablebox)
+    self.all_pushbutton.clicked.connect(self.manage_selection_box_all)
+    self.buildingBlocks_pushbutton.clicked.connect(self.manage_selection_box_bb)
+    self.append_pushbutton.clicked.connect(self.fill_table_widget)
+    self.configure_simulation_pushbutton.clicked.connect(self.configure_simulation)
+
 def highlight_whole_city(self):
     _city=self.pre_eq_city
     _interactor=_city.vtk_interactor

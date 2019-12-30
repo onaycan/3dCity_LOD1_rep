@@ -36,7 +36,7 @@ class MapCanvas(FigureCanvas):
 
         self.geomap = Basemap(llcrnrlon=25.979530,llcrnrlat=40.015137,urcrnrlon=31.979530,urcrnrlat=42.015137,
              resolution='h', projection='cass', lat_0 = 41.015137, lon_0 = 28.979530, ax=self.axes, epsg=3857)#5520
-        #self.geomap.drawmapboundary(fill_color='aqua')
+        self.geomap.drawmapboundary(fill_color='aqua')
         self.geomap.fillcontinents(color='#ddaa66',lake_color='aqua')
         self.geomap.drawcoastlines()
 
@@ -79,6 +79,11 @@ class MapCanvas(FigureCanvas):
         palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, QtCore.Qt.white)
         palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.BrightText, QtCore.Qt.white)
         self.nav_widget.setPalette(palette)
+
+
+def setup_Ui_eqmap(self):
+    self.set_mapcanvas()
+    self.config_eq_locs()
 
 def set_mapcanvas(self):
     self.mapcanvas = MapCanvas(self, width=4, height=4, dpi=100)

@@ -52,6 +52,9 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
 
 
     #START PREPROCESSING FUNCTIONS 
+    def setup_Ui_preproc(self):
+        Ui_preproc.setup_Ui_preproc(self)
+
     def handleItemChanged(self, item, column):
         Ui_preproc.preproc_handleItemChanged(self,item,column)
 
@@ -83,11 +86,11 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
         Ui_preproc.show_tree_widget(self,_pre_eq_city)
     #END PREPROCESSING FUNCTIONS 
     
-
-    
     
     #START PROCESSING FUNCTIONS
-    
+    def setup_Ui_proc(self):
+        Ui_proc.setup_Ui_proc(self)
+
     def manage_acc_buttons(self):
         Ui_proc.manage_acc_buttons(self)
 
@@ -135,10 +138,13 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def write_parameter_file(self, middlewaredir, outputpath, inputpath):
         Ui_proc.proc_write_parameter_file(self, middlewaredir, outputpath, inputpath)
-
     #END PROCESSING FUNCTIONS
 
+
     #START EQ MAP FUNCTIONS
+    def setup_Ui_eqmap(self):
+        Ui_eqmap.setup_Ui_eqmap(self)
+
     def set_mapcanvas(self):
         Ui_eqmap.set_mapcanvas(self)
     
@@ -148,6 +154,7 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
     def cluster_eqs(self, _numberofclusters):
         retval=Ui_eqmap.cluster_eqs(self, _numberofclusters)
         return retval
+
     def selection_changes(self):
         Ui_eqmap.selection_changes(self)
 
