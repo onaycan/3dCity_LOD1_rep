@@ -100,7 +100,7 @@ def preproc_handleItemChanged(self, item, column):
         if (item.checkState(0)>0):
             checked_items[item.text(0)]=item.checkState(0)
             #print (item.text(0),item.checkState(0))
-    print(checked_items)
+    #print(checked_items)
     
     
     self.city_vtk.ground_triangles = vtk.vtkCellArray()

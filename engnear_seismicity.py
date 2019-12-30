@@ -109,8 +109,8 @@ if __name__=='__main__':
     window.config_eq_locs()
     #window.showMaximized()
     
-    edit=window.textEdit_Log
-    sys.stdout = OutLog( edit, sys.stdout)
+    #edit=window.textEdit_Log
+    #sys.stdout = OutLog( edit, sys.stdout)
     
 
     
@@ -124,8 +124,12 @@ if __name__=='__main__':
     vl.addWidget(prevtkWidget)
     window.manage_simparams()
     pre_eq_city=cities.city("caferaga","pre-eq",prevtkWidget,"map_kadiköy_caferaga_small.osm","map_kadiköy_caferaga.json")
+    
+    
     pre_eq_city.build_city()
+    
     pre_eq_city.set_interactor()
+
     
     window.show_tree_widget(pre_eq_city)
     

@@ -123,8 +123,8 @@ def runsimulation(self):
             bbs.add(current_bb_id)
     
     for bb in bbs:
-        inputpath=root+"/inputs/"+str(bb).replace("bb","bb_")
-        outputpath=root+"/outputs/"+str(bb).replace("bb","bb_")
+        inputpath=root+"/inputs/"+str(bb)
+        outputpath=root+"/outputs/"+str(bb)
         os.makedirs(inputpath, exist_ok=True)
         self.building_blocks[bb].print_pounding_file(inputpath)
         self.write_parameter_file(middlewaredir, outputpath, inputpath)
@@ -253,8 +253,14 @@ def set_scalar_result(self,value):
                  "Axial Strain in Conc.":"StrainConcMean"
         }
         for b in self.results.keys():
-            for vid in self.results[b]["Displacements"].keys():
-                current_vertex_id=self.post_eq_city.femid2vertexid[vid]
+            #for vid in self.results[b]["Displacements"].keys():
+            current_femvertexids=set()
+            if b.startswith("b_"):
+                current_femvertexids=self.buildings[b.split("_")[1]].femvertexids
+            else:
+                current_femvertexids=self.building_blocks[b].femvertexids
+            for vid in current_femvertexids:
+                current_vertex_id=self.post_eq_city.femid2vertexid[str(vid)]
                 self.post_eq_city.vertices[current_vertex_id].rColorMap_activ=self.post_eq_city.vertices[current_vertex_id].rColorMaps[val2key[value]]
         rows = 9
         columns=2
@@ -289,43 +295,48 @@ def calculate_colormap_values(self):
         self.resultmaxmins["dX"+str(i)].append(numpy.amin([numpy.amin(v.dXT[:,i]) for v in self.post_eq_city.vertices.values()]))
         self.resultmaxmins["dX"+str(i)].append(numpy.amax([numpy.amax(v.dXT[:,i]) for v in self.post_eq_city.vertices.values()]))
         for b in self.results.keys():
-            for vid in self.results[b]["Displacements"].keys():
-                current_vertex_id=self.post_eq_city.femid2vertexid[vid]
+            for vid in self.femvertexids[b]:
+                current_vertex_id=self.post_eq_city.femid2vertexid[str(vid)]
                 vals=numpy.multiply(self.post_eq_city.vertices[current_vertex_id].dXT[:,i]-self.resultmaxmins["dX"+str(i)][0],1.0/(self.resultmaxmins["dX"+str(i)][1]-self.resultmaxmins["dX"+str(i)][0]))
                 self.post_eq_city.vertices[current_vertex_id].rColorMaps["dX"+str(i)]=numpy.multiply(self.cmap(vals)[:,0:3],255)
+    
     self.resultmaxmins["dXmag"].append(numpy.amin([numpy.amin(v.dXmag[:,0]) for v in self.post_eq_city.vertices.values()]))
     self.resultmaxmins["dXmag"].append(numpy.amax([numpy.amax(v.dXmag[:,0]) for v in self.post_eq_city.vertices.values()]))
     for b in self.results.keys():
-        for vid in self.results[b]["Displacements"].keys():
-            current_vertex_id=self.post_eq_city.femid2vertexid[vid]
+        for vid in self.femvertexids[b]:
+            current_vertex_id=self.post_eq_city.femid2vertexid[str(vid)]
             vals=numpy.multiply(self.post_eq_city.vertices[current_vertex_id].dXmag[:,0]-self.resultmaxmins["dXmag"][0],1.0/(self.resultmaxmins["dXmag"][1]-self.resultmaxmins["dXmag"][0]))
             self.post_eq_city.vertices[current_vertex_id].rColorMaps["dXmag"]=numpy.multiply(self.cmap(vals)[:,0:3],255)
+    
     self.resultmaxmins["StressReinfMean"].append(numpy.amin([numpy.amin(v.StressReinfMean) for v in self.post_eq_city.vertices.values()]))
     self.resultmaxmins["StressReinfMean"].append(numpy.amax([numpy.amax(v.StressReinfMean) for v in self.post_eq_city.vertices.values()]))
     for b in self.results.keys():
-        for vid in self.results[b]["Displacements"].keys():
-            current_vertex_id=self.post_eq_city.femid2vertexid[vid]
+        for vid in self.femvertexids[b]:
+            current_vertex_id=self.post_eq_city.femid2vertexid[str(vid)]
             vals=numpy.multiply(self.post_eq_city.vertices[current_vertex_id].StressReinfMean-self.resultmaxmins["StressReinfMean"][0],1.0/(self.resultmaxmins["StressReinfMean"][1]-self.resultmaxmins["StressReinfMean"][0]))
             self.post_eq_city.vertices[current_vertex_id].rColorMaps["StressReinfMean"]=numpy.multiply(self.cmap(vals)[:,0:3],255)
+    
     self.resultmaxmins["StressConcMean"].append(numpy.amin([numpy.amin(v.StressConcMean) for v in self.post_eq_city.vertices.values()]))
     self.resultmaxmins["StressConcMean"].append(numpy.amax([numpy.amax(v.StressConcMean) for v in self.post_eq_city.vertices.values()]))
     for b in self.results.keys():
-        for vid in self.results[b]["Displacements"].keys():
-            current_vertex_id=self.post_eq_city.femid2vertexid[vid]
+        for vid in self.femvertexids[b]:
+            current_vertex_id=self.post_eq_city.femid2vertexid[str(vid)]
             vals=numpy.multiply(self.post_eq_city.vertices[current_vertex_id].StressConcMean-self.resultmaxmins["StressConcMean"][0],1.0/(self.resultmaxmins["StressConcMean"][1]-self.resultmaxmins["StressConcMean"][0]))
             self.post_eq_city.vertices[current_vertex_id].rColorMaps["StressConcMean"]=numpy.multiply(self.cmap(vals)[:,0:3],255)
+    
     self.resultmaxmins["StrainReinfMean"].append(numpy.amin([numpy.amin(v.StrainReinfMean) for v in self.post_eq_city.vertices.values()]))
     self.resultmaxmins["StrainReinfMean"].append(numpy.amax([numpy.amax(v.StrainReinfMean) for v in self.post_eq_city.vertices.values()]))
     for b in self.results.keys():
-        for vid in self.results[b]["Displacements"].keys():
-            current_vertex_id=self.post_eq_city.femid2vertexid[vid]
+        for vid in self.femvertexids[b]:
+            current_vertex_id=self.post_eq_city.femid2vertexid[str(vid)]
             vals=numpy.multiply(self.post_eq_city.vertices[current_vertex_id].StrainReinfMean-self.resultmaxmins["StrainReinfMean"][0],1.0/(self.resultmaxmins["StrainReinfMean"][1]-self.resultmaxmins["StrainReinfMean"][0]))
             self.post_eq_city.vertices[current_vertex_id].rColorMaps["StrainReinfMean"]=numpy.multiply(self.cmap(vals)[:,0:3],255)
+    
     self.resultmaxmins["StrainConcMean"].append(numpy.amin([numpy.amin(v.StrainConcMean) for v in self.post_eq_city.vertices.values()]))
     self.resultmaxmins["StrainConcMean"].append(numpy.amax([numpy.amax(v.StrainConcMean) for v in self.post_eq_city.vertices.values()]))
     for b in self.results.keys():
-        for vid in self.results[b]["Displacements"].keys():
-            current_vertex_id=self.post_eq_city.femid2vertexid[vid]
+        for vid in self.femvertexids[b]:
+            current_vertex_id=self.post_eq_city.femid2vertexid[str(vid)]
             vals=numpy.multiply(self.post_eq_city.vertices[current_vertex_id].StrainConcMean-self.resultmaxmins["StrainConcMean"][0],1.0/(self.resultmaxmins["StrainConcMean"][1]-self.resultmaxmins["StrainConcMean"][0]))
             self.post_eq_city.vertices[current_vertex_id].rColorMaps["StrainConcMean"]=numpy.multiply(self.cmap(vals)[:,0:3],255)
 
@@ -339,6 +350,7 @@ def show_results(self):
     self.result_path=self.load_folder_name
     bulding_paths={}
     self.results={}
+    self.femvertexids={}
     print("start searching result files")
     start=datetime.datetime.now()
     for root, dirs, files in os.walk(self.result_path, topdown=False):
@@ -353,6 +365,14 @@ def show_results(self):
                     self.results[name]["StrainReinf"]={}
                     self.results[name]["StressConc"]={}
                     self.results[name]["StrainConc"]={}
+
+                    current_femvertexids=set()
+                    if name.startswith("b_"):
+                        current_femvertexids=self.buildings[name.split("_")[1]].femvertexids
+                    else:
+                        current_femvertexids=self.building_blocks[name].femvertexids
+                    self.femvertexids[name]=current_femvertexids
+
     #pprint.pprint(bulding_paths)
     last_b=0
     last_v=0
@@ -386,8 +406,8 @@ def show_results(self):
         counter=0
         
         for _id in ids:
-            self.results[b]["StressReinf"][_id[0]]=nss[startr:,counter*2+1]-nss[10,counter*2+1]
-            self.results[b]["StrainReinf"][_id[0]]=nss[startr:,counter*2+2]-nss[10,counter*2+2]
+            self.results[b]["StressReinf"][_id[0]]=nss[startr:,counter*2+1]-nss[startr,counter*2+1]
+            self.results[b]["StrainReinf"][_id[0]]=nss[startr:,counter*2+2]-nss[startr,counter*2+2]
             counter+=1
         #END STRESS STRAIN Reinforcement READING
         #START STRESS STRAIN Concrete READING
@@ -400,8 +420,8 @@ def show_results(self):
         nss = numpy.array(ss, dtype=numpy.float)
         counter=0
         for _id in ids:
-            self.results[b]["StressConc"][_id[0]]=nss[startr:,counter*2+1]-nss[10,counter*2+1]
-            self.results[b]["StrainConc"][_id[0]]=nss[startr:,counter*2+2]-nss[10,counter*2+2]
+            self.results[b]["StressConc"][_id[0]]=nss[startr:,counter*2+1]-nss[startr,counter*2+1]
+            self.results[b]["StrainConc"][_id[0]]=nss[startr:,counter*2+2]-nss[startr,counter*2+2]
             counter+=1
         #END STRESS STRAIN Concrete READING
         last_b=b
@@ -449,11 +469,13 @@ def show_results(self):
     self.modified_vertices=[]
     for b in self.results.keys():
         for vid in self.results[b]["Displacements"].keys():
-            current_vertex_id=self.post_eq_city.femid2vertexid[vid]
-            self.modified_vertices.append(current_vertex_id)
+            current_vertex_id=self.post_eq_city.femid2vertexid[str(vid)]
             self.post_eq_city.vertices[current_vertex_id].dXT=self.results[b]["Displacements"][vid]
             self.post_eq_city.vertices[current_vertex_id].dXmag[:,0]=numpy.linalg.norm(self.post_eq_city.vertices[current_vertex_id].dXT[:,0:3],axis=1)
-            
+        
+        for vid in self.femvertexids[b]:
+            current_vertex_id=self.post_eq_city.femid2vertexid[str(vid)]
+            self.modified_vertices.append(current_vertex_id)
             node_vals=numpy.array([self.results[b]["StressReinf"][str(cid)] for cid in self.post_eq_city.vertices[current_vertex_id].home_columns])
             self.post_eq_city.vertices[current_vertex_id].StressReinfMean=numpy.mean(node_vals, axis=0)
             node_vals=numpy.array([self.results[b]["StressConc"][str(cid)] for cid in self.post_eq_city.vertices[current_vertex_id].home_columns])

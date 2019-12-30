@@ -16,7 +16,20 @@ class buildingblock:
         self.constrain_els={}
         self.impact_els={}
         self.zerolengt_els={}
+        
+        #this name should be equal in building block as well
+        self.femvertexids=set()
 
+
+    def set_buildingblock_femvertexids(self):
+        for b in self.buildings:
+            for bsi in range(0,len(b.beamsets)):
+                bs=b.beamsets[bsi]
+                for vi in range(0,len(bs.vertices)-1):
+                    if len(bs.vertices[vi].home_columns)==0:
+                        print("ANNNNNNNAANANASSSKA")
+                    v=bs.vertices[vi].femid
+                    self.femvertexids.add(v)
 
     def append_building(self,_building):
         self.buildings.append(_building)
@@ -55,7 +68,7 @@ class buildingblock:
         max_column_id=max([c.femid for b in self.buildings for c in b.columns])
         max_el_id=max(max_beam_or_girder_id,max_column_id)
 
-        print(max_vertex_id, max_el_id)
+        #print(max_vertex_id, max_el_id)
 
         current_bb_pair_sets={}
 
@@ -97,7 +110,7 @@ class buildingblock:
         for s in current_bb_pair_sets.keys():
             combs=combinations(current_bb_pair_sets[s],2)
             for comb in combs:
-                print(comb[0], comb[1])
+                #print(comb[0], comb[1])
                 max_vertex_id, max_el_id=self.define_single_pounding_pair(max_vertex_id, max_el_id, _allvertices[comb[0]], _allvertices[comb[1]])
             #print(current_bb_pair_sets[s])
         

@@ -39,6 +39,8 @@ class building:
         self.osm_feasible=False
         self.levels="NotFound"
         self.pounding_building=False
+        #this name should be equal in building block as well
+        self.femvertexids=set()
 
         self.buildingname=''
         self.sitename=''
@@ -91,7 +93,7 @@ class building:
 
     def adoptto_building_blocks(self,_building_blocks, _buildings):
         if self.buildingblock_id==None:
-            current_bb_id="bb"+str(len(_building_blocks.keys()))
+            current_bb_id="bb_"+str(len(_building_blocks.keys()))
             _building_blocks[current_bb_id]=buildingblocks.buildingblock(current_bb_id)
             _building_blocks[current_bb_id].append_building(self)
             self.buildingblock_id=current_bb_id
@@ -264,11 +266,7 @@ class building:
                     _beamsets[next_beamset.id]=next_beamset
                     self.beamsets.append(next_beamset)
                     
-
-
-                    
                     #start columns
-                    
                     for v in range(len(self.beamsets[l-1].vertices)-1):
                         #this id plus from which stage to which, and the corner counter
                         truss_id=self.name+delim+str(l-1)+delim+str(l)+delim+str(v)
@@ -361,6 +359,13 @@ class building:
                    
                 retval=_numberofbuildingswithheight+1
         return retval, _lastvertexid
+
+    def set_building_femvertexids(self):
+        for bsi in range(0,len(self.beamsets)):
+            bs=self.beamsets[bsi]
+            for vi in range(0,len(bs.vertices)-1):
+                v=bs.vertices[vi].femid
+                self.femvertexids.add(v)
 
 
     def print_simulation_file(self,_filename):

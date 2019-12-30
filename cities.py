@@ -153,13 +153,17 @@ class city:
             b.adoptto_building_blocks(self.buildingblocks,self.buildings)
             b.set_floor_mid(floorvertices)
         # end assigning homes to vertices and neighbour information
-
-
-
+        
         for bbk in self.buildingblocks.keys():
             if len(self.buildingblocks[bbk].buildings)>1:
                 self.buildingblocks[bbk].configure_pounding(self.vertices)
+
         
+        for b in self.buildings.values():
+            b.set_building_femvertexids()
+
+        for bbk in self.buildingblocks.keys():
+            self.buildingblocks[bbk].set_buildingblock_femvertexids()
 
         #start poinding nodes
         #print("pounding configuration")
