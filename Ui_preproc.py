@@ -1,6 +1,6 @@
 from PyQt5 import Qt, QtCore, QtGui
 from PyQt5 import QtWidgets, uic
-
+import vtk
 
 
 class CheckableComboBox(QtWidgets.QComboBox):

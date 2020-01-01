@@ -524,7 +524,7 @@
                  </sizepolicy>
                 </property>
                 <property name="currentIndex">
-                 <number>1</number>
+                 <number>0</number>
                 </property>
                 <widget class="QWidget" name="simulation_tab">
                  <attribute name="title">
@@ -539,7 +539,7 @@
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                       <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
+                      <verstretch>10</verstretch>
                      </sizepolicy>
                     </property>
                     <property name="title">
@@ -730,118 +730,6 @@
                           <property name="sizeConstraint">
                            <enum>QLayout::SetNoConstraint</enum>
                           </property>
-                          <item row="1" column="0">
-                           <widget class="QLabel" name="label_7">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="frameShape">
-                             <enum>QFrame::StyledPanel</enum>
-                            </property>
-                            <property name="text">
-                             <string>W Section</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="6" column="0">
-                           <widget class="QLabel" name="label_10">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="frameShape">
-                             <enum>QFrame::StyledPanel</enum>
-                            </property>
-                            <property name="text">
-                             <string>Girder Width [inch]</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="3" column="0">
-                           <widget class="QLabel" name="label_9">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="frameShape">
-                             <enum>QFrame::StyledPanel</enum>
-                            </property>
-                            <property name="text">
-                             <string>Beam Depth [inch]</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="4" column="0">
-                           <widget class="QLabel" name="label_11">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="frameShape">
-                             <enum>QFrame::StyledPanel</enum>
-                            </property>
-                            <property name="text">
-                             <string>Beam Width [inch]</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="2" column="0">
-                           <widget class="QLabel" name="label_8">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="frameShape">
-                             <enum>QFrame::StyledPanel</enum>
-                            </property>
-                            <property name="text">
-                             <string>Column Width/Depth [inch]</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="5" column="0">
-                           <widget class="QLabel" name="label_12">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="frameShape">
-                             <enum>QFrame::StyledPanel</enum>
-                            </property>
-                            <property name="text">
-                             <string>Girder Depth [inch]</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="0" column="0">
-                           <widget class="QLabel" name="label_6">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="frameShape">
-                             <enum>QFrame::StyledPanel</enum>
-                            </property>
-                            <property name="text">
-                             <string>RC Section</string>
-                            </property>
-                           </widget>
-                          </item>
                           <item row="0" column="1">
                            <widget class="QCheckBox" name="rc_checkBox">
                             <property name="sizePolicy">
@@ -859,19 +747,6 @@
                            </widget>
                           </item>
                           <item row="1" column="1">
-                           <widget class="QCheckBox" name="ws_checkBox">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="text">
-                             <string>True</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="2" column="1">
                            <widget class="QDoubleSpinBox" name="cw_doubleSpinBox">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
@@ -891,44 +766,6 @@
                            </widget>
                           </item>
                           <item row="3" column="1">
-                           <widget class="QDoubleSpinBox" name="bd_doubleSpinBox">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="minimum">
-                             <double>10.000000000000000</double>
-                            </property>
-                            <property name="maximum">
-                             <double>30.000000000000000</double>
-                            </property>
-                            <property name="value">
-                             <double>24.000000000000000</double>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="4" column="1">
-                           <widget class="QDoubleSpinBox" name="bw_doubleSpinBox">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="minimum">
-                             <double>10.000000000000000</double>
-                            </property>
-                            <property name="maximum">
-                             <double>30.000000000000000</double>
-                            </property>
-                            <property name="value">
-                             <double>18.000000000000000</double>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="5" column="1">
                            <widget class="QDoubleSpinBox" name="gd_doubleSpinBox">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
@@ -947,8 +784,123 @@
                             </property>
                            </widget>
                           </item>
-                          <item row="6" column="1">
+                          <item row="1" column="0">
+                           <widget class="QLabel" name="label_8">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="text">
+                             <string>Column Width=Depth [inch]</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="2" column="0">
+                           <widget class="QLabel" name="label_9">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="text">
+                             <string>Beam Depth/Width [inch]</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="0">
+                           <widget class="QLabel" name="label_6">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="text">
+                             <string>RC Section/W Section</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="3" column="0">
+                           <widget class="QLabel" name="label_12">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="text">
+                             <string>Girder Depth/Width [inch]</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="2" column="1">
+                           <widget class="QDoubleSpinBox" name="bd_doubleSpinBox">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="minimum">
+                             <double>10.000000000000000</double>
+                            </property>
+                            <property name="maximum">
+                             <double>30.000000000000000</double>
+                            </property>
+                            <property name="value">
+                             <double>24.000000000000000</double>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="3" column="2">
                            <widget class="QDoubleSpinBox" name="gw_doubleSpinBox">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="minimum">
+                             <double>10.000000000000000</double>
+                            </property>
+                            <property name="maximum">
+                             <double>30.000000000000000</double>
+                            </property>
+                            <property name="value">
+                             <double>18.000000000000000</double>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="2">
+                           <widget class="QCheckBox" name="ws_checkBox">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="text">
+                             <string>True</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="2" column="2">
+                           <widget class="QDoubleSpinBox" name="bw_doubleSpinBox">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
                               <horstretch>0</horstretch>
@@ -1074,6 +1026,58 @@
                        </layout>
                       </widget>
                      </item>
+                     <item>
+                      <widget class="QGroupBox" name="groupBox_20">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                         <horstretch>0</horstretch>
+                         <verstretch>1</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="title">
+                        <string>Simulation</string>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_19">
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_16">
+                          <item>
+                           <widget class="QPushButton" name="runsimulation_pushButton">
+                            <property name="enabled">
+                             <bool>false</bool>
+                            </property>
+                            <property name="text">
+                             <string>RunSimulation to:</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QLabel" name="runfilename_label">
+                            <property name="enabled">
+                             <bool>false</bool>
+                            </property>
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="text">
+                             <string>TextLabel</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
+                         <widget class="QPushButton" name="run_pushButton">
+                          <property name="enabled">
+                           <bool>false</bool>
+                          </property>
+                          <property name="text">
+                           <string>RUN</string>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
                     </layout>
                    </widget>
                   </item>
@@ -1084,6 +1088,68 @@
                   <string>PostParam</string>
                  </attribute>
                  <layout class="QVBoxLayout" name="verticalLayout_15">
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_10">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>1</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="title">
+                     <string>Simulation</string>
+                    </property>
+                    <layout class="QVBoxLayout" name="verticalLayout_12">
+                     <item>
+                      <layout class="QVBoxLayout" name="verticalLayout_11">
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_15">
+                         <item>
+                          <widget class="QPushButton" name="loadsimulation_pushButton">
+                           <property name="enabled">
+                            <bool>true</bool>
+                           </property>
+                           <property name="text">
+                            <string> LoadSimulation from:</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QLabel" name="loadfilename_label">
+                           <property name="enabled">
+                            <bool>true</bool>
+                           </property>
+                           <property name="frameShape">
+                            <enum>QFrame::StyledPanel</enum>
+                           </property>
+                           <property name="text">
+                            <string>TextLabel</string>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="showresults_pushButton">
+                         <property name="enabled">
+                          <bool>false</bool>
+                         </property>
+                         <property name="text">
+                          <string>ShowResults</string>
+                         </property>
+                         <property name="flat">
+                          <bool>false</bool>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
                   <item>
                    <widget class="QGroupBox" name="animate_groupBox">
                     <property name="sizePolicy">
@@ -1204,7 +1270,7 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QRadioButton" name="nv_radioButton">
+                      <widget class="QRadioButton" name="rf_radioButton">
                        <property name="text">
                         <string>Show Reserve Factor Results</string>
                        </property>
@@ -1257,11 +1323,20 @@
                         </sizepolicy>
                        </property>
                        <property name="title">
-                        <string>Reserve Factor Results</string>
+                        <string>Inverse Reserve Factor Results</string>
                        </property>
                        <layout class="QVBoxLayout" name="verticalLayout_20">
                         <item>
                          <widget class="QTreeWidget" name="treeWidget_2">
+                          <property name="sizeAdjustPolicy">
+                           <enum>QAbstractScrollArea::AdjustToContents</enum>
+                          </property>
+                          <attribute name="headerCascadingSectionResizes">
+                           <bool>false</bool>
+                          </attribute>
+                          <attribute name="headerStretchLastSection">
+                           <bool>true</bool>
+                          </attribute>
                           <column>
                            <property name="text">
                             <string notr="true">1</string>
@@ -1363,105 +1438,6 @@
                      </item>
                     </layout>
                    </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item>
-                <widget class="QGroupBox" name="groupBox_10">
-                 <property name="enabled">
-                  <bool>true</bool>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>2</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="title">
-                  <string>Simulation</string>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_12">
-                  <item>
-                   <layout class="QVBoxLayout" name="verticalLayout_11">
-                    <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_16">
-                      <item>
-                       <widget class="QPushButton" name="runsimulation_pushButton">
-                        <property name="enabled">
-                         <bool>false</bool>
-                        </property>
-                        <property name="text">
-                         <string>RunSimulation to:</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QLabel" name="runfilename_label">
-                        <property name="enabled">
-                         <bool>false</bool>
-                        </property>
-                        <property name="frameShape">
-                         <enum>QFrame::StyledPanel</enum>
-                        </property>
-                        <property name="text">
-                         <string>TextLabel</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="run_pushButton">
-                      <property name="enabled">
-                       <bool>false</bool>
-                      </property>
-                      <property name="text">
-                       <string>RUN</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_15">
-                      <item>
-                       <widget class="QPushButton" name="loadsimulation_pushButton">
-                        <property name="enabled">
-                         <bool>true</bool>
-                        </property>
-                        <property name="text">
-                         <string> LoadSimulation from:</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QLabel" name="loadfilename_label">
-                        <property name="enabled">
-                         <bool>true</bool>
-                        </property>
-                        <property name="frameShape">
-                         <enum>QFrame::StyledPanel</enum>
-                        </property>
-                        <property name="text">
-                         <string>TextLabel</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="showresults_pushButton">
-                      <property name="enabled">
-                       <bool>false</bool>
-                      </property>
-                      <property name="text">
-                       <string>ShowResults</string>
-                      </property>
-                      <property name="flat">
-                       <bool>false</bool>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
                   </item>
                  </layout>
                 </widget>

@@ -263,20 +263,13 @@ class vtk_interactor:
           del self.iren
 
     def animate_displacement(self,_vertices, _timecounter, _vertexids,_scale):
-        self.building_points = vtk.vtkPoints()
-        #self.BuildingColors = vtk.vtkUnsignedCharArray()
-        #self.BuildingColors.SetNumberOfComponents(3)
-        #self.BuildingColors.SetName("BuildingColors")
         for v in _vertices:
-            #self.building_points.InsertNextPoint(v.coordsx[_timecounter])
-            self.building_points.InsertNextPoint(numpy.add(v.coordsXT[_timecounter],numpy.multiply(_scale,v.dXT[_timecounter])))
-            #cmap = matplotlib.cm.get_cmap(_colormap)
-            #val=(v.dXT[_timecounter][0]-_minr)/(_maxr-_minr)
-            #r,g,b,a = _cmap(val)
-            #self.BuildingColors.InsertNextTuple3(r*255,g*255,b*255)
+            self.building_points.SetPoint(self.b_vertexId2VtkPointId[v.id],v.coordsx[_timecounter])
             self.BuildingColors.SetTuple3(self.b_vertexId2VtkPointId[v.id],v.rColorMap_activ[_timecounter][0],v.rColorMap_activ[_timecounter][1],v.rColorMap_activ[_timecounter][2])
 
-
+        # if you do not consider this .Modified() the above set will not work at all! 
+        # you need to then consider insertpoint methods which will be timeconduming. 
+        self.building_points.Modified()
         self.PolyData_Lines = vtk.vtkPolyData()
         self.PolyData_BuildingCells = vtk.vtkPolyData()
         self.visualize(_nodal=True)
@@ -439,41 +432,10 @@ class vtk_interactor:
                 self.insert_building(b,_checked_items, _only_colors)
             #print(b.name)
             
-    def get_building_facets(self,_home):
-        b=_home
-        for bs in range(0,len(b.basesets)):
-            for f in b.basesets[bs].triangles:
-                self.building_facets.add(f.id)
-        for w in range(0,len(b.walls)):
-            for f in b.walls[w].triangles:
-                self.building_facets.add(f.id)
+    
 
 
-    def highlight_whole_city(self,_window):
-        _city=_window.pre_eq_city
-        facetids=[]
-
-        self.building_vertices=set()
-        self.building_facets=set()
-        for bbk in _city.buildingblocks.keys():
-            _window.comboboxes['Building Blocks'].addItem(_city.buildingblocks[bbk].id)
-            _window.comboboxes['Building Blocks'].setCurrentIndex(_window.comboboxes['Building Blocks'].count() - 1)
-            for b in _city.buildingblocks[bbk].buildings:
-                _window.comboboxes['Buildings'].addItem(b.id)
-                _window.comboboxes['Buildings'].setCurrentIndex(_window.comboboxes['Buildings'].count() - 1)
-                self.get_building_facets(b)
-
-        for fid in self.building_facets:
-            facetids.append(self.b_TriangleId2VtkTriangleid[fid])
-
-        
-        for f in facetids:
-            self.BuildingCellColors.SetTuple3(int(f),255,0,0)
-        
-        self.PolyData_BuildingCells.GetCellData().SetScalars(self.BuildingCellColors)
-        self.mapper_BuildingCells.ScalarVisibilityOff()
-        self.mapper_BuildingCells.ScalarVisibilityOn()
-        self.renWin.Render()
+    
 
         
 

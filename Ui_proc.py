@@ -1,12 +1,13 @@
 import os
-from PyQt5.QtWidgets import QTreeWidgetItem, QColorDialog, QFileDialog, QTabWidget
+from PyQt5.QtWidgets import QTreeWidgetItem, QColorDialog, QFileDialog, QTabWidget, QProgressDialog
 from PyQt5.QtCore import QTimer
 from PyQt5 import QtWidgets, uic
-from PyQt5 import QtTest
-import numpy 
+from PyQt5 import QtTest, QtCore, Qt
+import numpy
 import datetime
 import csv
 import matplotlib
+import pprint
 
 
 def setup_Ui_proc(self):
@@ -23,6 +24,70 @@ def setup_Ui_proc(self):
     self.scalarresult_comboBox.currentTextChanged.connect(self.set_scalar_result)
     self.legend_table=QtWidgets.QTableWidget()
     self.legend_layout.addWidget(self.legend_table)
+
+
+
+    self.configure_rf_tree_widget()
+    self.nr_radioButton.clicked.connect(self.rbclicked)
+    self.rf_radioButton.clicked.connect(self.rbclicked)
+
+
+def configure_rf_tree_widget(self):
+    tw    = self.treeWidget_2
+    tw.clear()
+    
+    tw.setAlternatingRowColors(True)
+    
+    tw.setHeaderLabels(['Material/Structure','Failure Criteria', 'Limit'])
+    ri = QtWidgets.QTreeWidgetItem(tw, ['Reinforcement','Tension/Comp', 'Limit'])
+    ri.setFlags(ri.flags() | QtCore.Qt.ItemIsTristate | QtCore.Qt.ItemIsUserCheckable)
+    ri.setCheckState(0, QtCore.Qt.Checked)
+
+    rit=QtWidgets.QTreeWidgetItem(ri, ['', 'Tensile Yield', '66.8ksi'])
+    rit.setFlags(ri.flags() | QtCore.Qt.ItemIsUserCheckable)
+    rit.setCheckState(0, QtCore.Qt.Checked)
+
+    ric=QtWidgets.QTreeWidgetItem(ri, ['', 'Compression Max.', '-66.8ksi'])
+    ric.setFlags(ri.flags() | QtCore.Qt.ItemIsUserCheckable)
+    ric.setCheckState(0, QtCore.Qt.Checked)
+
+    co = QtWidgets.QTreeWidgetItem(tw, ['Concrete','Tension/Comp', 'Limit'])
+    co.setFlags(co.flags() | QtCore.Qt.ItemIsTristate | QtCore.Qt.ItemIsUserCheckable)
+    co.setCheckState(0, QtCore.Qt.Checked)
+
+    cot=QtWidgets.QTreeWidgetItem(co, ['', 'Tensile Ultimate', '0.73ksi'])
+    cot.setFlags(co.flags() | QtCore.Qt.ItemIsUserCheckable)
+    cot.setCheckState(0, QtCore.Qt.Checked)
+
+    coc=QtWidgets.QTreeWidgetItem(co, ['', 'Compression Max.', '-4.0ksi'])
+    coc.setFlags(co.flags() | QtCore.Qt.ItemIsUserCheckable)
+    coc.setCheckState(0, QtCore.Qt.Checked)
+
+    #ld = QtWidgets.QTreeWidgetItem(tw, ['Lateral Drift','Emprical', '0.02'])
+    #ld.setFlags(ld.flags() | QtCore.Qt.ItemIsUserCheckable)
+    #ld.setCheckState(0, QtCore.Qt.Checked)
+
+
+    tw.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+    tw.header().setStretchLastSection(False)
+
+    #co = QtWidgets.QTreeWidgetItem(tw, ['Concrete','Tensile Strength', "0.73ksi", 'Comp. Max. Stress', '-4.0ksi'])
+    #co.setFlags(co.flags())
+    
+
+
+def rbclicked(self):
+    if self.nr_radioButton.isChecked():
+        self.rf_radioButton.setChecked(False)
+        self.groupBox_13.setEnabled(True)
+        self.groupBox_19.setEnabled(False)
+        #self.animate_groupBox.setEnabled(False)
+    if self.rf_radioButton.isChecked():
+        self.nr_radioButton.setChecked(False)
+        self.groupBox_13.setEnabled(False)
+        self.groupBox_19.setEnabled(True)
+        self.set_rf_result()
+        #self.animate_groupBox.setEnabled(False)
 
 def manage_acc_buttons(self):
     if self.acc_checkbutton.isChecked():
@@ -111,6 +176,9 @@ def proc_write_parameter_file(self, middlewaredir, outputpath, inputpath):
 
 
 def runsimulation(self):
+
+    #progress = QProgressDialog("Running Simulation...", "Abort Copy", 0, 0, self)
+    #progress.setWindowModality(Qt.WindowModal)
     
     self.showresults_pushButton.setEnabled(False)
     bs=set()
@@ -131,6 +199,7 @@ def runsimulation(self):
             os.chdir(middlewaredir)
             os.system("OpenSees.exe ./StartSimulation.tcl "+"b_"+str(b))
             os.chdir("..")
+            #progress.setValue(1)
             
     for i in range(self.comboboxes['Building Blocks'].count()):
         current_bb_id=self.comboboxes['Building Blocks'].itemText(i)
@@ -146,9 +215,12 @@ def runsimulation(self):
         os.chdir(middlewaredir)
         os.system("OpenSees.exe ./StartSimulation.tcl "+str(b))
         os.chdir("..")
+        #progress.setValue(1)
         
     outputpath=root+"/outputs/"
-    self.showresults_pushButton.setEnabled(True)
+    #self.showresults_pushButton.setEnabled(True)
+    self.show_results()
+
 
 def manage_simparams(self):
     self.load_folder_name=os.path.abspath(".\\FEM_MiddleWare\\outputs")
@@ -172,20 +244,22 @@ def manage_runorload(self):
         self.groupBox_7.setEnabled(True)
         self.groupBox_8.setEnabled(True)
         self.groupBox_9.setEnabled(True)
+        self.groupBox_20.setEnabled(True)
         self.run_pushButton.setEnabled(True)
-        self.loadsimulation_pushButton.setEnabled(False)
+        #self.loadsimulation_pushButton.setEnabled(False)
         self.runfilename_label.setEnabled(True)
-        self.loadfilename_label.setEnabled(False)
+        #self.loadfilename_label.setEnabled(False)
         self.runsimulation_pushButton.setEnabled(True)
     else:
         self.groupBox_7.setEnabled(False)
         self.groupBox_8.setEnabled(False)
         self.groupBox_9.setEnabled(False)
+        self.groupBox_20.setEnabled(False)
         self.runsimulation_pushButton.setEnabled(False)
-        self.loadsimulation_pushButton.setEnabled(True)
-        self.run_pushButton.setEnabled(False)
+        #self.loadsimulation_pushButton.setEnabled(True)
+        #self.run_pushButton.setEnabled(False)
         self.runfilename_label.setEnabled(False)
-        self.loadfilename_label.setEnabled(True)
+        #self.loadfilename_label.setEnabled(True)
 
 def set_timelabel(self):
     self.time_label.setText("Time: "+str(self.dial.value()*0.01)+" sc.")
@@ -196,6 +270,9 @@ def set_timelabel(self):
    
 def animatewindow(self):
     
+    for v in self.post_eq_city.vertices.values():
+        v.coordsx=numpy.add(v.coordsX,numpy.multiply(self.scalefact_doubleSpinBox.value(),v.dXT))
+
     if self.Start_Animation_Push_Button.isChecked():
         self.Start_Animation_Push_Button.setText("Stop Animation")
         self.dial.setEnabled(False)
@@ -253,7 +330,41 @@ def set_combobox_post_legend(self, value):
         self.scalarresult_comboBox.clear()
         self.scalarresult_comboBox.addItem("Axial Strain in Reinf.")
         self.scalarresult_comboBox.addItem("Axial Strain in Conc.")
+
+def set_rf_result(self):
     
+        for b in self.results.keys():
+            for vid in self.femvertexids[b]:
+                current_vertex_id=self.post_eq_city.femid2vertexid[str(vid)]
+                self.post_eq_city.vertices[current_vertex_id].rColorMap_activ=self.post_eq_city.vertices[current_vertex_id].rColorMaps["rf_combined"]
+        rows = 9
+        columns=2
+        self.legend_table.setColumnCount(columns)
+        self.legend_table.setRowCount(rows)
+        self.legend_table.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("Colour"))
+        self.legend_table.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("Value"))
+        print(self.resultmaxmins["rf_combined"][0])
+        print(self.resultmaxmins["rf_combined"][1])
+        for i in range(rows):
+            current_value=i/(rows-1)
+            current_color_button=QtWidgets.QPushButton()
+            if i==0:
+                current_color_button.setText("Min:")
+            if i==rows-1:
+                current_color_button.setText("Max:")
+            color_vals=self.cmap(current_value)
+            current_style="background:rgb("+str(int(color_vals[0]*255))+","+str(int(color_vals[1]*255))+","+str(int(color_vals[2]*255))+")"
+            print(current_style)
+            current_color_button.setStyleSheet(current_style)
+            self.legend_table.setCellWidget(i,0,current_color_button)
+            print_value=current_value*(self.resultmaxmins["rf_combined"][1]-self.resultmaxmins["rf_combined"][0])+self.resultmaxmins["rf_combined"][0]
+            self.legend_table.setItem(i, 1, QtWidgets.QTableWidgetItem(str(round(print_value, 5))))
+        #stop animation and show colors
+        self.Start_Animation_Push_Button.setChecked(False)
+        self.set_timelabel()
+
+
+
 def set_scalar_result(self,value):
     
     if value!='':
@@ -269,12 +380,7 @@ def set_scalar_result(self,value):
         }
         for b in self.results.keys():
             #for vid in self.results[b]["Displacements"].keys():
-            current_femvertexids=set()
-            if b.startswith("b_"):
-                current_femvertexids=self.buildings[b.split("_")[1]].femvertexids
-            else:
-                current_femvertexids=self.building_blocks[b].femvertexids
-            for vid in current_femvertexids:
+            for vid in self.femvertexids[b]:
                 current_vertex_id=self.post_eq_city.femid2vertexid[str(vid)]
                 self.post_eq_city.vertices[current_vertex_id].rColorMap_activ=self.post_eq_city.vertices[current_vertex_id].rColorMaps[val2key[value]]
         rows = 9
@@ -355,7 +461,25 @@ def calculate_colormap_values(self):
             vals=numpy.multiply(self.post_eq_city.vertices[current_vertex_id].StrainConcMean-self.resultmaxmins["StrainConcMean"][0],1.0/(self.resultmaxmins["StrainConcMean"][1]-self.resultmaxmins["StrainConcMean"][0]))
             self.post_eq_city.vertices[current_vertex_id].rColorMaps["StrainConcMean"]=numpy.multiply(self.cmap(vals)[:,0:3],255)
 
+    self.resultmaxmins["rf_combined"].append(numpy.amin([numpy.amin(v.rf_combined) for v in self.post_eq_city.vertices.values()]))
+    self.resultmaxmins["rf_combined"].append(numpy.amax([numpy.amax(v.rf_combined) for v in self.post_eq_city.vertices.values()]))
+    for b in self.results.keys():
+        for vid in self.femvertexids[b]:
+            current_vertex_id=self.post_eq_city.femid2vertexid[str(vid)]
+            vals=numpy.multiply(self.post_eq_city.vertices[current_vertex_id].rf_combined-self.resultmaxmins["rf_combined"][0],1.0/(self.resultmaxmins["rf_combined"][1]-self.resultmaxmins["rf_combined"][0]))
+            self.post_eq_city.vertices[current_vertex_id].rColorMaps["rf_combined"]=numpy.multiply(self.cmap(vals)[:,0:3],255)
 
+
+def fill_rf_results(self):
+    for v in self.post_eq_city.vertices.values():
+        x=v.StressReinfMean
+        v.rf_Tens_Stress_Reinf=numpy.piecewise(x, [x<0,x>=0], [lambda x: 0.0 ,lambda x: x/66.8])
+        v.rf_Comp_Stress_Reinf=numpy.piecewise(x, [x<0,x>=0], [lambda x: -x/66.8 , lambda x: 0.0])
+        x=v.StressConcMean
+        #v.rf_Tens_Stress_Concr=numpy.piecewise(x, [x<0,x>=0], [lambda x: 0.0 , lambda x: x/0.73])
+        v.rf_Comp_Stress_Concr=numpy.piecewise(x, [x<0,x>=0], [lambda x: -x/4.0 , lambda x: 0.0])
+        v.rf_combined=numpy.vstack([v.rf_Tens_Stress_Reinf,v.rf_Comp_Stress_Reinf,v.rf_Comp_Stress_Concr]).max(axis=0)
+        #v.rf_combined=v.rf_Tens_Stress_Reinf
 def show_results(self):
     inches2meter=1.0/39.3701
     
@@ -421,8 +545,8 @@ def show_results(self):
         counter=0
         
         for _id in ids:
-            self.results[b]["StressReinf"][_id[0]]=nss[startr:,counter*2+1]-nss[startr,counter*2+1]
-            self.results[b]["StrainReinf"][_id[0]]=nss[startr:,counter*2+2]-nss[startr,counter*2+2]
+            self.results[b]["StressReinf"][_id[0]]=nss[startr:,counter*2+1]#-nss[startr,counter*2+1]
+            self.results[b]["StrainReinf"][_id[0]]=nss[startr:,counter*2+2]#-nss[startr,counter*2+2]
             counter+=1
         #END STRESS STRAIN Reinforcement READING
         #START STRESS STRAIN Concrete READING
@@ -435,8 +559,8 @@ def show_results(self):
         nss = numpy.array(ss, dtype=numpy.float)
         counter=0
         for _id in ids:
-            self.results[b]["StressConc"][_id[0]]=nss[startr:,counter*2+1]-nss[startr,counter*2+1]
-            self.results[b]["StrainConc"][_id[0]]=nss[startr:,counter*2+2]-nss[startr,counter*2+2]
+            self.results[b]["StressConc"][_id[0]]=nss[startr:,counter*2+1]#-nss[startr,counter*2+1]
+            self.results[b]["StrainConc"][_id[0]]=nss[startr:,counter*2+2]#-nss[startr,counter*2+2]
             counter+=1
         #END STRESS STRAIN Concrete READING
         last_b=b
@@ -457,7 +581,7 @@ def show_results(self):
     dx_zero = numpy.array([[0.0,0.0,0.0]])
     dc_zero = numpy.array([[0.0,0.0,0.0]])
     dval_zero = numpy.array([[0.0]])
-    result_flags=["dX0","dX1","dX2","dXmag","StressReinfMean","StressConcMean","StrainReinfMean","StrainConcMean"]
+    result_flags=["dX0","dX1","dX2","dXmag","StressReinfMean","StressConcMean","StrainReinfMean","StrainConcMean","rf_combined"]
     self.resultmaxmins={}
     for k in result_flags:
         self.resultmaxmins[k]=[]
@@ -471,6 +595,14 @@ def show_results(self):
         v.StressConcMean=numpy.repeat(dval_zero, repeats=self.numberoftimeintervals, axis=0)
         v.StrainReinfMean=numpy.repeat(dval_zero, repeats=self.numberoftimeintervals, axis=0)
         v.StrainConcMean=numpy.repeat(dval_zero, repeats=self.numberoftimeintervals, axis=0)
+        #start rf_related
+        v.rf_Tens_Stress_Reinf=numpy.repeat(dval_zero, repeats=self.numberoftimeintervals, axis=0)
+        v.rf_Comp_Stress_Reinf=numpy.repeat(dval_zero, repeats=self.numberoftimeintervals, axis=0)
+        v.rf_Tens_Stress_Concr=numpy.repeat(dval_zero, repeats=self.numberoftimeintervals, axis=0)
+        v.rf_Comp_Stress_Concr=numpy.repeat(dval_zero, repeats=self.numberoftimeintervals, axis=0)
+        v.rf_combined=numpy.repeat(dval_zero, repeats=self.numberoftimeintervals, axis=0)
+        #enf rf related
+
         for k in result_flags:
             v.rColorMaps[k]=numpy.repeat(dc_zero, repeats=self.numberoftimeintervals, axis=0)
         v.rColorMap_activ=numpy.repeat(dc_zero, repeats=self.numberoftimeintervals, axis=0)
@@ -505,6 +637,11 @@ def show_results(self):
     print("np dX coords updated")
     print("took "+str(delta.total_seconds()))
 
+    print("setting rf values map")
+    self.fill_rf_results()
+    print("rf values map has been set")
+
+
     print("setting initial color map")
     start=datetime.datetime.now()
     self.cmap = matplotlib.cm.get_cmap("rainbow")
@@ -514,6 +651,10 @@ def show_results(self):
     delta=end-start
     print("initial color values are set")
     print("took "+str(delta.total_seconds()))
+
+
+    
+
 
     print(self.numberoftimeintervals)
     self.dial.setMaximum(self.numberoftimeintervals)

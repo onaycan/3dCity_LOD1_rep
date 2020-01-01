@@ -138,6 +138,18 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def write_parameter_file(self, middlewaredir, outputpath, inputpath):
         Ui_proc.proc_write_parameter_file(self, middlewaredir, outputpath, inputpath)
+    
+    def rbclicked(self):
+        Ui_proc.rbclicked(self)
+
+    def configure_rf_tree_widget(self):
+        Ui_proc.configure_rf_tree_widget(self)
+
+    def fill_rf_results(self):
+        Ui_proc.fill_rf_results(self)
+
+    def set_rf_result(self):
+        Ui_proc.set_rf_result(self)
     #END PROCESSING FUNCTIONS
 
 

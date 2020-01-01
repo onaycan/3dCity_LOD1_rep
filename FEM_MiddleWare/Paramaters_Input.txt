@@ -1,7 +1,7 @@
 #Input folder path:
-C:/PZI_16292/CAN/PersDev/EQ/05_QuickPipeline/00_AdressLevels_Master/simple_outputs/inputs/b_693985495
+C:/PZI_16292/CAN/PersDev/EQ/05_QuickPipeline/00_AdressLevels_Master/dummy/inputs/b_694698618
 #Output folder path:
-C:/PZI_16292/CAN/PersDev/EQ/05_QuickPipeline/00_AdressLevels_Master/simple_outputs/outputs/b_693985495
+C:/PZI_16292/CAN/PersDev/EQ/05_QuickPipeline/00_AdressLevels_Master/dummy/outputs/b_694698618
 #Unit system <Metric> <US>
 us
 #Acceleration recording in lateral direction:
