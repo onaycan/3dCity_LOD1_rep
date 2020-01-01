@@ -24,12 +24,21 @@ def setup_Ui_proc(self):
     self.scalarresult_comboBox.currentTextChanged.connect(self.set_scalar_result)
     self.legend_table=QtWidgets.QTableWidget()
     self.legend_layout.addWidget(self.legend_table)
+    self.param_tabWidget.currentChanged.connect(self.showhidelegend)
 
 
 
     self.configure_rf_tree_widget()
     self.nr_radioButton.clicked.connect(self.rbclicked)
     self.rf_radioButton.clicked.connect(self.rbclicked)
+
+def showhidelegend(self):
+    current_index=self.param_tabWidget.currentIndex()
+    current_text=self.param_tabWidget.tabText(current_index)
+    if current_text=="SimParam":
+        self.groupBox_14.hide()
+    else:
+        self.groupBox_14.show()
 
 
 def configure_rf_tree_widget(self):
@@ -40,28 +49,30 @@ def configure_rf_tree_widget(self):
     
     tw.setHeaderLabels(['Material/Structure','Failure Criteria', 'Limit'])
     ri = QtWidgets.QTreeWidgetItem(tw, ['Reinforcement','Tension/Comp', 'Limit'])
-    ri.setFlags(ri.flags() | QtCore.Qt.ItemIsTristate | QtCore.Qt.ItemIsUserCheckable)
-    ri.setCheckState(0, QtCore.Qt.Checked)
+    #ri.setFlags(ri.flags() | QtCore.Qt.ItemIsTristate | QtCore.Qt.ItemIsUserCheckable)
+    #ri.setCheckState(0, QtCore.Qt.Checked)
 
     rit=QtWidgets.QTreeWidgetItem(ri, ['', 'Tensile Yield', '66.8ksi'])
-    rit.setFlags(ri.flags() | QtCore.Qt.ItemIsUserCheckable)
-    rit.setCheckState(0, QtCore.Qt.Checked)
+    #rit.setFlags(ri.flags() | QtCore.Qt.ItemIsUserCheckable)
+    #rit.setCheckState(0, QtCore.Qt.Checked)
 
     ric=QtWidgets.QTreeWidgetItem(ri, ['', 'Compression Max.', '-66.8ksi'])
-    ric.setFlags(ri.flags() | QtCore.Qt.ItemIsUserCheckable)
-    ric.setCheckState(0, QtCore.Qt.Checked)
+    #ric.setFlags(ri.flags() | QtCore.Qt.ItemIsUserCheckable)
+    #ric.setCheckState(0, QtCore.Qt.Checked)
 
     co = QtWidgets.QTreeWidgetItem(tw, ['Concrete','Tension/Comp', 'Limit'])
-    co.setFlags(co.flags() | QtCore.Qt.ItemIsTristate | QtCore.Qt.ItemIsUserCheckable)
-    co.setCheckState(0, QtCore.Qt.Checked)
+    #co.setFlags(co.flags() | QtCore.Qt.ItemIsTristate | QtCore.Qt.ItemIsUserCheckable)
+    #co.setCheckState(0, QtCore.Qt.Checked)
 
     cot=QtWidgets.QTreeWidgetItem(co, ['', 'Tensile Ultimate', '0.73ksi'])
-    cot.setFlags(co.flags() | QtCore.Qt.ItemIsUserCheckable)
-    cot.setCheckState(0, QtCore.Qt.Checked)
+    #cot.setFlags(co.flags() | QtCore.Qt.ItemIsUserCheckable)
+    #cot.setCheckState(0, QtCore.Qt.Checked)
 
     coc=QtWidgets.QTreeWidgetItem(co, ['', 'Compression Max.', '-4.0ksi'])
-    coc.setFlags(co.flags() | QtCore.Qt.ItemIsUserCheckable)
-    coc.setCheckState(0, QtCore.Qt.Checked)
+    #coc.setFlags(co.flags() | QtCore.Qt.ItemIsUserCheckable)
+    #coc.setCheckState(0, QtCore.Qt.Checked)
+
+    tw.expandToDepth(1)
 
     #ld = QtWidgets.QTreeWidgetItem(tw, ['Lateral Drift','Emprical', '0.02'])
     #ld.setFlags(ld.flags() | QtCore.Qt.ItemIsUserCheckable)
@@ -71,13 +82,13 @@ def configure_rf_tree_widget(self):
     tw.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
     tw.header().setStretchLastSection(False)
 
-    #co = QtWidgets.QTreeWidgetItem(tw, ['Concrete','Tensile Strength', "0.73ksi", 'Comp. Max. Stress', '-4.0ksi'])
-    #co.setFlags(co.flags())
-    
-
 
 def rbclicked(self):
     if self.nr_radioButton.isChecked():
+        self.tensorresult_comboBox.setCurrentText("Displacement")
+        self.set_combobox_post_legend("Displacement")
+        self.scalarresult_comboBox.setCurrentText("Displacement Mag")
+        self.set_scalar_result("Displacement Mag")
         self.rf_radioButton.setChecked(False)
         self.groupBox_13.setEnabled(True)
         self.groupBox_19.setEnabled(False)
@@ -480,11 +491,14 @@ def fill_rf_results(self):
         v.rf_Comp_Stress_Concr=numpy.piecewise(x, [x<0,x>=0], [lambda x: -x/4.0 , lambda x: 0.0])
         v.rf_combined=numpy.vstack([v.rf_Tens_Stress_Reinf,v.rf_Comp_Stress_Reinf,v.rf_Comp_Stress_Concr]).max(axis=0)
         #v.rf_combined=v.rf_Tens_Stress_Reinf
+
 def show_results(self):
     inches2meter=1.0/39.3701
     
     self.param_tabWidget.setCurrentWidget(self.postprocessing_tab)
     self.Postprocessing_tabwidget.setCurrentWidget(self.tab_postcity)
+    self.animate_groupBox.setEnabled(True)
+    self.groupBox_12.setEnabled(True)
     self.Start_Animation_Push_Button.setEnabled(True)
     self.result_path=self.load_folder_name
     bulding_paths={}

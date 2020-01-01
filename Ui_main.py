@@ -150,6 +150,9 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def set_rf_result(self):
         Ui_proc.set_rf_result(self)
+
+    def showhidelegend(self):
+        Ui_proc.showhidelegend(self)
     #END PROCESSING FUNCTIONS
 
 
