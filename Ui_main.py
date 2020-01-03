@@ -7,6 +7,7 @@ import datetime
 import numpy 
 
 import Ui_preproc
+import Ui_preproc_diag
 import Ui_proc
 import Ui_eqmap
 
@@ -86,6 +87,24 @@ class Ui(QtWidgets.QMainWindow, Ui_MainWindow):
         Ui_preproc.show_tree_widget(self,_pre_eq_city)
     #END PREPROCESSING FUNCTIONS 
     
+    #START PREPROCESSING DIAGRAM FUNCTIONS
+    def setup_Ui_preproc_diag(self):
+        Ui_preproc_diag.setup_Ui_preproc_diag(self)
+
+    def plot_level_histogram(self, _x, _attr):
+        Ui_preproc_diag.plot_level_histogram(self, _x, _attr)
+    
+    def switch_citydiag(self):
+        Ui_preproc_diag.switch_citydiag(self)
+
+    def switch_citydiag_2(self):
+        Ui_preproc_diag.switch_citydiag_2(self)
+
+    def selectdiagram(self, item):
+        Ui_preproc_diag.selectdiagram(self, item)
+    #END PREPROCESSING DIAGRAM FUNCTIONS
+
+
     
     #START PROCESSING FUNCTIONS
     def setup_Ui_proc(self):

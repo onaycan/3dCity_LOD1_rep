@@ -48,7 +48,7 @@
           <enum>QTabWidget::West</enum>
          </property>
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="pretab">
           <attribute name="title">
@@ -59,7 +59,7 @@
             <widget class="QGroupBox" name="groupBox">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
-               <horstretch>2</horstretch>
+               <horstretch>3</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
@@ -68,39 +68,161 @@
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_6">
               <item>
-               <widget class="QLabel" name="label_2">
-                <property name="text">
-                 <string>All Entitites</string>
+               <widget class="QTabWidget" name="tabWidget_2">
+                <property name="currentIndex">
+                 <number>0</number>
                 </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QTreeWidget" name="treeWidget">
-                <column>
-                 <property name="text">
-                  <string notr="true">1</string>
-                 </property>
-                </column>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label">
-                <property name="text">
-                 <string>Simulation Pool Selected Entities</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QTableWidget" name="tableWidget"/>
-              </item>
-              <item>
-               <widget class="QPushButton" name="configure_simulation_pushbutton">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Configure Simulation</string>
-                </property>
+                <widget class="QWidget" name="pre_city_tab">
+                 <attribute name="title">
+                  <string>Pre-City</string>
+                 </attribute>
+                 <layout class="QVBoxLayout" name="verticalLayout_28">
+                  <item>
+                   <widget class="QFrame" name="frame_3">
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                    <layout class="QVBoxLayout" name="verticalLayout_27">
+                     <item>
+                      <layout class="QVBoxLayout" name="verticalLayout_26">
+                       <item>
+                        <widget class="QLabel" name="label_2">
+                         <property name="text">
+                          <string>All Entitites</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QTreeWidget" name="treeWidget">
+                         <column>
+                          <property name="text">
+                           <string notr="true">1</string>
+                          </property>
+                         </column>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="label">
+                         <property name="text">
+                          <string>Simulation Pool Selected Entities</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QTableWidget" name="tableWidget"/>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="configure_simulation_pushbutton">
+                         <property name="enabled">
+                          <bool>false</bool>
+                         </property>
+                         <property name="text">
+                          <string>Configure Simulation</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="pre_city_statistics">
+                 <attribute name="title">
+                  <string>Statistics</string>
+                 </attribute>
+                 <layout class="QVBoxLayout" name="verticalLayout_31">
+                  <item>
+                   <widget class="QFrame" name="frame_4">
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                    <layout class="QVBoxLayout" name="verticalLayout_30">
+                     <item>
+                      <layout class="QVBoxLayout" name="verticalLayout_29">
+                       <item>
+                        <widget class="QListWidget" name="listWidget">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                           <horstretch>0</horstretch>
+                           <verstretch>8</verstretch>
+                          </sizepolicy>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="label_22">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+                           <horstretch>0</horstretch>
+                           <verstretch>1</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string>Illustrative Clarification:</string>
+                         </property>
+                         <property name="scaledContents">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QFrame" name="frame_5">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+                           <horstretch>0</horstretch>
+                           <verstretch>6</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="frameShape">
+                          <enum>QFrame::StyledPanel</enum>
+                         </property>
+                         <property name="frameShadow">
+                          <enum>QFrame::Raised</enum>
+                         </property>
+                         <layout class="QVBoxLayout" name="verticalLayout_32">
+                          <item>
+                           <widget class="QLabel" name="label_21">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="frameShadow">
+                             <enum>QFrame::Raised</enum>
+                            </property>
+                            <property name="lineWidth">
+                             <number>2</number>
+                            </property>
+                            <property name="text">
+                             <string/>
+                            </property>
+                            <property name="scaledContents">
+                             <bool>true</bool>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
                </widget>
               </item>
              </layout>
@@ -111,8 +233,11 @@
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                <horstretch>8</horstretch>
-               <verstretch>0</verstretch>
+               <verstretch>10</verstretch>
               </sizepolicy>
+             </property>
+             <property name="currentIndex">
+              <number>0</number>
              </property>
              <property name="tabsClosable">
               <bool>true</bool>
@@ -273,6 +398,25 @@
                      </item>
                     </layout>
                    </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab">
+              <attribute name="title">
+               <string>Statistics</string>
+              </attribute>
+              <layout class="QHBoxLayout" name="horizontalLayout_21">
+               <item>
+                <widget class="QGroupBox" name="groupBox_21">
+                 <property name="title">
+                  <string>DiagramBox</string>
+                 </property>
+                 <layout class="QHBoxLayout" name="horizontalLayout_20">
+                  <item>
+                   <layout class="QVBoxLayout" name="verticalLayout_23"/>
                   </item>
                  </layout>
                 </widget>

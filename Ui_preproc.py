@@ -72,6 +72,7 @@ def setup_Ui_preproc(self):
     self.buildingBlocks_pushbutton.clicked.connect(self.manage_selection_box_bb)
     self.append_pushbutton.clicked.connect(self.fill_table_widget)
     self.configure_simulation_pushbutton.clicked.connect(self.configure_simulation)
+    self.setup_Ui_preproc_diag()
 
 def highlight_whole_city(self):
     _city=self.pre_eq_city
