@@ -26,7 +26,11 @@
 	}
 
 # ---------------------------------------------------------------------------------------------
-	source CreateElements.tcl;						# Creates elements
+	set tclfilename "/"
+	append tclfilename "CreateElements.tcl";						# Creates elements
+	set tclfile2source ""
+	append tclfile2source $tclfilesdir $tclfilename
+	source $tclfile2source
 #
 # --------------------- FLOOR HEIGHTs ---------------------------------------------------------  
 #

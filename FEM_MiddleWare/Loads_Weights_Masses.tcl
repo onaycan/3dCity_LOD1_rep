@@ -286,7 +286,7 @@ lset sumWiHi $numInFile 1 $sumWiHitmp; 	# sum of storey weight times height, for
 # Fj = WjHj/sum(WiHi)  * Weight   at each floor j
 # initialize variables for each building as list variables 
 set iFPush "";			#lateral load for pushover
-set iNodePush "";		# nodes for pushover/cyclic, vectorized
+#set iNodePush "";		# nodes for pushover/cyclic, vectorized
 set iFjtmp ""
 for {set i 1} {$i <= [lindex $NStory $numInFile]} {incr i 1} {
 	lappend iFjtmp 0
@@ -297,7 +297,6 @@ for {set j 0} {$j <=[expr [lindex $NStory $numInFile]-1]} {incr j 1} {
 	set FloorWeight [lindex $iFloorWeight $numInFile 0 $j];
 	lset iFj $numInFile $j [expr $FloorWeight*[lindex $FloorHeight $numInFile $j]/[lindex $sumWiHi $numInFile 1]*[lindex $WeightTotal $numInFile 1]];		
 }
-
 
 lappend iNodePush [lindex $iMasterNode $numInFile] ;		# nodes for pushover/cyclic, vectorized
 set iFPush $iFj;				# lateral load for pushover, vectorized for each building (list)

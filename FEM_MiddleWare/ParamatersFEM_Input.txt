@@ -3,7 +3,7 @@ false
 #Display recorder plot
 false
 #Pounding Type <zeroLengthImpact3D>  <zeroLengthContact3D>  <None>:
-None
+zeroLengthImpact3D
 #Direction of normal of contact surface
 1
 #Friction coefficient mu:
@@ -11,9 +11,9 @@ None
 #Penalty stiffness for tangential directions Kt:
 1.0e5
 #Penalty stiffness for normal direction Kn:
-1.0e10
+1.0e15
 #Cohesion:
-1.0e4
+1.0e5
 #Initial gap:
 0.01
 #Friction ratio:
@@ -21,4 +21,4 @@ None
 #Yield displacement based on Hertz impact model:
 0.01
 #Spring element (zeroLength) stiffness:
-1.0e15
+1.0e3

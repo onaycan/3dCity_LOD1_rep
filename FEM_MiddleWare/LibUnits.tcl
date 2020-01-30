@@ -25,8 +25,10 @@ if {[string match $unitsystem "us"] == 1} {
 	set Usmall [expr 1/$Ubig]; 		# a really small number
 }
 if {[string match $unitsystem "metric"] == 1} {
-	set in 0.394; 				# in --> cm      1 Zoll = 2.54 cm
-	set kip 2.2046; 			# kip --> ton    1 kip = 0.4536 ton
+	#set in 0.394; 				# cm --> in
+	set in 2.54;				# in --> cm      1 Zoll = 2.54 cm
+	#set kip 2.2046; 			# ton --> kip
+	set kip 0.4536;				# kip --> ton    1 kip = 0.4536 ton
 	set sec 1.; 				# define basic units -- output units
 	set LunitTXT "cm";		# define basic-unit text for output
 	set FunitTXT "ton";			# define basic-unit text for output

@@ -26,8 +26,6 @@ class buildingblock:
             for bsi in range(0,len(b.beamsets)):
                 bs=b.beamsets[bsi]
                 for vi in range(0,len(bs.vertices)-1):
-                    if len(bs.vertices[vi].home_columns)==0:
-                        print("ANNNNNNNAANANASSSKA")
                     v=bs.vertices[vi].femid
                     self.femvertexids.add(v)
 

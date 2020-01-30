@@ -12,7 +12,7 @@ set GJ [expr $G*$J];
 # nominal concrete compressive strength
 set fc 		[expr -4.0*$ksi];		# CONCRETE Compressive Strength, ksi   (+Tension, -Compression)
 set Ec 		[expr 57*$ksi*sqrt(-$fc/$psi)];	# Concrete Elastic Modulus
-set nu 0.2;
+set nu 0.2;								# Poisson ratio
 set Gc [expr $Ec/2./[expr 1+$nu]];  	# Torsional stiffness Modulus
 
 # confined concrete
@@ -28,7 +28,6 @@ set fc1U  $fc;			# UNCONFINED concrete (todeschini parabolic model), maximum str
 set eps1U -0.003;			# strain at maximum strength of unconfined concrete
 set fc2U [expr $Kres*$fc1U];		# ultimate stress
 set eps2U -0.01;			# strain at ultimate stress
-
 # tensile-strength properties
 set ftC [expr -0.14*$fc1C];		# tensile strength +tension
 set ftU [expr -0.14*$fc1U];		# tensile strength +tension
@@ -40,7 +39,6 @@ set IDconcCore 1
 set IDconcCover 2
 uniaxialMaterial Concrete02 $IDconcCore $fc1C $eps1C $fc2C $eps2C $lambda $ftC $Ets;	# Core concrete (confined)
 uniaxialMaterial Concrete02 $IDconcCover $fc1U $eps1U $fc2U $eps2U $lambda $ftU $Ets;	# Cover concrete (unconfined)
-
 # -----------------------------------------------------------------------------------------------------# REINFORCING STEEL parameters
 #
 set Fy [expr 66.8*$ksi];		# STEEL yield stress
@@ -52,3 +50,20 @@ set cR2 0.15;			# control the transition from elastic to plastic branches
 
 set IDSteel 3
 uniaxialMaterial Steel02 $IDSteel  $Fy $Es $Bs $R0 $cR1 $cR2
+#
+# Output Material Properties
+#puts ConfConreteTensileStrength:$ftC
+#puts UnConfConreteTensileStrength:$ftU
+#puts ConfconcreteMaximumStress:$fc1C
+#puts UnConfconcreteMaximumStress:$fc1U
+#puts UltimateStressofUnconfConcrete:$fc2U
+#puts StrainatMaximumStrengthofUnconfinedConcrete:$eps1U
+#puts StrainatUltimateStressofUnconfinedConcrete:$eps2U
+#puts UltimateStressofConfConcrete:$fc2C
+#puts StrainatMaximumStressofConfinedConcrete:$eps1C
+#puts StrainatUltimateStressofConfinedConcrete:$eps2C
+#puts ConcreteCompressiveStrength:$fc
+#puts ConcreteElasticModulus:$Ec
+#puts SteelYieldStress:$Fy
+#puts SteelElasticModulus:$Es
+#

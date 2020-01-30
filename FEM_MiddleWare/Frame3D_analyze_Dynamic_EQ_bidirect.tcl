@@ -9,23 +9,60 @@ puts " -------------Uniaxial Inelastic Section, Nonlinear Model -------------"
 puts " -------------Uniform Earthquake Excitation -------------"
 puts " -------------Bidirectional GroundMotion -------------"
 #
-source ReadSMDfile.tcl;		# procedure for reading GM file and converting it to proper format
-source LibUnits.tcl;			# define units (kip-in-sec)
-source DisplayPlane.tcl;		# procedure for displaying a plane in model
-source DisplayModel3D.tcl;		# procedure for displaying 3D perspectives of model
-source AreaPolygon.tcl
-source subfolderSearch.tcl
+set tclfilename "/"
+append tclfilename "ReadSMDfile.tcl";		# procedure for reading GM file and converting it to proper format
+set tclfile2source ""
+append tclfile2source $tclfilesdir $tclfilename
+source $tclfile2source
+#
+set tclfilename "/"
+append tclfilename "LibUnits.tcl";		# define units (kip-in-sec)
+set tclfile2source ""
+append tclfile2source $tclfilesdir $tclfilename
+source $tclfile2source
+#
+set tclfilename "/"
+append tclfilename "DisplayPlane.tcl";		# procedure for displaying a plane in model
+set tclfile2source ""
+append tclfile2source $tclfilesdir $tclfilename
+source $tclfile2source
+#
+set tclfilename "/"
+append tclfilename "DisplayModel3D.tcl";		# procedure for displaying 3D perspectives of model
+set tclfile2source ""
+append tclfile2source $tclfilesdir $tclfilename
+source $tclfile2source
+#
+set tclfilename "/"
+append tclfilename "AreaPolygon.tcl";		# procedure for displaying 3D perspectives of model
+set tclfile2source ""
+append tclfile2source $tclfilesdir $tclfilename
+source $tclfile2source
+#
+set tclfilename "/"
+append tclfilename "subfolderSearch.tcl";		# procedure for displaying 3D perspectives of model
+set tclfile2source ""
+append tclfile2source $tclfilesdir $tclfilename
+source $tclfile2source
 # ------------------  Define SECTIONS ------------------------------------------------------
 set SectionType FiberSection;		# options: Elastic FiberSection
 if {$RCSection=="true"} {
-	source BuildRCrectSection.tcl;		# procedure for definining RC fiber section
+	set tclfilename "/"
+	append tclfilename "BuildRCrectSection.tcl";		# procedure for definining RC fiber section
+	set tclfile2source ""
+	append tclfile2source $tclfilesdir $tclfilename
+	source $tclfile2source
 }
 if {$WSection=="true"} {
-	source Wsection.tcl; # procedure for definining steel W section
+	set tclfilename "/"
+	append tclfilename "Wsection.tcl";		# procedure for definining steel W section
+	set tclfile2source ""
+	append tclfile2source $tclfilesdir $tclfilename
+	source $tclfile2source
 }
 # Bidirectional Uniform Earthquake ground motion (uniform acceleration input at all support nodes)
-set iGMdirection "1 3";			# ground-motion direction
-set iGMfact "1.5 0.75";			# ground-motion scaling factor
+set iGMdirection "1 2 3";			# ground-motion direction
+set iGMfact "$GMSF $GMSF $GMSF";			# ground-motion scaling factor
 set dtInput 0.00500 ;		    # DT
 #
 # ------------  SET UP -------------------------------------------------------------------------
@@ -35,7 +72,11 @@ model BasicBuilder -ndm 3 -ndf 6;	# Define the model builder, ndm=#dimension, nd
 # ---------------------   Input File Names List  -----------------------------------------------------
 set InputDir $inputFilepath;			# set up name of input directory
 set Buildingnum 0; # initialize the total number of buildings
-source split_inputFileNames.tcl; # take file names, define number of buildings and take the building IDs
+	set tclfilename "/"
+	append tclfilename "split_inputFileNames.tcl";		# take file names, define number of buildings and take the building IDs
+	set tclfile2source ""
+	append tclfile2source $tclfilesdir $tclfilename
+	source $tclfile2source
 #
 set dataDir $outputFilepath;			# set up name of data directory
 file mkdir "$dataDir"; 			# create data directory
@@ -53,37 +94,109 @@ set GirdSecTagFiber 6
 set SecTagTorsion 70
 # ---------------------- Define SECTIONs --------------------------------
 if {$RCSection=="true"} {
-	source RCrectSectionProperties.tcl
+	set tclfilename "/"
+	append tclfilename "RCrectSectionProperties.tcl"
+	set tclfile2source ""
+	append tclfile2source $tclfilesdir $tclfilename
+	source $tclfile2source
 }
 if {$WSection=="true"} {
-	source WSectionProperties.tcl
+	set tclfilename "/"
+	append tclfilename "WSectionProperties.tcl"
+	set tclfile2source ""
+	append tclfile2source $tclfilesdir $tclfilename
+	source $tclfile2source
 }
 # ---------------------   READ INPUTS  ----------------------------------------------------------
 for {set numInFile 0} {$numInFile <= [expr $Buildingnum-1]} {incr numInFile 1} {
-	source AssemblefromNodes.tcl;					# Identify special lists from Nodal input, define output node lists, etc.
-	source AssemblefromElements.tcl;				# Beam/Girder tags, Transformation, vector definitions, etc.
+	set tclfilename "/"
+	append tclfilename "AssemblefromNodes.tcl";					# Identify special lists from Nodal input, define output node lists, etc.
+	set tclfile2source ""
+	append tclfile2source $tclfilesdir $tclfilename
+	source $tclfile2source
+
+	set tclfilename "/"
+	append tclfilename "AssemblefromElements.tcl";					# Beam/Girder tags, Transformation, vector definitions, etc.
+	set tclfile2source ""
+	append tclfile2source $tclfilesdir $tclfilename
+	source $tclfile2source
 }
-source CreateNodes.tcl
+	set tclfilename "/"
+	append tclfilename "CreateNodes.tcl"
+	set tclfile2source ""
+	append tclfile2source $tclfilesdir $tclfilename
+	source $tclfile2source
 # ---------------------   CREATE THE MODEL  ----------------------------------------------------------
 for {set numInFile 0} {$numInFile <= [expr $Buildingnum-1]} {incr numInFile 1} {
-	source Frame3D_Build_RC.tcl ;  			#inputing many building parameters
-	source Anglebtw.tcl
-	source nodeID2coordXZ.tcl
-	source ElementLengths.tcl
-	source FloorLoadDistribution.tcl; 		# Dead Load Distribution on Floors among interior Frames with unknown slab geometries
-	source Loads_Weights_Masses.tcl; 		# Gravity, Nodal Weights, Lateral Loads, Masses
+	set tclfilename "/"
+	append tclfilename "Frame3D_Build_RC.tcl";  			#inputing many building parameters
+	set tclfile2source ""
+	append tclfile2source $tclfilesdir $tclfilename
+	source $tclfile2source
+	#
+	set tclfilename "/"
+	append tclfilename "Anglebtw.tcl"
+	set tclfile2source ""
+	append tclfile2source $tclfilesdir $tclfilename
+	source $tclfile2source
+	#
+	set tclfilename "/"
+	append tclfilename "nodeID2coordXZ.tcl"
+	set tclfile2source ""
+	append tclfile2source $tclfilesdir $tclfilename
+	source $tclfile2source
+	#
+	set tclfilename "/"
+	append tclfilename "ElementLengths.tcl"
+	set tclfile2source ""
+	append tclfile2source $tclfilesdir $tclfilename
+	source $tclfile2source
+	#
+	set tclfilename "/"
+	append tclfilename "FloorLoadDistribution.tcl"; 		# Dead Load Distribution on Floors among interior Frames with unknown slab geometries
+	set tclfile2source ""
+	append tclfile2source $tclfilesdir $tclfilename
+	source $tclfile2source
+	#
+	set tclfilename "/"
+	append tclfilename "Loads_Weights_Masses.tcl"; 		# Gravity, Nodal Weights, Lateral Loads, Masses
+	set tclfile2source ""
+	append tclfile2source $tclfilesdir $tclfilename
+	source $tclfile2source
+	#
 }
-source CreateIDFile.tcl
-source Recorder_outputs.tcl;	# OUTPUT RESULTS
+set tclfilename "/"
+append tclfilename "CreateIDFile.tcl"
+set tclfile2source ""
+append tclfile2source $tclfilesdir $tclfilename
+source $tclfile2source
+#
+set tclfilename "/"
+append tclfilename "Recorder_outputs.tcl";	# OUTPUT RESULTS
+set tclfile2source ""
+append tclfile2source $tclfilesdir $tclfilename
+source $tclfile2source
 # -----------------	POUNDING -----------------
 if {$Buildingnum>1} {
-	source CreatePoundingNodesElements.tcl
-	source CreatePoundingCommands.tcl; # actually create Pounding Contacts
+	set tclfilename "/"
+	append tclfilename "CreatePoundingNodesElements.tcl"
+	set tclfile2source ""
+	append tclfile2source $tclfilesdir $tclfilename
+	source $tclfile2source
+	#
+	set tclfilename "/"
+	append tclfilename "CreatePoundingCommands.tcl"; # actually create Pounding Contacts
+	set tclfile2source ""
+	append tclfile2source $tclfilesdir $tclfilename
+	source $tclfile2source
 }
 #
 # -------------------------  MODAL ANALYSIS  ---------------------------------------------------
-source ModalAnalysis.tcl;	#Modal Analysis and Output here
-
+set tclfilename "/"
+append tclfilename "ModalAnalysis.tcl"; #Modal Analysis and Output here
+set tclfile2source ""
+append tclfile2source $tclfilesdir $tclfilename
+source $tclfile2source
 #
 # Define DISPLAY -------------------------------------------------------------
 if {[string match $displaymodel "true"] == 1} {
@@ -91,7 +204,11 @@ if {[string match $displaymodel "true"] == 1} {
 }
 #
 # ---------------------  GRAVITY LOADS  -----------------------------------------------------
-source Gravity.tcl
+set tclfilename "/"
+append tclfilename "Gravity.tcl"
+set tclfile2source ""
+append tclfile2source $tclfilesdir $tclfilename
+source $tclfile2source
 #
 if {  [info exists RigidDiaphragm] == 1} {
 	if {$RigidDiaphragm=="ON"} {
@@ -123,8 +240,11 @@ if {[string match $displayrecorder "true"] == 1} {
 #
 #
 # ----------- set up analysis parameters
-source LibAnalysisDynamicParameters.tcl;	# constraintsHandler,DOFnumberer,system-ofequations,convergenceTest,solutionAlgorithm,integrator
-
+set tclfilename "/"
+append tclfilename "LibAnalysisDynamicParameters.tcl";	# constraintsHandler,DOFnumberer,system-ofequations,convergenceTest,solutionAlgorithm,integrator
+set tclfile2source ""
+append tclfile2source $tclfilesdir $tclfilename
+source $tclfile2source
 # ------------ define & apply damping
 # RAYLEIGH damping parameters, Where to put M/K-prop damping, switches (http://opensees.berkeley.edu/OpenSees/manuals/usermanual/1099.htm)
 #          D=$alphaM*M + $betaKcurr*Kcurrent + $betaKcomm*KlastCommit + $beatKinit*$Kinitial

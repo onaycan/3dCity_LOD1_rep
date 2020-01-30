@@ -8,7 +8,8 @@ import datetime
 import csv
 import matplotlib
 import pprint
-
+import shutil
+import multiprocessing
 
 def setup_Ui_proc(self):
     self.runorloadcheckBox.stateChanged.connect(self.manage_runorload)
@@ -142,17 +143,24 @@ def openFileNameDialoglon(self):
 
 
 def proc_write_parameter_file(self, middlewaredir, outputpath, inputpath):
-    configfile=open(middlewaredir+"/Paramaters_Input.txt",'w')
+    configfile=open(os.path.abspath(inputpath)+"/Paramaters_Input.txt",'w')
+
+    configfile.write("#Tcl files directory:\n")
+    configfile.write(os.path.abspath(middlewaredir).replace("\\","/")+"\n")
     configfile.write("#Input folder path:\n")
     configfile.write(os.path.abspath(inputpath).replace("\\","/")+"\n")
     configfile.write("#Output folder path:\n")
     configfile.write(os.path.abspath(outputpath).replace("\\","/")+"\n")
     configfile.write("#Unit system <Metric> <US>\n")
     configfile.write(str(self.unit_comboBox.currentText()).lower()+"\n")
-    configfile.write("#Acceleration recording in lateral direction:\n")
+    configfile.write("#Acceleration recording in lateral direction 1:\n")
     configfile.write(self.latfile.replace("\\","/")+"\n")
-    configfile.write("#Acceleration recording in perpendicular direction:\n")
+    configfile.write("#Acceleration recording in lateral direction 2:\n")
     configfile.write(self.lonfile.replace("\\","/")+"\n")
+    configfile.write("#Acceleration recording in perpendicular direction:\n")
+    configfile.write(self.altfile.replace("\\","/")+"\n")
+    configfile.write("#Ground motion scaling factor:\n")
+    configfile.write("4.7613"+"\n")
     configfile.write("#Simulation type: <Dynamic> or <Static>:\n")
     configfile.write(str(self.simtype_comboBox.currentText())+"\n")
     configfile.write("#Maximum duration for <Dynamic> simulation in seconds:\n")
@@ -186,6 +194,13 @@ def proc_write_parameter_file(self, middlewaredir, outputpath, inputpath):
     configfile.close()
 
 
+def perform_runipb(ipbs):
+    current_dir=os.path.abspath(".\\")
+    middlewaredir=os.path.abspath(".\\FEM_MiddleWare")
+    os.chdir(ipbs)
+    os.system(middlewaredir+"/OpenSees.exe "+"./StartSimulation.tcl ")
+    os.chdir(current_dir)
+
 def runsimulation(self):
 
     #progress = QProgressDialog("Running Simulation...", "Abort Copy", 0, 0, self)
@@ -200,17 +215,32 @@ def runsimulation(self):
         current_building_id=self.comboboxes['Buildings'].itemText(i)
         if current_building_id!="None":
             bs.add(current_building_id)
+    numberofprocesses=0
+    ipbs=[]
     for b in bs:
         if not self.buildings[b].pounding_building:
             inputpath=root+"/inputs/b_"+str(b)
             outputpath=root+"/outputs/b_"+str(b)
             os.makedirs(inputpath, exist_ok=True)
             self.buildings[b].print_simulation_file(inputpath+"/"+"INPUT_1.tcl")
+            shutil.copyfile(middlewaredir+"/ReadParameters.tcl",inputpath+"/ReadParameters.tcl")
+            shutil.copyfile(middlewaredir+"/StartSimulation.tcl",inputpath+"/StartSimulation.tcl")
             self.write_parameter_file(middlewaredir, outputpath, inputpath)
-            os.chdir(middlewaredir)
-            os.system("OpenSees.exe ./StartSimulation.tcl "+"b_"+str(b))
-            os.chdir("..")
-            #progress.setValue(1)
+            numberofprocesses+=1
+            ipbs.append(inputpath)
+            #os.chdir(middlewaredir)
+            #os.system("OpenSees.exe ./StartSimulation.tcl "+"b_"+str(b))
+            #os.chdir("..")
+    
+    pool = multiprocessing.Pool(numberofprocesses)
+    results = pool.map_async(perform_runipb, ipbs)
+    pool.close()
+    pool.join()
+
+
+
+
+    
             
     for i in range(self.comboboxes['Building Blocks'].count()):
         current_bb_id=self.comboboxes['Building Blocks'].itemText(i)
@@ -222,15 +252,19 @@ def runsimulation(self):
         outputpath=root+"/outputs/"+str(bb)
         os.makedirs(inputpath, exist_ok=True)
         self.building_blocks[bb].print_pounding_file(inputpath)
+        shutil.copyfile(middlewaredir+"/ReadParameters.tcl",inputpath+"/ReadParameters.tcl")
+        shutil.copyfile(middlewaredir+"/StartSimulation.tcl",inputpath+"/StartSimulation.tcl")
         self.write_parameter_file(middlewaredir, outputpath, inputpath)
         os.chdir(middlewaredir)
-        os.system("OpenSees.exe ./StartSimulation.tcl "+str(b))
+        #os.system("OpenSees.exe ./StartSimulation.tcl "+str(b))
         os.chdir("..")
-        #progress.setValue(1)
         
     outputpath=root+"/outputs/"
     #self.showresults_pushButton.setEnabled(True)
-    self.show_results()
+    
+    
+    #DO NOT FORGET TO OPEN THIS!
+    #self.show_results()
 
 
 def manage_simparams(self):
@@ -242,8 +276,9 @@ def manage_simparams(self):
     self.lon_pushButton.clicked.connect(self.openFileNameDialoglon)
     self.lonfile_label.setText(os.path.basename(".\\FEM_MiddleWare\\GMfiles\\H-E12140.at2"))
     self.latfile_label.setText(os.path.basename(".\\FEM_MiddleWare\\GMfiles\\H-E01140.at2"))
-    self.latfile=os.path.abspath(".\\FEM_MiddleWare\\GMfiles\\H-E12140.at2")
-    self.lonfile=os.path.abspath(".\\FEM_MiddleWare\\GMfiles\\H-E01140.at2")
+    self.latfile=os.path.abspath(".\\FEM_MiddleWare\\GMfiles\\Cluster0\\RSN14938_51177644_BKCVSHLE.AT2")
+    self.lonfile=os.path.abspath(".\\FEM_MiddleWare\\GMfiles\\Cluster0\\RSN14938_51177644_BKCVSHLN.AT2")
+    self.altfile=os.path.abspath(".\\FEM_MiddleWare\\GMfiles\\Cluster0\\RSN14938_51177644_BKCVSHLZ.AT2")
     self.runsimulation_pushButton.clicked.connect(self.selectDirDialogrun)
     self.loadsimulation_pushButton.clicked.connect(self.selectDirDialogload)
 

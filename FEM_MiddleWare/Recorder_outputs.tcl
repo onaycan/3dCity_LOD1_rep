@@ -4,8 +4,11 @@
 #
 #
 # -------------------------------------------------------------
-set outFileforRecorderSTR CreateRecorderCommands.tcl
-set outFileforRecorder [open $outFileforRecorderSTR w]
+set outFileforRecorderSTR "/"
+append outFileforRecorderSTR "CreateRecorderCommands.tcl"
+set outFileforRecorderSTR_w_path ""
+append outFileforRecorderSTR_w_path $tclfilesdir $outFileforRecorderSTR
+set outFileforRecorder [open $outFileforRecorderSTR_w_path w]
 #set outFileNodeIDName $dataDir/NodeIDs.out
 #set outFileEltIDName $dataDir/ElementIDs.out
 #set outFileBeamEltIDName $dataDir/BeamElementIDs.out
@@ -194,5 +197,6 @@ if {$WSection=="true"} {
 }
 #
 close $outFileforRecorder
-source $outFileforRecorderSTR
+
+source $outFileforRecorderSTR_w_path
 #

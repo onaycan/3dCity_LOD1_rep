@@ -3,7 +3,7 @@
 
 set BCol $HCol
 
-set GammaConcrete [expr 150*$pcf];
+set GammaConcrete [expr 150*$pcf];  			# Typically, concrete has a density of 150 pounds per cubic foot,
 set QdlCol [expr $GammaConcrete*$HCol*$BCol];	# self weight of Column, weight per length
 set QBeam [expr $GammaConcrete*$HBeam*$BBeam];	# self weight of Beam, weight per length
 set QGird [expr $GammaConcrete*$HGird*$BGird];	# self weight of Gird, weight per length
@@ -37,7 +37,11 @@ if {$SectionType == "Elastic"} {
 
 } elseif {$SectionType == "FiberSection"} {
 	# MATERIAL parameters 
-	source LibMaterialsRC.tcl;	# define library of Reinforced-concrete Materials
+	set tclfilename "/"
+	append tclfilename "LibMaterialsRC.tcl";	# define library of Reinforced-concrete Materials
+	set tclfile2source ""
+	append tclfile2source $tclfilesdir $tclfilename
+	source $tclfile2source
 	# FIBER SECTION properties 
 	# Column section geometry:
 	set cover [expr 2.5*$in];	# rectangular-RC-Column cover
